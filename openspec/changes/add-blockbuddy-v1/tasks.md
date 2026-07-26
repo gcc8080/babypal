@@ -73,11 +73,21 @@
 
 ## 3. 内容流水线（与 P1 起并行，不占关键路径）
 
-- [ ] 3.1 `tool/gen_audio.dart`：读内容包枚举 `voiceKey` → 调本机 TTS → 输出 **WAV（22.05 kHz 单声道 16-bit）** + manifest。macOS 命令形如 `say -v Tingting --file-format=WAVE --data-format=LEI16@22050 -o out.wav`，英文用 `-v Samantha`
-- [ ] 3.2 跑 `gen_audio.dart` 产出约 400 条 TTS 音频（约 26 MB），在 `pubspec.yaml` 声明资源目录
+- [x] 3.1 `tool/gen_audio.dart`：读内容包枚举 `voiceKey` → 调本机 TTS → 输出 **WAV（22.05 kHz 单声道 16-bit）** + manifest。macOS 命令形如 `say -v Tingting --file-format=WAVE --data-format=LEI16@22050 -o out.wav`，英文用 `-v Samantha`
+- [x] 3.2 跑 `gen_audio.dart` 产出约 400 条 TTS 音频（约 26 MB），在 `pubspec.yaml` 声明资源目录
 - [ ] 3.3 `tool/fetch_openmoji.dart`：按内容包里的 emoji 码点抽取 OpenMoji SVG 子集（约 150 个），输出到 `assets/icons/`
 - [ ] 3.4 在 `assets/icons/` 放置 OpenMoji 的 LICENSE 文件（CC BY-SA 4.0），记录署名信息供家长区署名页使用
-- [ ] 3.5 校验：内容包中每个 `voiceKey` 在音频 manifest 中都有对应文件，缺失项列出清单
+- [x] 3.5 校验：内容包中每个 `voiceKey` 在音频 manifest 中都有对应文件，缺失项列出清单
+
+> 3.1/3.2/3.5 已完成（2026-07-26）：202 条 TTS 音频，实测 **6.6 MB**——远低于 design.md 估算的 26 MB。格式经测试校验为 WAV 单声道 / 22050 Hz / 16-bit。`Tingting`（中）与 `Samantha`（英）两个音色本机实测可用。
+>
+> 数字读法由工具从 `value` 推导，因此 `numbers.json` 无需逐条写朗读文本（`21 → 二十一 / twenty-one`、`100 → 一百 / one hundred`，已抽查）。**名词的朗读文本无法推导**：`NounItem` 目前不携带文本字段，工具会报告缺失而非猜测——生成一条读错的音频比没有更糟。设计 `nouns.json` 时需补 `text` / `textEn` 字段。字母音素（/æ/）文本 TTS 无法可靠合成，留给真人录音覆盖。
+>
+> 3.5 的校验做成了 `test/content_audio_coverage_test.dart` 而非仅是脚本，让 CI 兜住：内容包加了新字却忘了跑 `gen_audio.dart`，构建阶段就该发现。
+>
+> **3.3 / 3.4 被阻塞**：OpenMoji 抽取依赖内容包里的 emoji 码点，而 `nouns.json` 尚未设计（属 P2–P3）。
+>
+> **仍缺音效素材**：`gen_audio.dart` 产出的是**语音**，而点击积木的「啵」这类**音效**不是 TTS 能生成的，也不在 3.x 范围内。因此 2.17 的「连点 10 个积木音效不丢」目前仍无法验证。可考虑程序化合成短音效（与本项目「零素材、程序化绘制」的取向一致），或找 CC0 音效包。
 
 ## 4. P2 数字 + 加法（约 1.5 周）
 

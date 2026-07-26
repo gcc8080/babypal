@@ -48,3 +48,7 @@ flutter:
 
   assets:
     - assets/packs/
+    # TTS 打底语音（WAV 22.05kHz 单声道 16-bit，见 design.md D4）。
+    # 家长录制的真人语音写入应用文档目录，运行时优先于这里的资源，
+    # 无需重新打包——见 VoiceResolver。
+    - assets/audio/
