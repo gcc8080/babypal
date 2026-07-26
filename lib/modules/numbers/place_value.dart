@@ -28,8 +28,8 @@ enum PlacePiece {
 @immutable
 class PlaceValue {
   const PlaceValue({required this.tens, required this.ones})
-      : assert(tens >= 0),
-        assert(ones >= 0);
+    : assert(tens >= 0),
+      assert(ones >= 0);
 
   factory PlaceValue.of(int value) {
     assert(value >= 0, '位值拆解不处理负数');
@@ -46,9 +46,9 @@ class PlaceValue {
 
   /// 拆成一串积木，十条在前。用于「演示正确答案」时按顺序飞入。
   List<PlacePiece> get pieces => [
-        for (var i = 0; i < tens; i++) PlacePiece.rod,
-        for (var i = 0; i < ones; i++) PlacePiece.unit,
-      ];
+    for (var i = 0; i < tens; i++) PlacePiece.rod,
+    for (var i = 0; i < ones; i++) PlacePiece.unit,
+  ];
 
   @override
   bool operator ==(Object other) =>
@@ -69,8 +69,8 @@ class PlaceValue {
 @immutable
 class PlaceValueAttempt {
   const PlaceValueAttempt({this.rods = 0, this.units = 0})
-      : assert(rods >= 0),
-        assert(units >= 0);
+    : assert(rods >= 0),
+      assert(units >= 0);
 
   factory PlaceValueAttempt.fromPieces(Iterable<PlacePiece> pieces) {
     var rods = 0;
@@ -104,9 +104,8 @@ class PlaceValueAttempt {
   bool get canCompact => units >= 10;
 
   /// 换一次：10 个单块 → 1 个十条。总数不变。
-  PlaceValueAttempt compact() => canCompact
-      ? PlaceValueAttempt(rods: rods + 1, units: units - 10)
-      : this;
+  PlaceValueAttempt compact() =>
+      canCompact ? PlaceValueAttempt(rods: rods + 1, units: units - 10) : this;
 
   /// 一路换到标准写法。
   PlaceValueAttempt canonical() {
@@ -118,16 +117,20 @@ class PlaceValueAttempt {
   }
 
   PlaceValueAttempt add(PlacePiece piece) => switch (piece) {
-        PlacePiece.rod => PlaceValueAttempt(rods: rods + 1, units: units),
-        PlacePiece.unit => PlaceValueAttempt(rods: rods, units: units + 1),
-      };
+    PlacePiece.rod => PlaceValueAttempt(rods: rods + 1, units: units),
+    PlacePiece.unit => PlaceValueAttempt(rods: rods, units: units + 1),
+  };
 
   PlaceValueAttempt remove(PlacePiece piece) => switch (piece) {
-        PlacePiece.rod =>
-          PlaceValueAttempt(rods: rods > 0 ? rods - 1 : 0, units: units),
-        PlacePiece.unit =>
-          PlaceValueAttempt(rods: rods, units: units > 0 ? units - 1 : 0),
-      };
+    PlacePiece.rod => PlaceValueAttempt(
+      rods: rods > 0 ? rods - 1 : 0,
+      units: units,
+    ),
+    PlacePiece.unit => PlaceValueAttempt(
+      rods: rods,
+      units: units > 0 ? units - 1 : 0,
+    ),
+  };
 
   @override
   bool operator ==(Object other) =>

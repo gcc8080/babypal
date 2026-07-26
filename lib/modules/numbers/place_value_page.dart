@@ -14,6 +14,8 @@ import '../../core/block/block_model.dart';
 import '../../core/block/snap_grid.dart';
 import '../../core/design/controls.dart';
 import '../../core/design/tokens.dart';
+import 'hundred_board_page.dart';
+import 'piece_glyph.dart';
 import 'place_value.dart';
 
 /// 位值工作台。
@@ -38,11 +40,6 @@ class PlaceValuePage extends ConsumerStatefulWidget {
 }
 
 class _PlaceValuePageState extends ConsumerState<PlaceValuePage> {
-  /// 十条与单块的取色。刻意固定而非按数值轮换——「十条永远是这个颜色」
-  /// 本身就是一条要被记住的信息。
-  static const int _rodColorIndex = 6; // 天蓝
-  static const int _unitColorIndex = 2; // 琥珀
-
   /// 攒够 10 个单块后，隔这么久再演示换十。
   ///
   /// 不能立刻换：他刚放下第 10 块，手还在那儿，画面立刻变会让他以为
@@ -147,8 +144,7 @@ class _PlaceValuePageState extends ConsumerState<PlaceValuePage> {
       c.addBlock(
         BlockBody(
           id: 'p${_nextId++}',
-          colorIndex:
-              piece == PlacePiece.rod ? _rodColorIndex : _unitColorIndex,
+          colorIndex: PieceColors.indexOf(piece),
           widthUnits: piece.widthUnits,
           anchor: anchor,
         ),
@@ -210,7 +206,7 @@ class _PlaceValuePageState extends ConsumerState<PlaceValuePage> {
       c.addBlock(
         BlockBody(
           id: 'p${_nextId++}',
-          colorIndex: _rodColorIndex,
+          colorIndex: PieceColors.rodIndex,
           widthUnits: PlacePiece.rod.widthUnits,
           expression: BlockExpression.happy,
           anchor: anchor,
@@ -293,6 +289,14 @@ class _PlaceValuePageState extends ConsumerState<PlaceValuePage> {
     );
   }
 
+  /// 数字模块的两个玩法：位值工作台 ↔ 百格板。一律 `pushReplacement`，
+  /// 返回键始终直接回星球地图，不会越按越深。
+  void _goToHundredBoard() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(builder: (_) => const HundredBoardPage()),
+    );
+  }
+
   void _playBoardSound(BlockSoundEvent event) {
     _audio.playSfx(switch (event) {
       BlockSoundEvent.tap => Sfx.tap,
@@ -337,6 +341,7 @@ class _PlaceValuePageState extends ConsumerState<PlaceValuePage> {
                 onDispense: _dispense,
                 onClear: _clearBoard,
                 onNext: _nextTarget,
+                onSwitchMode: _goToHundredBoard,
               ),
             ],
           ),
@@ -358,6 +363,7 @@ class _Tray extends StatelessWidget {
     required this.onDispense,
     required this.onClear,
     required this.onNext,
+    required this.onSwitchMode,
   });
 
   final int target;
@@ -366,6 +372,9 @@ class _Tray extends StatelessWidget {
   final void Function(PlacePiece piece) onDispense;
   final VoidCallback onClear;
   final VoidCallback onNext;
+
+  /// 去百格板。数字模块的两个玩法互相替换，返回键始终直接回星球地图。
+  final VoidCallback onSwitchMode;
 
   @override
   Widget build(BuildContext context) {
@@ -399,6 +408,12 @@ class _Tray extends StatelessWidget {
               piece: PlacePiece.unit,
               onPressed: () => onDispense(PlacePiece.unit),
             ),
+          ),
+          SizedBox(width: gap),
+          RoundActionButton(
+            key: const ValueKey('mode'),
+            icon: Icons.grid_on_rounded,
+            onPressed: onSwitchMode,
           ),
           SizedBox(width: gap),
           RoundActionButton(
@@ -458,11 +473,7 @@ class _TargetCard extends StatelessWidget {
 
 /// 托盘里的「源」。按下即出一块，可以一直按。
 class _PieceSource extends StatelessWidget {
-  const _PieceSource({
-    super.key,
-    required this.piece,
-    required this.onPressed,
-  });
+  const _PieceSource({super.key, required this.piece, required this.onPressed});
 
   final PlacePiece piece;
   final VoidCallback onPressed;
@@ -474,59 +485,8 @@ class _PieceSource extends StatelessWidget {
       color: Colors.white,
       child: Padding(
         padding: EdgeInsets.all(BlockMetrics.gap / 2),
-        child: _PieceGlyph(piece: piece),
+        child: PieceGlyph(piece: piece),
       ),
-    );
-  }
-}
-
-/// 「源」里那块积木的缩略图。
-///
-/// 十条画成 10 个连着的小格而不是一根光溜的长条——那 10 道分隔线正是
-/// 「一条等于十块」这句话的全部证据，不能省。
-class _PieceGlyph extends StatelessWidget {
-  const _PieceGlyph({required this.piece});
-
-  final PlacePiece piece;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = BlockColors.forIndex(
-      piece == PlacePiece.rod ? 6 : 2,
-    );
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final segments = piece.widthUnits;
-        final segment = math.min(
-          constraints.maxWidth / segments,
-          constraints.maxHeight,
-        );
-        return Center(
-          child: SizedBox(
-            width: segment * segments,
-            height: segment,
-            child: Row(
-              children: [
-                for (var i = 0; i < segments; i++)
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: segments > 1 ? segment * 0.04 : 0,
-                      ),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: color,
-                          borderRadius: BorderRadius.circular(segment * 0.22),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }
