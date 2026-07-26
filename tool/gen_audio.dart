@@ -20,12 +20,49 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
+import 'dart:typed_data';
 
-/// 中文音色。macOS 自带，已实测可用。
-const String zhVoice = 'Tingting';
+/// 中文音色。
+///
+/// **从 Tingting 换到 Flo**：Tingting 读「三」时，声母 /s/ 的能量 98.8% 落在
+/// 8–11 kHz，其中 24% 挤在 10–11 kHz——紧贴 22.05 kHz 采样率的奈奎斯特上限。
+/// 那个位置任何一点高频衰减都会把 /s/ 抹掉，`sān` 剩下 `an`，听起来正好是英文
+/// 字母 N。加上 Tingting 的「三」鼻音尾与元音一样长（各 120ms），退化得更彻底。
+/// 「四」没有鼻音尾，掉了 /s/ 只剩 `ì`，不像任何熟悉的音，所以只有「三」暴露。
+///
+/// Flo 把 /s/ 放在 2–6 kHz，频带正中间。交付设备 MI 8 SE 是 5.88 寸机，小喇叭
+/// 在 9 kHz 上基本没输出——**只提采样率治不了根，换音色才行**。
+const String zhVoiceName = 'Flo';
+const String zhVoiceLocale = 'zh_CN';
 
-/// 英文音色。
-const String enVoice = 'Samantha';
+/// 英文音色。人耳验收无问题，不动。
+const String enVoiceName = 'Samantha';
+const String enVoiceLocale = 'en_US';
+
+/// 解析后的实际音色名，由 [resolveVoice] 在 main 中填入，并写进 manifest。
+late final String zhVoice;
+late final String enVoice;
+
+/// 裁剪静音的判定阈值（相对满量程）。
+///
+/// 取得很低是因为**擦音的起音本来就轻**：Tingting 的 /s/ 起始窗口只有满量程的
+/// 0.7%。阈值定高一点就会把声母切掉，那正是我们要修的那个 bug。
+const double silenceThreshold = 0.004;
+
+/// 裁剪时在前后各留出的余量。
+///
+/// 前面留得比后面短：前导静音本来就只有 20ms 左右，而**切掉声母的代价远大于
+/// 多留 40ms 静音**。
+const int leadPadMs = 40;
+const int tailPadMs = 60;
+
+/// 峰值归一化目标（满量程 32767）。
+///
+/// 现状是中英响度不齐——中文峰值均值 17030、英文 22003，最低的中文条目只有
+/// 9718（比英文低 10 dB）。而每次播报都是中英连着放，不齐就会一句响一句闷。
+/// 统一到 22000（约 -3.5 dBFS），留出余量让语音叠音效时不削顶。
+const int normalizePeak = 22000;
 
 const String packsDir = 'assets/packs';
 const String audioDir = 'assets/audio';
@@ -56,6 +93,20 @@ Future<void> main(List<String> args) async {
     stderr.writeln('本工具依赖 macOS 的 `say` 命令，当前平台不支持。');
     exit(1);
   }
+
+  final zh = await resolveVoice(zhVoiceName, zhVoiceLocale);
+  final en = await resolveVoice(enVoiceName, enVoiceLocale);
+  if (zh == null || en == null) {
+    stderr.writeln(
+      '找不到音色：${zh == null ? "$zhVoiceName($zhVoiceLocale) " : ""}'
+      '${en == null ? "$enVoiceName($enVoiceLocale)" : ""}\n'
+      '用 `say -v "?"` 看这台机器上有哪些，然后改本文件顶部的常量。',
+    );
+    exit(1);
+  }
+  zhVoice = zh;
+  enVoice = en;
+  stdout.writeln('音色：中文「$zhVoice」／英文「$enVoice」');
 
   final packs = Directory(packsDir)
       .listSync()
@@ -119,6 +170,12 @@ Future<void> main(List<String> args) async {
     if (result.exitCode != 0 || !out.existsSync() || out.lengthSync() <= 44) {
       failed++;
       stderr.writeln('生成失败 ${entry.key}（"${entry.text}"）：${result.stderr}');
+      continue;
+    }
+
+    if (!_postProcess(out)) {
+      failed++;
+      stderr.writeln('后处理失败 ${entry.key}（"${entry.text}"）');
       continue;
     }
     generated++;
@@ -193,6 +250,165 @@ const Map<String, String> zhNarrationPhrases = {
 const Map<String, String> enNarrationPhrases = {
   'en.phrase.tenOnesMakeATen': 'ten ones make one ten',
 };
+
+// ─── 音色解析 ────────────────────────────────────────────────────────
+
+/// 按「名字前缀 + 语言标签」找音色，而不是写死显示名。
+///
+/// 新一代音色的显示名是**本地化的**：中文系统下是「Flo (中文（中国大陆）)」，
+/// 英文系统下是「Flo (Chinese (China mainland))」。写死会在另一台机器上直接
+/// 失败，而且失败信息是 `say` 的一句 "Voice not found"，很难看出原因。
+Future<String?> resolveVoice(String namePrefix, String locale) async {
+  final result = await Process.run('say', ['-v', '?']);
+  if (result.exitCode != 0) return null;
+
+  for (final line in const LineSplitter().convert('${result.stdout}')) {
+    // 每行形如：`Flo (中文（中国大陆）)      zh_CN    # 你好！我叫Flo。`
+    // 名字里有空格和括号，所以先切掉注释，再从右边取语言标签。
+    final head = line.split('#').first.trimRight();
+    final split = head.lastIndexOf(RegExp(r'\s'));
+    if (split < 0) continue;
+
+    final name = head.substring(0, split).trim();
+    if (head.substring(split).trim() != locale) continue;
+    if (name == namePrefix || name.startsWith('$namePrefix ')) return name;
+  }
+  return null;
+}
+
+// ─── WAV 后处理 ──────────────────────────────────────────────────────
+
+/// 裁掉首尾静音并做峰值归一化，然后以规范的 44 字节头重写。
+///
+/// 两件事都不是锦上添花：
+///
+/// - **裁静音**：新一代音色在词尾留了约 520ms 静音。算式播报是靠语音队列把
+///   「三」「加」「二」「等于」「五」串起来的，队列**要等每条播完**才放下一条，
+///   520ms × 5 = 多出 2.6 秒。这会把一句话拖成一段等待。
+/// - **归一化**：中英是连着放的两个声道，响度不齐就会一句响一句闷。
+///
+/// 返回 false 表示这个文件没法处理（保持原样，由调用方计为失败）。
+bool _postProcess(File file) {
+  final bytes = file.readAsBytesSync();
+  final pcm = _readWav(bytes);
+  if (pcm == null) return false;
+
+  final samples = pcm.samples;
+  if (samples.isEmpty) return false;
+
+  var peak = 0;
+  for (final s in samples) {
+    final a = s.abs();
+    if (a > peak) peak = a;
+  }
+  if (peak == 0) return false;
+
+  // 裁剪：阈值取「相对峰值」与「绝对下限」的较大者，避免整条都很轻时
+  // 把有效声音当成静音切掉。
+  final threshold = math.max(
+    (peak * silenceThreshold).round(),
+    (32767 * silenceThreshold).round(),
+  );
+  var first = 0;
+  while (first < samples.length && samples[first].abs() < threshold) {
+    first++;
+  }
+  var last = samples.length - 1;
+  while (last > first && samples[last].abs() < threshold) {
+    last--;
+  }
+  if (last <= first) return false;
+
+  final lead = pcm.sampleRate * leadPadMs ~/ 1000;
+  final tail = pcm.sampleRate * tailPadMs ~/ 1000;
+  final start = math.max(0, first - lead);
+  final end = math.min(samples.length, last + tail + 1);
+
+  final gain = normalizePeak / peak;
+  final trimmed = Int16List(end - start);
+  for (var i = 0; i < trimmed.length; i++) {
+    final v = (samples[start + i] * gain).round();
+    trimmed[i] = v.clamp(-32768, 32767);
+  }
+
+  file.writeAsBytesSync(_writeWav(trimmed, pcm.sampleRate));
+  return true;
+}
+
+class _Pcm {
+  _Pcm(this.samples, this.sampleRate);
+  final Int16List samples;
+  final int sampleRate;
+}
+
+/// 解析 RIFF/WAVE，取出单声道 16-bit PCM。
+///
+/// **必须逐块遍历，不能假定 44 字节头**：`say` 在 `fmt ` 与 `data` 之间插了一个
+/// 4044 字节的 `FLLR` 对齐填充块，按固定偏移读会拿到一堆零。
+_Pcm? _readWav(Uint8List bytes) {
+  if (bytes.length < 12) return null;
+  final data = ByteData.sublistView(bytes);
+  String tag(int at) => String.fromCharCodes(bytes.sublist(at, at + 4));
+  if (tag(0) != 'RIFF' || tag(8) != 'WAVE') return null;
+
+  int? sampleRate;
+  var channels = 1;
+  var bits = 16;
+
+  var pos = 12;
+  while (pos + 8 <= bytes.length) {
+    final id = tag(pos);
+    final size = data.getUint32(pos + 4, Endian.little);
+    final body = pos + 8;
+    if (body + size > bytes.length) break;
+
+    if (id == 'fmt ' && size >= 16) {
+      channels = data.getUint16(body + 2, Endian.little);
+      sampleRate = data.getUint32(body + 4, Endian.little);
+      bits = data.getUint16(body + 14, Endian.little);
+    } else if (id == 'data') {
+      if (sampleRate == null || channels != 1 || bits != 16) return null;
+      final count = size ~/ 2;
+      final out = Int16List(count);
+      for (var i = 0; i < count; i++) {
+        out[i] = data.getInt16(body + i * 2, Endian.little);
+      }
+      return _Pcm(out, sampleRate);
+    }
+    // 块长为奇数时有一个填充字节。
+    pos = body + size + (size.isOdd ? 1 : 0);
+  }
+  return null;
+}
+
+/// 写规范的 44 字节头单声道 WAV。
+Uint8List _writeWav(Int16List samples, int sampleRate) {
+  final dataBytes = samples.length * 2;
+  final out = ByteData(44 + dataBytes);
+  void tag(int at, String s) {
+    for (var i = 0; i < 4; i++) {
+      out.setUint8(at + i, s.codeUnitAt(i));
+    }
+  }
+
+  tag(0, 'RIFF');
+  out.setUint32(4, 36 + dataBytes, Endian.little);
+  tag(8, 'WAVE');
+  tag(12, 'fmt ');
+  out.setUint32(16, 16, Endian.little);
+  out.setUint16(20, 1, Endian.little); // PCM
+  out.setUint16(22, 1, Endian.little); // 单声道
+  out.setUint32(24, sampleRate, Endian.little);
+  out.setUint32(28, sampleRate * 2, Endian.little); // byteRate
+  out.setUint16(32, 2, Endian.little); // blockAlign
+  out.setUint16(34, 16, Endian.little); // 位深
+  tag(36, 'data');
+  out.setUint32(40, dataBytes, Endian.little);
+  for (var i = 0; i < samples.length; i++) {
+    out.setInt16(44 + i * 2, samples[i], Endian.little);
+  }
+  return out.buffer.asUint8List();
+}
 
 void _collectNarrationWords(Map<String, VoiceEntry> out) {
   void addAll(Map<String, String> words, String voice) {
