@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'core/design/tokens.dart';
+import 'modules/home/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,45 +69,7 @@ class _BlockPlanetAppState extends State<BlockPlanetApp>
       debugShowCheckedModeBanner: false,
       theme: buildBlockPlanetTheme(),
       // 儿童端零文字界面，不需要 localizations；家长端固定中文。
-      home: const _ScaffoldPlaceholder(),
-    );
-  }
-}
-
-/// 临时占位页，等积木引擎与首页星球地图就位后替换。
-class _ScaffoldPlaceholder extends StatelessWidget {
-  const _ScaffoldPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    final scale = BlockScale.of(context);
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: BlockMetrics.unit * scale,
-              height: BlockMetrics.unit * scale,
-              decoration: BoxDecoration(
-                color: BlockColors.forIndex(0),
-                borderRadius: BorderRadius.circular(
-                  BlockMetrics.blockRadius * scale,
-                ),
-              ),
-            ),
-            SizedBox(height: BlockMetrics.gap * scale),
-            Text(
-              '方块星球',
-              style: TextStyle(
-                fontSize: 32 * scale,
-                fontWeight: FontWeight.w800,
-                color: BlockColors.ink,
-              ),
-            ),
-          ],
-        ),
-      ),
+      home: const HomePage(),
     );
   }
 }

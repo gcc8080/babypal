@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -161,7 +162,11 @@ class _BlockFaceState extends State<BlockFace>
     duration: _blinkDuration,
   );
   final math.Random _random = math.Random();
-  bool _disposed = false;
+
+  /// 必须持有并可取消。用 `Future.delayed` 的话组件销毁后定时器仍会挂着
+  /// 最多 6 秒——单块积木无所谓，但拼搭台上积木频繁增删时会攒下一堆悬空
+  /// 定时器，测试里也会直接报 "A Timer is still pending"。
+  Timer? _blinkTimer;
 
   @override
   void initState() {
@@ -171,25 +176,30 @@ class _BlockFaceState extends State<BlockFace>
 
   @override
   void dispose() {
-    _disposed = true;
+    _blinkTimer?.cancel();
     _blinkController.dispose();
     super.dispose();
   }
 
   void _scheduleBlink() {
+    _blinkTimer?.cancel();
     final span = _maxIdleGap.inMilliseconds - _minIdleGap.inMilliseconds;
     final delay = Duration(
       milliseconds: _minIdleGap.inMilliseconds + _random.nextInt(span),
     );
-    Future<void>.delayed(delay, () async {
-      if (_disposed || !mounted) return;
-      // 只在待机时眨眼——开心/惊讶有各自的表情，不该被眨眼打断。
-      if (widget.expression == BlockExpression.idle) {
-        await _blinkController.forward();
-        if (_disposed || !mounted) return;
-        await _blinkController.reverse();
+    _blinkTimer = Timer(delay, () async {
+      if (!mounted) return;
+      try {
+        // 只在待机时眨眼——开心/惊讶有各自的表情，不该被眨眼打断。
+        if (widget.expression == BlockExpression.idle) {
+          await _blinkController.forward();
+          if (!mounted) return;
+          await _blinkController.reverse();
+        }
+      } on TickerCanceled {
+        return; // 动画期间被销毁，正常结束
       }
-      if (_disposed || !mounted) return;
+      if (!mounted) return;
       _scheduleBlink();
     });
   }
