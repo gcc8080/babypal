@@ -7,6 +7,7 @@ import 'core/audio/audio_providers.dart';
 import 'core/design/tokens.dart';
 import 'modules/home/home_page.dart';
 import 'modules/home/module_id.dart';
+import 'modules/numbers/place_value_page.dart';
 import 'modules/sandbox/sandbox_page.dart';
 
 Future<void> main() async {
@@ -83,11 +84,14 @@ class _BlockPlanetAppState extends State<BlockPlanetApp>
       home: Builder(
         builder: (context) => HomePage(
           onModuleSelected: (module) {
-            // 目前只有沙盒接上了拼搭台，其余模块待 P2–P4 实现。
-            if (module != ModuleId.sandbox) return;
-            Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const SandboxPage()),
-            );
+            // 尚未实现的模块静默忽略——绝不能弹「敬请期待」之类的文字。
+            final builder = switch (module) {
+              ModuleId.sandbox => (_) => const SandboxPage(),
+              ModuleId.numbers => (_) => const PlaceValuePage(),
+              _ => null,
+            };
+            if (builder == null) return;
+            Navigator.of(context).push(MaterialPageRoute<void>(builder: builder));
           },
         ),
       ),

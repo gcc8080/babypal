@@ -11,6 +11,16 @@ import 'snap_grid.dart';
 /// 返回 null 表示这两块不能合体。
 typedef MergeResolver = BlockBody? Function(BlockBody moving, BlockBody target);
 
+/// 内容模块对「点击某块积木」的自行处理。
+///
+/// 返回 true 表示模块已消费这次点击（例如把积木收回托盘），引擎不再让它
+/// 进入选中态。返回 false 则走引擎默认的点选通道。
+///
+/// 存在这个钩子是因为「选中→点目标位落子」并非所有模块的最优点击语义：
+/// 位值工作台上位置不参与判定，点一下直接收回比先选中再决定少一步。
+/// 但**点选通道本身仍是全局不变量**——模块必须在别处（如托盘源）提供它。
+typedef BlockTapHandler = bool Function(BlockBody block);
+
 /// 拼搭台上发生的、需要出声的语义事件。
 ///
 /// 由 controller 发出而非各模块自行判断——「什么时候该响」是引擎的知识：
@@ -76,10 +86,14 @@ class BlockBoardController extends ChangeNotifier {
     List<BlockBody> blocks = const [],
     this.mergeResolver,
     this.onSound,
+    this.onBlockTapped,
   }) : _blocks = List.of(blocks);
 
   /// 语义事件回调，供调用方接音效。为 null 时静默。
   final void Function(BlockSoundEvent event)? onSound;
+
+  /// 模块对点击的自行处理。见 [BlockTapHandler]。
+  final BlockTapHandler? onBlockTapped;
 
   /// 棋盘几何。屏幕尺寸变化（旋转、平板分屏）时由渲染层调用 [updateGrid] 刷新。
   SnapGrid grid;
@@ -262,9 +276,20 @@ class BlockBoardController extends ChangeNotifier {
   // 认知，与「无挫败」红线直接冲突。
 
   /// 点击积木：进入选中态；再次点击同一块则取消。
+  ///
+  /// 音效**先于**任何逻辑分支触发——「触摸必有回应」这条红线优先于
+  /// 这次点击最终被谁消费。
   void tapBlock(String blockId) {
-    _selectedId = _selectedId == blockId ? null : blockId;
     onSound?.call(BlockSoundEvent.tap);
+
+    final block = blockById(blockId);
+    if (block != null && (onBlockTapped?.call(block) ?? false)) {
+      _selectedId = null;
+      notifyListeners();
+      return;
+    }
+
+    _selectedId = _selectedId == blockId ? null : blockId;
     notifyListeners();
   }
 
@@ -349,6 +374,17 @@ class BlockBoardController extends ChangeNotifier {
 
   void addBlock(BlockBody block) {
     _blocks.add(block);
+    notifyListeners();
+  }
+
+  /// 就地替换若干积木（按 id 匹配）。
+  ///
+  /// 用于改表情、换颜色这类**不涉及位置规则**的更新——保留原有顺序与 id，
+  /// 动画层的进出场匹配因此不会被打断。
+  void updateBlocks(Iterable<BlockBody> updated) {
+    for (final block in updated) {
+      _replace(block);
+    }
     notifyListeners();
   }
 
