@@ -1,4 +1,510 @@
 {
   "schemaVersion": 1,
-  "items": []
+  "numbers": [
+    {
+      "value": 0,
+      "voiceKey": "zh.number.0",
+      "voiceKeyEn": "en.number.0"
+    },
+    {
+      "value": 1,
+      "voiceKey": "zh.number.1",
+      "voiceKeyEn": "en.number.1"
+    },
+    {
+      "value": 2,
+      "voiceKey": "zh.number.2",
+      "voiceKeyEn": "en.number.2"
+    },
+    {
+      "value": 3,
+      "voiceKey": "zh.number.3",
+      "voiceKeyEn": "en.number.3"
+    },
+    {
+      "value": 4,
+      "voiceKey": "zh.number.4",
+      "voiceKeyEn": "en.number.4"
+    },
+    {
+      "value": 5,
+      "voiceKey": "zh.number.5",
+      "voiceKeyEn": "en.number.5"
+    },
+    {
+      "value": 6,
+      "voiceKey": "zh.number.6",
+      "voiceKeyEn": "en.number.6"
+    },
+    {
+      "value": 7,
+      "voiceKey": "zh.number.7",
+      "voiceKeyEn": "en.number.7"
+    },
+    {
+      "value": 8,
+      "voiceKey": "zh.number.8",
+      "voiceKeyEn": "en.number.8"
+    },
+    {
+      "value": 9,
+      "voiceKey": "zh.number.9",
+      "voiceKeyEn": "en.number.9"
+    },
+    {
+      "value": 10,
+      "voiceKey": "zh.number.10",
+      "voiceKeyEn": "en.number.10"
+    },
+    {
+      "value": 11,
+      "voiceKey": "zh.number.11",
+      "voiceKeyEn": "en.number.11"
+    },
+    {
+      "value": 12,
+      "voiceKey": "zh.number.12",
+      "voiceKeyEn": "en.number.12"
+    },
+    {
+      "value": 13,
+      "voiceKey": "zh.number.13",
+      "voiceKeyEn": "en.number.13"
+    },
+    {
+      "value": 14,
+      "voiceKey": "zh.number.14",
+      "voiceKeyEn": "en.number.14"
+    },
+    {
+      "value": 15,
+      "voiceKey": "zh.number.15",
+      "voiceKeyEn": "en.number.15"
+    },
+    {
+      "value": 16,
+      "voiceKey": "zh.number.16",
+      "voiceKeyEn": "en.number.16"
+    },
+    {
+      "value": 17,
+      "voiceKey": "zh.number.17",
+      "voiceKeyEn": "en.number.17"
+    },
+    {
+      "value": 18,
+      "voiceKey": "zh.number.18",
+      "voiceKeyEn": "en.number.18"
+    },
+    {
+      "value": 19,
+      "voiceKey": "zh.number.19",
+      "voiceKeyEn": "en.number.19"
+    },
+    {
+      "value": 20,
+      "voiceKey": "zh.number.20",
+      "voiceKeyEn": "en.number.20"
+    },
+    {
+      "value": 21,
+      "voiceKey": "zh.number.21",
+      "voiceKeyEn": "en.number.21"
+    },
+    {
+      "value": 22,
+      "voiceKey": "zh.number.22",
+      "voiceKeyEn": "en.number.22"
+    },
+    {
+      "value": 23,
+      "voiceKey": "zh.number.23",
+      "voiceKeyEn": "en.number.23"
+    },
+    {
+      "value": 24,
+      "voiceKey": "zh.number.24",
+      "voiceKeyEn": "en.number.24"
+    },
+    {
+      "value": 25,
+      "voiceKey": "zh.number.25",
+      "voiceKeyEn": "en.number.25"
+    },
+    {
+      "value": 26,
+      "voiceKey": "zh.number.26",
+      "voiceKeyEn": "en.number.26"
+    },
+    {
+      "value": 27,
+      "voiceKey": "zh.number.27",
+      "voiceKeyEn": "en.number.27"
+    },
+    {
+      "value": 28,
+      "voiceKey": "zh.number.28",
+      "voiceKeyEn": "en.number.28"
+    },
+    {
+      "value": 29,
+      "voiceKey": "zh.number.29",
+      "voiceKeyEn": "en.number.29"
+    },
+    {
+      "value": 30,
+      "voiceKey": "zh.number.30",
+      "voiceKeyEn": "en.number.30"
+    },
+    {
+      "value": 31,
+      "voiceKey": "zh.number.31",
+      "voiceKeyEn": "en.number.31"
+    },
+    {
+      "value": 32,
+      "voiceKey": "zh.number.32",
+      "voiceKeyEn": "en.number.32"
+    },
+    {
+      "value": 33,
+      "voiceKey": "zh.number.33",
+      "voiceKeyEn": "en.number.33"
+    },
+    {
+      "value": 34,
+      "voiceKey": "zh.number.34",
+      "voiceKeyEn": "en.number.34"
+    },
+    {
+      "value": 35,
+      "voiceKey": "zh.number.35",
+      "voiceKeyEn": "en.number.35"
+    },
+    {
+      "value": 36,
+      "voiceKey": "zh.number.36",
+      "voiceKeyEn": "en.number.36"
+    },
+    {
+      "value": 37,
+      "voiceKey": "zh.number.37",
+      "voiceKeyEn": "en.number.37"
+    },
+    {
+      "value": 38,
+      "voiceKey": "zh.number.38",
+      "voiceKeyEn": "en.number.38"
+    },
+    {
+      "value": 39,
+      "voiceKey": "zh.number.39",
+      "voiceKeyEn": "en.number.39"
+    },
+    {
+      "value": 40,
+      "voiceKey": "zh.number.40",
+      "voiceKeyEn": "en.number.40"
+    },
+    {
+      "value": 41,
+      "voiceKey": "zh.number.41",
+      "voiceKeyEn": "en.number.41"
+    },
+    {
+      "value": 42,
+      "voiceKey": "zh.number.42",
+      "voiceKeyEn": "en.number.42"
+    },
+    {
+      "value": 43,
+      "voiceKey": "zh.number.43",
+      "voiceKeyEn": "en.number.43"
+    },
+    {
+      "value": 44,
+      "voiceKey": "zh.number.44",
+      "voiceKeyEn": "en.number.44"
+    },
+    {
+      "value": 45,
+      "voiceKey": "zh.number.45",
+      "voiceKeyEn": "en.number.45"
+    },
+    {
+      "value": 46,
+      "voiceKey": "zh.number.46",
+      "voiceKeyEn": "en.number.46"
+    },
+    {
+      "value": 47,
+      "voiceKey": "zh.number.47",
+      "voiceKeyEn": "en.number.47"
+    },
+    {
+      "value": 48,
+      "voiceKey": "zh.number.48",
+      "voiceKeyEn": "en.number.48"
+    },
+    {
+      "value": 49,
+      "voiceKey": "zh.number.49",
+      "voiceKeyEn": "en.number.49"
+    },
+    {
+      "value": 50,
+      "voiceKey": "zh.number.50",
+      "voiceKeyEn": "en.number.50"
+    },
+    {
+      "value": 51,
+      "voiceKey": "zh.number.51",
+      "voiceKeyEn": "en.number.51"
+    },
+    {
+      "value": 52,
+      "voiceKey": "zh.number.52",
+      "voiceKeyEn": "en.number.52"
+    },
+    {
+      "value": 53,
+      "voiceKey": "zh.number.53",
+      "voiceKeyEn": "en.number.53"
+    },
+    {
+      "value": 54,
+      "voiceKey": "zh.number.54",
+      "voiceKeyEn": "en.number.54"
+    },
+    {
+      "value": 55,
+      "voiceKey": "zh.number.55",
+      "voiceKeyEn": "en.number.55"
+    },
+    {
+      "value": 56,
+      "voiceKey": "zh.number.56",
+      "voiceKeyEn": "en.number.56"
+    },
+    {
+      "value": 57,
+      "voiceKey": "zh.number.57",
+      "voiceKeyEn": "en.number.57"
+    },
+    {
+      "value": 58,
+      "voiceKey": "zh.number.58",
+      "voiceKeyEn": "en.number.58"
+    },
+    {
+      "value": 59,
+      "voiceKey": "zh.number.59",
+      "voiceKeyEn": "en.number.59"
+    },
+    {
+      "value": 60,
+      "voiceKey": "zh.number.60",
+      "voiceKeyEn": "en.number.60"
+    },
+    {
+      "value": 61,
+      "voiceKey": "zh.number.61",
+      "voiceKeyEn": "en.number.61"
+    },
+    {
+      "value": 62,
+      "voiceKey": "zh.number.62",
+      "voiceKeyEn": "en.number.62"
+    },
+    {
+      "value": 63,
+      "voiceKey": "zh.number.63",
+      "voiceKeyEn": "en.number.63"
+    },
+    {
+      "value": 64,
+      "voiceKey": "zh.number.64",
+      "voiceKeyEn": "en.number.64"
+    },
+    {
+      "value": 65,
+      "voiceKey": "zh.number.65",
+      "voiceKeyEn": "en.number.65"
+    },
+    {
+      "value": 66,
+      "voiceKey": "zh.number.66",
+      "voiceKeyEn": "en.number.66"
+    },
+    {
+      "value": 67,
+      "voiceKey": "zh.number.67",
+      "voiceKeyEn": "en.number.67"
+    },
+    {
+      "value": 68,
+      "voiceKey": "zh.number.68",
+      "voiceKeyEn": "en.number.68"
+    },
+    {
+      "value": 69,
+      "voiceKey": "zh.number.69",
+      "voiceKeyEn": "en.number.69"
+    },
+    {
+      "value": 70,
+      "voiceKey": "zh.number.70",
+      "voiceKeyEn": "en.number.70"
+    },
+    {
+      "value": 71,
+      "voiceKey": "zh.number.71",
+      "voiceKeyEn": "en.number.71"
+    },
+    {
+      "value": 72,
+      "voiceKey": "zh.number.72",
+      "voiceKeyEn": "en.number.72"
+    },
+    {
+      "value": 73,
+      "voiceKey": "zh.number.73",
+      "voiceKeyEn": "en.number.73"
+    },
+    {
+      "value": 74,
+      "voiceKey": "zh.number.74",
+      "voiceKeyEn": "en.number.74"
+    },
+    {
+      "value": 75,
+      "voiceKey": "zh.number.75",
+      "voiceKeyEn": "en.number.75"
+    },
+    {
+      "value": 76,
+      "voiceKey": "zh.number.76",
+      "voiceKeyEn": "en.number.76"
+    },
+    {
+      "value": 77,
+      "voiceKey": "zh.number.77",
+      "voiceKeyEn": "en.number.77"
+    },
+    {
+      "value": 78,
+      "voiceKey": "zh.number.78",
+      "voiceKeyEn": "en.number.78"
+    },
+    {
+      "value": 79,
+      "voiceKey": "zh.number.79",
+      "voiceKeyEn": "en.number.79"
+    },
+    {
+      "value": 80,
+      "voiceKey": "zh.number.80",
+      "voiceKeyEn": "en.number.80"
+    },
+    {
+      "value": 81,
+      "voiceKey": "zh.number.81",
+      "voiceKeyEn": "en.number.81"
+    },
+    {
+      "value": 82,
+      "voiceKey": "zh.number.82",
+      "voiceKeyEn": "en.number.82"
+    },
+    {
+      "value": 83,
+      "voiceKey": "zh.number.83",
+      "voiceKeyEn": "en.number.83"
+    },
+    {
+      "value": 84,
+      "voiceKey": "zh.number.84",
+      "voiceKeyEn": "en.number.84"
+    },
+    {
+      "value": 85,
+      "voiceKey": "zh.number.85",
+      "voiceKeyEn": "en.number.85"
+    },
+    {
+      "value": 86,
+      "voiceKey": "zh.number.86",
+      "voiceKeyEn": "en.number.86"
+    },
+    {
+      "value": 87,
+      "voiceKey": "zh.number.87",
+      "voiceKeyEn": "en.number.87"
+    },
+    {
+      "value": 88,
+      "voiceKey": "zh.number.88",
+      "voiceKeyEn": "en.number.88"
+    },
+    {
+      "value": 89,
+      "voiceKey": "zh.number.89",
+      "voiceKeyEn": "en.number.89"
+    },
+    {
+      "value": 90,
+      "voiceKey": "zh.number.90",
+      "voiceKeyEn": "en.number.90"
+    },
+    {
+      "value": 91,
+      "voiceKey": "zh.number.91",
+      "voiceKeyEn": "en.number.91"
+    },
+    {
+      "value": 92,
+      "voiceKey": "zh.number.92",
+      "voiceKeyEn": "en.number.92"
+    },
+    {
+      "value": 93,
+      "voiceKey": "zh.number.93",
+      "voiceKeyEn": "en.number.93"
+    },
+    {
+      "value": 94,
+      "voiceKey": "zh.number.94",
+      "voiceKeyEn": "en.number.94"
+    },
+    {
+      "value": 95,
+      "voiceKey": "zh.number.95",
+      "voiceKeyEn": "en.number.95"
+    },
+    {
+      "value": 96,
+      "voiceKey": "zh.number.96",
+      "voiceKeyEn": "en.number.96"
+    },
+    {
+      "value": 97,
+      "voiceKey": "zh.number.97",
+      "voiceKeyEn": "en.number.97"
+    },
+    {
+      "value": 98,
+      "voiceKey": "zh.number.98",
+      "voiceKeyEn": "en.number.98"
+    },
+    {
+      "value": 99,
+      "voiceKey": "zh.number.99",
+      "voiceKeyEn": "en.number.99"
+    },
+    {
+      "value": 100,
+      "voiceKey": "zh.number.100",
+      "voiceKeyEn": "en.number.100"
+    }
+  ]
 }

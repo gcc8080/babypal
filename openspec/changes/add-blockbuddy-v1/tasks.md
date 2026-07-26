@@ -18,7 +18,7 @@
 
 > 实测设备：**MI 8 SE**（Android 9 / API 28 / arm64）。可用区域 2029×1080 物理像素，dpr 2.75 → 横屏逻辑尺寸约 **738 × 393 dp**，短边 393dp，`BlockScale = 1.09`。两条链路均已跑通，release APK 49.2 MB，启动无崩溃。
 >
-> ⚠️ 该机为 5.88 寸小屏，与 D12「有多台时优先屏幕较大的一台」的建议不符。横屏拼搭受益于物理尺寸，若家中另有 Android 平板应优先考虑。**孩子实际要玩哪台设备仍待确认。**
+> **已确认以此机作为交付与调试设备。** 该机为 5.88 寸小屏，与 D12「有多台时优先屏幕较大的一台」的建议不符——这是**已知取舍**，非疏漏。相应地，后续设计与验收一律按 393dp 短边把关：积木必须在此尺寸下仍然好抓（抓取目标 ≥90dp、放置区 ≥60dp），一屏可容纳的积木数量按此估算。日后若换大屏平板只会更宽松，不会失效。
 >
 > 构建环境问题与修复：NDK 28.2 搭配 Android SDK 自带的 CMake 3.22.1 在 macOS 上不传 `--target=` 三元组给 clang，导致其误选 Mach-O 链接器 `ld64.lld`（报 `unknown argument '--build-id=sha1'`），`flutter_soloud` 原生编译失败。已在 `android/build.gradle.kts` 中仅对 macOS 覆盖 CMake 版本为 4.0.2。
 - [ ] 1.12 确认 iOS 侧能力保留：本机 `fvm flutter run -d <ios-simulator>` 可跑，CI 的 `flutter build ios --no-codesign` 通过。iOS **不做真机验收**，回归职责全部由 CI 承担
@@ -39,9 +39,16 @@
 - [x] 2.9 `lib/core/audio/audio_bus.dart`：`flutter_soloud` 封装——音效池（并发短音效）+ 语音队列（同一时刻一条，支持排队/打断两种策略）
 - [x] 2.10 `lib/core/audio/voice_resolver.dart`：文档目录 `voice_overrides/<key>.wav` 优先，回落 `assets/audio/<key>.wav`；覆盖文件损坏时必须回落而非静默。扩展名抽为单一常量
 - [x] 2.11 `test/core/audio/voice_resolver_test.dart`：有覆盖、无覆盖、覆盖文件损坏三种优先级场景
-- [ ] 2.12 `lib/core/content/models.dart` 与 `pack_loader.dart`：四类内容模型 + `schemaVersion` 校验（过高则跳过整包）+ 单条目非法时局部跳过而不丢弃整包
-- [ ] 2.13 `test/core/content/pack_loader_test.dart`：版本受支持、版本过高、缺 schemaVersion、单条目字段缺失、合体字引用不存在的部件
-- [ ] 2.14 `assets/packs/numbers.json` 首个内容包，跑通「内容包 → 加载器 → 积木」全链路
+- [x] 2.12 `lib/core/content/models.dart` 与 `pack_loader.dart`：四类内容模型 + `schemaVersion` 校验（过高则跳过整包）+ 单条目非法时局部跳过而不丢弃整包
+- [x] 2.13 `test/core/content/pack_loader_test.dart`：版本受支持、版本过高、缺 schemaVersion、单条目字段缺失、合体字引用不存在的部件
+- [x] 2.14 `assets/packs/numbers.json` 首个内容包，跑通「内容包 → 加载器 → 积木」全链路
+
+> 实现说明：
+> - `parse()` 是**同步纯函数**（输入 JSON 字符串，不碰 IO 与 AssetBundle），因此两级降级路径全部可直接单测。
+> - 汉字**分两趟解析**：先收集全部合法条目，再校验合体字的 `parts` 是否都在包内。一趟扫描会把「部件定义在合体字之后」误判为缺失（已有用例覆盖）。
+> - `ContentPack.skipped` 保留被跳过条目及原因而非静默丢弃——否则一个拼错的字段会让某个字安静地从 App 里消失。
+> - `numbers.json` 逐条列出 0–100 共 101 条而非在代码里生成：`allVoiceKeys` 必须能枚举出全部 202 个中英语音键，否则 `tool/gen_audio.dart` 无从得知要合成哪些音频。
+> - 全链路验证 `test/core/content/numbers_pack_pipeline_test.dart` 直接读真实 asset 文件，验到「十条逐行落满 10×10 百格板」。
 - [ ] 2.15 `lib/core/progress/`：`shared_preferences` + JSON 存档读写
 - [ ] 2.16 `lib/modules/home/`：积木岛首页，纯图形入口、零文字
 - [ ] 2.17 真机手感验收：连续快速点击 10 个积木音效不丢不卡；手指移出边缘不崩；两指同时拖拽正常；手机与平板横屏与缩放均正确
