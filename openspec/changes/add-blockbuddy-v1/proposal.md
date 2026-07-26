@@ -47,7 +47,7 @@
 
 **既有配置**：`.fvmrc`（3.27.4 → 3.44.8）、`.gitignore`（取消忽略 `pubspec.lock`）。
 
-**依赖**（均随 Flutter 3.44.8 走最新稳定版）：`flutter_riverpod ^3.3.2`、`flutter_soloud ^4.0.13`、`record ^7.1.1`、`shared_preferences ^2.5.5`、`path_provider ^2.1.6`、`wakelock_plus ^1.7.0`、`flutter_svg ^2.3.0`。`record 7.x` 要求 **Android minSdk 23**。
+**依赖**（均随 Flutter 3.44.8 走最新稳定版）：`flutter_riverpod ^3.3.2`、`flutter_soloud ^4.0.13`、`record ^7.1.1`、`shared_preferences ^2.5.5`、`path_provider ^2.1.6`、`wakelock_plus ^1.7.0`、`flutter_svg ^2.3.0`。平台最低版本沿用 Flutter 3.44.8 默认值（Android minSdk **24** / iOS **13.0**），已高于全部依赖要求，无需显式配置——详见 `design.md` D9。
 
 **刻意不引入**：游戏/物理引擎、Rive/Lottie、任何网络 / 分析 / 广告 SDK、完整 `intl` 本地化。理由见 `design.md`。
 

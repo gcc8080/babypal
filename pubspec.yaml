@@ -1,0 +1,50 @@
+name: baby_pal
+description: "方块星球 — 为快满三岁的孩子定制的积木学习 App（离线 / 无广告 / 无内购 / 不收集任何数据）"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 状态管理。不用 riverpod_generator：provider 数量有限，codegen 的构建步骤不划算。
+  # 注意 3.x 的 Notifier / Ref API 与 2.x 有别，勿照抄旧教程。
+  flutter_riverpod: ^3.3.2
+
+  # 音频引擎。多个短音效并发时延迟远低于 audioplayers——本 App 是音效驱动的，
+  # 「每次触摸必有回应」这条 3 岁交互红线全靠它。
+  # 注意：只支持 MP3 / WAV / OGG / FLAC，不支持 AAC / M4A。
+  flutter_soloud: ^4.0.13
+
+  # 家长端逐条录音覆盖 + 生日吹蜡烛的麦克风检测。
+  record: ^7.1.1
+
+  # 进度存档。数据量是「哪些内容练过几次」量级，用 Hive/Drift 要付 codegen 与
+  # schema 迁移成本，收益为零。
+  shared_preferences: ^2.5.5
+
+  # 定位 voice_overrides 目录（家长录音的落盘位置）。
+  path_provider: ^2.1.6
+
+  # 屏幕常亮：孩子拼搭时不会被自动锁屏打断。
+  wakelock_plus: ^1.7.0
+
+  # OpenMoji 名词图标渲染（约 150 个动物/水果/交通工具等）。
+  flutter_svg: ^2.3.0
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/packs/

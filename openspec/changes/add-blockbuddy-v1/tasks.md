@@ -4,33 +4,35 @@
 
 ## 1. P0 脚手架（约 3 天）
 
-- [ ] 1.1 把 `.fvmrc` 的 flutter 从 `3.27.4` 改为 `3.44.8`，本机执行 `fvm install` 并确认 `fvm flutter --version` 输出 Dart 3.12.2
-- [ ] 1.2 在仓库根执行 `flutter create --platforms=android,ios --org <reverse-domain> .`，保留既有 `openspec/`、`.github/`、`.fvmrc` 不被覆盖
-- [ ] 1.3 从 `.gitignore` 删除 `pubspec.lock` 一行（本项目是应用不是 library，锁文件须入库）
-- [ ] 1.4 在 `pubspec.yaml` 加入依赖：`flutter_riverpod ^3.3.2`、`flutter_soloud ^4.0.13`、`record ^7.1.1`、`shared_preferences ^2.5.5`、`path_provider ^2.1.6`、`wakelock_plus ^1.7.0`、`flutter_svg ^2.3.0`，执行 `fvm flutter pub get` 并提交 `pubspec.lock`
-- [ ] 1.5 在 `android/app/build.gradle.kts` 显式设置 `minSdk = 23`（`record 7.x` 要求；Flutter 默认值低于此）
-- [ ] 1.6 三处声明横屏锁定：`lib/main.dart` 的 `SystemChrome.setPreferredOrientations`、`AndroidManifest.xml` 的 `android:screenOrientation="sensorLandscape"`、iOS `Info.plist` 的 `UISupportedInterfaceOrientations` 只留横屏两项
-- [ ] 1.7 在 `Info.plist` 加 `NSMicrophoneUsageDescription`，文案说明仅用于家长录音与生日吹蜡烛；确认 `AndroidManifest.xml` 与 `Info.plist` 均**不含**任何网络权限声明
-- [ ] 1.8 建立 `lib/core/design/tokens.dart`：设计基准短边 360dp、缩放因子 `shortestSide / 360`、可拖拽积木与按钮下限 90dp、放置区下限 60dp、吸附半径系数 1.5、原创配色表
-- [ ] 1.9 在 `lib/main.dart` 接入 `wakelock_plus` 前台常亮并在退到后台时解除
-- [ ] 1.10 新建 `.github/workflows/ci.yml`（仓库当前无任何 workflow）：ubuntu job 固定 Flutter 3.44.8 跑 `flutter analyze`、`flutter test`、`flutter build apk --debug`；macos job 跑 `flutter build ios --no-codesign`
+- [x] 1.1 把 `.fvmrc` 的 flutter 从 `3.27.4` 改为 `3.44.8`，本机执行 `fvm install` 并确认 `fvm flutter --version` 输出 Dart 3.12.2
+- [x] 1.2 在仓库根执行 `flutter create --platforms=android,ios --org <reverse-domain> .`，保留既有 `openspec/`、`.github/`、`.fvmrc` 不被覆盖
+- [x] 1.3 从 `.gitignore` 删除 `pubspec.lock` 一行（本项目是应用不是 library，锁文件须入库）
+- [x] 1.4 在 `pubspec.yaml` 加入依赖：`flutter_riverpod ^3.3.2`、`flutter_soloud ^4.0.13`、`record ^7.1.1`、`shared_preferences ^2.5.5`、`path_provider ^2.1.6`、`wakelock_plus ^1.7.0`、`flutter_svg ^2.3.0`，执行 `fvm flutter pub get` 并提交 `pubspec.lock`
+- [x] 1.5 确认平台最低版本无需显式配置：实测 Flutter 3.44.8 默认 minSdk **24** / iOS **13.0**，已高于全部依赖要求（`record_android` 23、`flutter_soloud` 21、`record_ios` 12.0、`flutter_soloud` iOS 13.0）。`build.gradle.kts` 保持 `minSdk = flutter.minSdkVersion` 不写死数字
+- [x] 1.6 三处声明横屏锁定：`lib/main.dart` 的 `SystemChrome.setPreferredOrientations`、`AndroidManifest.xml` 的 `android:screenOrientation="sensorLandscape"`、iOS `Info.plist` 的 `UISupportedInterfaceOrientations` 只留横屏两项
+- [x] 1.7 在 `Info.plist` 加 `NSMicrophoneUsageDescription`，文案说明仅用于家长录音与生日吹蜡烛；确认 `AndroidManifest.xml` 与 `Info.plist` 均**不含**任何网络权限声明
+- [x] 1.8 建立 `lib/core/design/tokens.dart`：设计基准短边 360dp、缩放因子 `shortestSide / 360`、可拖拽积木与按钮下限 90dp、放置区下限 60dp、吸附半径系数 1.5、原创配色表
+- [x] 1.9 在 `lib/main.dart` 接入 `wakelock_plus` 前台常亮并在退到后台时解除
+- [x] 1.10 新建 `.github/workflows/ci.yml`（仓库当前无任何 workflow）：ubuntu job 固定 Flutter 3.44.8 跑 `flutter analyze`、`flutter test`、`flutter build apk --debug`；macos job 跑 `flutter build ios --no-codesign`
 - [ ] 1.11 选定生日交付用的 Android 真机（有多台时优先屏幕较大的一台），开启开发者选项与 USB 调试，跑通 `fvm flutter run -d <android>` 与 `fvm flutter install --release` 两条链路
 - [ ] 1.12 确认 iOS 侧能力保留：本机 `fvm flutter run -d <ios-simulator>` 可跑，CI 的 `flutter build ios --no-codesign` 通过。iOS **不做真机验收**，回归职责全部由 CI 承担
-- [ ] 1.13 确认代码中不存在 Android 专有分支，保留日后取得开发者账号后直接上 iOS 真机的能力
+- [x] 1.13 确认代码中不存在 Android 专有分支，保留日后取得开发者账号后直接上 iOS 真机的能力
 
 ## 2. P1 积木引擎与地基（约 1 周，本阶段做扎实，后面五个模块全靠它）
 
-- [ ] 2.1 `lib/core/block/block_model.dart`：`BlockBody` 数据模型（id、尺寸、颜色、表情、所属群组）
-- [ ] 2.2 `lib/core/block/snap_grid.dart`：网格吸附纯逻辑——最近合法格位判定、1.5 倍宽容半径、多候选取最近、已占用格位跳到最近空闲格位
-- [ ] 2.3 `test/core/block/snap_grid_test.dart`：覆盖半径内、半径外、多候选、已占用、边界共 5 类场景
-- [ ] 2.4 `lib/core/block/block_face.dart`：`CustomPainter` 程序化画脸——待机眨眼、开心、惊讶三种表情，零素材
-- [ ] 2.5 `lib/core/block/block_widget.dart`：单块渲染 + 手势 + 挤压回弹；保证每一次触摸都触发动画与音效
-- [ ] 2.6 `lib/core/block/block_board.dart` 拖拽通道：拖拽、落位吸附、手指移出屏幕边缘按释放处理、多指同时拖拽互不干扰
-- [ ] 2.7 `lib/core/block/block_board.dart` **点选通道**：点积木进入选中态（含选中态视觉）→ 点目标位飞入落子；再点积木或点空白取消选中。此为全局不变量，五个模块不得只实现拖拽通道
-- [ ] 2.8 `lib/core/block/block_board.dart` 合体、分裂与群组整体拖动，三者均带过程动画
-- [ ] 2.9 `lib/core/audio/audio_bus.dart`：`flutter_soloud` 封装——音效池（并发短音效）+ 语音队列（同一时刻一条，支持排队/打断两种策略）
-- [ ] 2.10 `lib/core/audio/voice_resolver.dart`：文档目录 `voice_overrides/<key>.wav` 优先，回落 `assets/audio/<key>.wav`；覆盖文件损坏时必须回落而非静默。扩展名抽为单一常量
-- [ ] 2.11 `test/core/audio/voice_resolver_test.dart`：有覆盖、无覆盖、覆盖文件损坏三种优先级场景
+- [x] 2.1 `lib/core/block/block_model.dart`：`BlockBody` 数据模型（id、尺寸、颜色、表情、所属群组）
+- [x] 2.2 `lib/core/block/snap_grid.dart`：网格吸附纯逻辑——最近合法格位判定、1.5 倍宽容半径、多候选取最近、已占用格位跳到最近空闲格位
+- [x] 2.3 `test/core/block/snap_grid_test.dart`：覆盖半径内、半径外、多候选、已占用、边界共 5 类场景
+- [x] 2.4 `lib/core/block/block_face.dart`：`CustomPainter` 程序化画脸——待机眨眼、开心、惊讶三种表情，零素材
+- [x] 2.5 `lib/core/block/block_widget.dart`：单块渲染 + 手势 + 挤压回弹；保证每一次触摸都触发动画与音效（音效通过 `onSquash` 回调预留，待 2.9 音频总线接入）
+- [x] 2.6 `lib/core/block/block_board.dart` 拖拽通道：拖拽、落位吸附、手指移出屏幕边缘按释放处理、多指同时拖拽互不干扰
+- [x] 2.7 `lib/core/block/block_board.dart` **点选通道**：点积木进入选中态（含选中态视觉）→ 点目标位飞入落子；再点积木或点空白取消选中。此为全局不变量，五个模块不得只实现拖拽通道
+- [x] 2.8 `lib/core/block/block_board.dart` 合体、分裂与群组整体拖动，三者均带过程动画
+
+> 实现说明：状态与规则拆到 `lib/core/block/block_board_controller.dart`，`block_board.dart` 只负责渲染与指针事件。这样合体/分裂/群组/吸附落位可以用纯逻辑单测覆盖（`test/core/block/block_board_controller_test.dart`，15 个用例直接对应规格场景），不需要 pump 组件树。
+- [x] 2.9 `lib/core/audio/audio_bus.dart`：`flutter_soloud` 封装——音效池（并发短音效）+ 语音队列（同一时刻一条，支持排队/打断两种策略）
+- [x] 2.10 `lib/core/audio/voice_resolver.dart`：文档目录 `voice_overrides/<key>.wav` 优先，回落 `assets/audio/<key>.wav`；覆盖文件损坏时必须回落而非静默。扩展名抽为单一常量
+- [x] 2.11 `test/core/audio/voice_resolver_test.dart`：有覆盖、无覆盖、覆盖文件损坏三种优先级场景
 - [ ] 2.12 `lib/core/content/models.dart` 与 `pack_loader.dart`：四类内容模型 + `schemaVersion` 校验（过高则跳过整包）+ 单条目非法时局部跳过而不丢弃整包
 - [ ] 2.13 `test/core/content/pack_loader_test.dart`：版本受支持、版本过高、缺 schemaVersion、单条目字段缺失、合体字引用不存在的部件
 - [ ] 2.14 `assets/packs/numbers.json` 首个内容包，跑通「内容包 → 加载器 → 积木」全链路

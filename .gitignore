@@ -31,7 +31,11 @@
 build/
 
 .metadata
-pubspec.lock
+# 本项目是应用而非 library，pubspec.lock 必须入库——否则 CI 与本机会解析出
+# 不同的依赖版本组合。见 design.md D9。
+# 用否定规则显式覆盖 ~/.gitignore_global 里的全局 pubspec.lock 忽略项，
+# 否则仅从本文件删除该行是不够的。
+!pubspec.lock
 example/pubspec.lock
 
 # Android related

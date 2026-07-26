@@ -110,7 +110,19 @@ Future<String> resolve(String key) async {
 
 同时从 `.gitignore` 移除 `pubspec.lock`——这是**应用**不是 library，锁文件必须入库，否则 CI 与本机会解析出不同的依赖版本组合。
 
-`record 7.x` 要求 **Android minSdk 23**，须在 `android/app/build.gradle.kts` 显式设置（Flutter 默认值低于此）。
+**平台最低版本无需显式配置**——实测各方要求均不高于 Flutter 3.44.8 的默认值：
+
+| 来源 | Android minSdk | iOS |
+|---|---|---|
+| Flutter 3.44.8 默认（`FlutterExtension.kt:26` / Xcode 模板） | **24** | **13.0** |
+| `flutter_soloud 4.0.13` | 21 | 13.0 |
+| `record_android 2.1.2` | 23 | — |
+| `record_ios 2.1.1` | — | 12.0 |
+| **取最大值 → 最终生效** | **24** | **13.0** |
+
+因此 `android/app/build.gradle.kts` 保持 `minSdk = flutter.minSdkVersion`、iOS 保持模板默认的 `IPHONEOS_DEPLOYMENT_TARGET = 13.0`，两处均不写死数字——日后升级 Flutter 时会自动跟随，不会留下一个越来越旧的硬编码下限。
+
+**对设备的影响**：iOS 最低 13.0 会排除 iPad Air 1 与 iPad mini 2/3（系统最高停在 iOS 12.5.7）；iPad Air 2、iPad mini 4 可到 iPadOS 15，无问题。Android 最低 24（Android 7.0, 2016），现役设备覆盖率 >99%。
 
 ### D10. 横屏锁定三重保险
 
