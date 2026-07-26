@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/audio/audio_providers.dart';
+import '../../core/audio/sfx.dart';
 import '../../core/block/block_board.dart';
 import '../../core/block/block_board_controller.dart';
 import '../../core/block/block_model.dart';
@@ -11,14 +14,14 @@ import '../../core/design/tokens.dart';
 /// 见 sandbox 规格：**无关卡、无目标、无计分、无正误判定**。孩子把积木放哪
 /// 都对，系统不给提示也不催促。这是决定这个 App 能玩两周还是两年的模块——
 /// 关卡总会被玩通，空白拼搭台不会。
-class SandboxPage extends StatefulWidget {
+class SandboxPage extends ConsumerStatefulWidget {
   const SandboxPage({super.key});
 
   @override
-  State<SandboxPage> createState() => _SandboxPageState();
+  ConsumerState<SandboxPage> createState() => _SandboxPageState();
 }
 
-class _SandboxPageState extends State<SandboxPage> {
+class _SandboxPageState extends ConsumerState<SandboxPage> {
   /// 托盘里始终保持这么多**格宽**的可取用积木——孩子永远不会「用完」。
   ///
   /// 按格宽而非块数计：托盘里混有单块与长条，只数块数会让长条把托盘撑出
@@ -90,6 +93,22 @@ class _SandboxPageState extends State<SandboxPage> {
     );
   }
 
+  /// 把引擎发出的语义事件翻译成音效。
+  ///
+  /// 「什么时候该响」由引擎决定，「响什么」由这里决定——只有引擎知道这次
+  /// 释放到底是合体、落位还是退回。
+  void _playSound(BlockSoundEvent event) {
+    final bus = ref.read(audioBusProvider);
+    bus.playSfx(switch (event) {
+      BlockSoundEvent.tap => Sfx.tap,
+      BlockSoundEvent.pickup => Sfx.pickup,
+      BlockSoundEvent.snap => Sfx.snap,
+      BlockSoundEvent.merge => Sfx.merge,
+      BlockSoundEvent.split => Sfx.split,
+      BlockSoundEvent.returned => Sfx.returned,
+    });
+  }
+
   SnapGrid _buildGrid(BoxConstraints constraints) {
     const columns = 6;
     const rows = 2;
@@ -127,6 +146,7 @@ class _SandboxPageState extends State<SandboxPage> {
               _controller = BlockBoardController(
                 grid: grid,
                 mergeResolver: _resolveMerge,
+                onSound: _playSound,
               )..addListener(_refillTray);
               _refillTray();
             } else {

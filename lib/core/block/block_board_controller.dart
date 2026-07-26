@@ -11,6 +11,31 @@ import 'snap_grid.dart';
 /// 返回 null 表示这两块不能合体。
 typedef MergeResolver = BlockBody? Function(BlockBody moving, BlockBody target);
 
+/// 拼搭台上发生的、需要出声的语义事件。
+///
+/// 由 controller 发出而非各模块自行判断——「什么时候该响」是引擎的知识：
+/// 只有它知道这次释放到底是合体、落位还是退回。让五个内容模块各猜一遍
+/// 必然出现行为不一致。
+enum BlockSoundEvent {
+  /// 按下积木。
+  tap,
+
+  /// 拾起（拖拽开始）。
+  pickup,
+
+  /// 吸附落位成功。
+  snap,
+
+  /// 合体。
+  merge,
+
+  /// 分裂。
+  split,
+
+  /// 退回原位。**不是失败**，见 [Sfx.returned] 的说明。
+  returned,
+}
+
 /// 一次进行中的拖拽。按指针 id 索引，因此多指同时拖拽天然互不干扰。
 @immutable
 class ActiveDrag {
@@ -50,7 +75,11 @@ class BlockBoardController extends ChangeNotifier {
     required this.grid,
     List<BlockBody> blocks = const [],
     this.mergeResolver,
+    this.onSound,
   }) : _blocks = List.of(blocks);
+
+  /// 语义事件回调，供调用方接音效。为 null 时静默。
+  final void Function(BlockSoundEvent event)? onSound;
 
   /// 棋盘几何。屏幕尺寸变化（旋转、平板分屏）时由渲染层调用 [updateGrid] 刷新。
   SnapGrid grid;
@@ -122,6 +151,7 @@ class BlockBoardController extends ChangeNotifier {
     // 拖起来就离开格位，避免自己挡住自己的落点。
     _replace(block.copyWith(clearAnchor: true));
     _selectedId = null;
+    onSound?.call(BlockSoundEvent.pickup);
     notifyListeners();
   }
 
@@ -159,6 +189,7 @@ class BlockBoardController extends ChangeNotifier {
       if (merged != null) {
         _blocks.removeWhere((b) => b.id == block.id || b.id == target.id);
         _blocks.add(merged.copyWith(anchor: target.anchor));
+        onSound?.call(BlockSoundEvent.merge);
         notifyListeners();
         return;
       }
@@ -176,6 +207,9 @@ class BlockBoardController extends ChangeNotifier {
     // ③ 吸附失败就回到起点——不播放任何错误提示（无挫败红线）。
     final landed = cell ?? drag.originAnchor;
     _replace(block.copyWith(anchor: landed));
+    onSound?.call(
+      cell != null ? BlockSoundEvent.snap : BlockSoundEvent.returned,
+    );
 
     // ④ 同组积木按相同的格位位移一同移动，保持相对位置不变。
     final origin = drag.originAnchor;
@@ -230,6 +264,7 @@ class BlockBoardController extends ChangeNotifier {
   /// 点击积木：进入选中态；再次点击同一块则取消。
   void tapBlock(String blockId) {
     _selectedId = _selectedId == blockId ? null : blockId;
+    onSound?.call(BlockSoundEvent.tap);
     notifyListeners();
   }
 
@@ -260,6 +295,7 @@ class BlockBoardController extends ChangeNotifier {
       return false;
     }
     _replace(block.copyWith(anchor: cell));
+    onSound?.call(BlockSoundEvent.snap);
     notifyListeners();
     return true;
   }
@@ -291,6 +327,7 @@ class BlockBoardController extends ChangeNotifier {
       );
       col += part.widthUnits;
     }
+    onSound?.call(BlockSoundEvent.split);
     notifyListeners();
   }
 

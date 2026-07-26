@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import 'core/audio/audio_providers.dart';
 import 'core/design/tokens.dart';
 import 'modules/home/home_page.dart';
 import 'modules/home/module_id.dart';
@@ -22,7 +23,15 @@ Future<void> main() async {
   // immersiveSticky 下孩子划出系统栏后会自动缩回去。
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
-  runApp(const ProviderScope(child: BlockPlanetApp()));
+  // 在 runApp 之前完成音频初始化与音效预加载：首次点击不能等在磁盘 IO 上。
+  final audioBus = await createAudioBus();
+
+  runApp(
+    ProviderScope(
+      overrides: [audioBusProvider.overrideWithValue(audioBus)],
+      child: const BlockPlanetApp(),
+    ),
+  );
 }
 
 class BlockPlanetApp extends StatefulWidget {
