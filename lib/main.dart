@@ -5,6 +5,8 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'core/design/tokens.dart';
 import 'modules/home/home_page.dart';
+import 'modules/home/module_id.dart';
+import 'modules/sandbox/sandbox_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,7 +71,17 @@ class _BlockPlanetAppState extends State<BlockPlanetApp>
       debugShowCheckedModeBanner: false,
       theme: buildBlockPlanetTheme(),
       // 儿童端零文字界面，不需要 localizations；家长端固定中文。
-      home: const HomePage(),
+      home: Builder(
+        builder: (context) => HomePage(
+          onModuleSelected: (module) {
+            // 目前只有沙盒接上了拼搭台，其余模块待 P2–P4 实现。
+            if (module != ModuleId.sandbox) return;
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const SandboxPage()),
+            );
+          },
+        ),
+      ),
     );
   }
 }
