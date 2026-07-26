@@ -48,6 +48,38 @@ const List<AdditionProblem> kAdditionProblems = [
   AdditionProblem(7, 3),
 ];
 
+/// 把 [total] 拆成两个加数的全部**有序**分解。
+///
+/// 有序：`2+3` 与 `3+2` 分别算一种。规格里 5 的分解枚举写的就是
+/// `1+4`、`2+3`、`3+2`、`4+1` 四种——对他而言「左边 2 右边 3」和
+/// 「左边 3 右边 2」在积木上确实是两个不同的画面。
+///
+/// 加数必须是正整数，因此 `total <= 1` 返回空集，且界面
+/// **MUST NOT** 因此给任何错误提示。
+List<AdditionProblem> decompositions(int total) => [
+      for (var a = 1; a < total; a++) AdditionProblem(a, total - a),
+    ];
+
+/// 反向分解的题序。
+///
+/// 5 打头——它是最经典的那个数（4 种分法，不多不少），也是凑十法真正的起点。
+/// 其余按由少到多排，最后到 10。
+const List<int> kDecompositionTargets = [5, 3, 4, 6, 7, 8, 9, 10];
+
+/// 点在积木上的哪一格 → 从第几格后面切开。
+///
+/// [localX] 是手指落点相对积木左上角的横向偏移，[cellSize] 是格边长。
+///
+/// **这个函数永远给得出一个合法的切点**，`clamp` 保证结果落在
+/// `[1, total-1]` 内：点在积木最左端也切得出 `1 + (total-1)`，点在最右端
+/// 切得出 `(total-1) + 1`。反向分解不存在「没切中」这回事——他点在积木上
+/// 的任何位置都必须切出点什么来，否则就是「点了没反应」。
+int cutIndexAt(double localX, double cellSize, int total) {
+  assert(total >= 2, '只有 2 格以上的积木才切得开');
+  if (cellSize <= 0) return 1;
+  return (localX / cellSize).round().clamp(1, total - 1);
+}
+
 /// 拼搭台列数。得数最大的那道题也必须一行摆得下。
 const int kAdditionColumns = 10;
 

@@ -19,7 +19,10 @@ typedef MergeResolver = BlockBody? Function(BlockBody moving, BlockBody target);
 /// 存在这个钩子是因为「选中→点目标位落子」并非所有模块的最优点击语义：
 /// 位值工作台上位置不参与判定，点一下直接收回比先选中再决定少一步。
 /// 但**点选通道本身仍是全局不变量**——模块必须在别处（如托盘源）提供它。
-typedef BlockTapHandler = bool Function(BlockBody block);
+///
+/// [localPosition] 是手指落点相对该积木左上角的偏移。反向分解要靠它决定
+/// 从哪一格切开：「点哪儿切哪儿」。
+typedef BlockTapHandler = bool Function(BlockBody block, Offset localPosition);
 
 /// 拼搭台上发生的、需要出声的语义事件。
 ///
@@ -272,11 +275,12 @@ class BlockBoardController extends ChangeNotifier {
   ///
   /// 音效**先于**任何逻辑分支触发——「触摸必有回应」这条红线优先于
   /// 这次点击最终被谁消费。
-  void tapBlock(String blockId) {
+  void tapBlock(String blockId, {Offset localPosition = Offset.zero}) {
     onSound?.call(BlockSoundEvent.tap);
 
     final block = blockById(blockId);
-    if (block != null && (onBlockTapped?.call(block) ?? false)) {
+    if (block != null &&
+        (onBlockTapped?.call(block, localPosition) ?? false)) {
       _selectedId = null;
       notifyListeners();
       return;

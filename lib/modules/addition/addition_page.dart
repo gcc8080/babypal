@@ -15,6 +15,7 @@ import '../../core/block/snap_grid.dart';
 import '../../core/design/controls.dart';
 import '../../core/design/tokens.dart';
 import 'addition.dart';
+import 'decompose_page.dart';
 
 /// 合体求和。
 ///
@@ -171,7 +172,7 @@ class _AdditionPageState extends ConsumerState<AdditionPage> {
   /// 点选通道：点 A 选中，再点 B 就合体。
   ///
   /// 返回 true 表示这次点击已被消费；返回 false 则交回引擎走默认选中态。
-  bool _onBlockTapped(BlockBody block) {
+  bool _onBlockTapped(BlockBody block, Offset _) {
     final controller = _controller;
     if (controller == null) return false;
 
@@ -248,6 +249,14 @@ class _AdditionPageState extends ConsumerState<AdditionPage> {
     );
   }
 
+  /// 去反向分解。两个玩法是同一件事的两个方向，因此**互相替换**而不是
+  /// 叠层——返回键始终直接回星球地图，不会越按越深。
+  void _goToDecompose() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(builder: (_) => const DecomposePage()),
+    );
+  }
+
   void _playBoardSound(BlockSoundEvent event) {
     _audio.playSfx(switch (event) {
       BlockSoundEvent.tap => Sfx.tap,
@@ -300,6 +309,12 @@ class _AdditionPageState extends ConsumerState<AdditionPage> {
                             ? _celebrate()
                             : _askQuestion(interrupt: true),
                       ),
+                    ),
+                    SizedBox(width: BlockMetrics.gap / 2),
+                    RoundActionButton(
+                      key: const ValueKey('mode'),
+                      icon: Icons.call_split_rounded,
+                      onPressed: _goToDecompose,
                     ),
                     SizedBox(width: BlockMetrics.gap / 2),
                     RoundActionButton(

@@ -486,7 +486,7 @@ void main() {
       final c = BlockBoardController(
         grid: grid,
         blocks: [block('a', at: const GridCell(0, 0))],
-        onBlockTapped: (b) {
+        onBlockTapped: (b, _) {
           tapped.add(b.id);
           return true;
         },
@@ -501,7 +501,7 @@ void main() {
       final c = BlockBoardController(
         grid: grid,
         blocks: [block('a', at: const GridCell(0, 0))],
-        onBlockTapped: (_) => false,
+        onBlockTapped: (_, _) => false,
       );
 
       c.tapBlock('a');
@@ -513,7 +513,7 @@ void main() {
       final c = BlockBoardController(
         grid: grid,
         blocks: [block('a', at: const GridCell(0, 0))],
-        onBlockTapped: (_) => true,
+        onBlockTapped: (_, _) => true,
         onSound: events.add,
       );
 

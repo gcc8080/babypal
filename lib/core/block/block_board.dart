@@ -113,7 +113,14 @@ class _BlockBoardState extends State<BlockBoard> with WidgetsBindingObserver {
     final pending = _pending.remove(event.pointer);
     if (pending != null) {
       // 位移未越过阈值 → 判定为点击，走点选通道。
-      widget.controller.tapBlock(pending.blockId);
+      //
+      // `startPosition` 是按下那一刻的 `localPosition`，而 Listener 的坐标
+      // 原点就是积木左上角，所以它天然是「点在积木的哪个位置」——反向分解
+      // 靠它决定从哪一格切开。
+      widget.controller.tapBlock(
+        pending.blockId,
+        localPosition: pending.startPosition,
+      );
       return;
     }
     widget.controller.endDrag(pointer: event.pointer);

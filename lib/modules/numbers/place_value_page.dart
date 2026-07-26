@@ -158,7 +158,7 @@ class _PlaceValuePageState extends ConsumerState<PlaceValuePage> {
   }
 
   /// 点已放置的积木 = 收回。返回 true 告诉引擎这次点击已被消费。
-  bool _takeBack(BlockBody block) {
+  bool _takeBack(BlockBody block, Offset _) {
     _mutate((c) => c.removeBlock(block.id));
     _audio.playSfx(Sfx.returned);
     return true;
