@@ -5,6 +5,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'core/audio/audio_providers.dart';
 import 'core/design/tokens.dart';
+import 'modules/addition/addition_page.dart';
 import 'modules/home/home_page.dart';
 import 'modules/home/module_id.dart';
 import 'modules/numbers/place_value_page.dart';
@@ -88,6 +89,7 @@ class _BlockPlanetAppState extends State<BlockPlanetApp>
             final builder = switch (module) {
               ModuleId.sandbox => (_) => const SandboxPage(),
               ModuleId.numbers => (_) => const PlaceValuePage(),
+              ModuleId.addition => (_) => const AdditionPage(),
               _ => null,
             };
             if (builder == null) return;

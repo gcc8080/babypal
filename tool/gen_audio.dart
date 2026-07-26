@@ -72,6 +72,7 @@ Future<void> main(List<String> args) async {
   final entries = <String, VoiceEntry>{};
   final unresolved = <String>[];
 
+  _collectNarrationWords(entries);
   for (final pack in packs) {
     _collect(pack, entries, unresolved);
   }
@@ -151,6 +152,64 @@ Future<void> main(List<String> args) async {
     '音频总体积 ${(totalBytes / 1024 / 1024).toStringAsFixed(1)} MB',
   );
   stdout.writeln('manifest 已写入 $manifestPath');
+}
+
+/// 播报用的连接词。
+///
+/// **刻意只生成词片，不生成整句。** 10 以内的加法有 45 个有序算式，分解也有
+/// 45 个，整句录制要 180 条音频（约 16 MB），而词片只要这 8 条（约 0.25 MB），
+/// 还能拼出任意算式——他已经在数 100 了，迟早要报到 10 以外。
+///
+/// 决定性的理由其实是家长录音：覆盖层的全部意义是「你录四十来条就能把打底
+/// 语音换成爸妈的声音」。词片方案下录一次「加」就覆盖全部算式；整句方案下
+/// 要录 45 句，那个覆盖层就名存实亡了。
+///
+/// `AudioBus` 的语音队列本来就是为连续播报设计的（见 `VoicePolicy.queue`
+/// 的注释），词片间天然留一个小停顿——对正在学的孩子反而比连读更清楚。
+///
+/// 这些键不来自任何内容包：它们是界面播报用词，不是学习内容。
+const Map<String, String> zhNarrationWords = {
+  'zh.word.plus': '加',
+  'zh.word.equals': '等于',
+  'zh.word.and': '和',
+  'zh.word.isMadeOf': '可以分成',
+};
+
+const Map<String, String> enNarrationWords = {
+  'en.word.plus': 'plus',
+  'en.word.equals': 'equals',
+  'en.word.and': 'and',
+  'en.word.isMadeOf': 'is made of',
+};
+
+/// 拼不出来、只能整句录的播报。
+///
+/// 「十个一是一个十」正是位值这一课要说的那句话，没法用数词加连接词拼出来，
+/// 且只有这一句，整句生成是划算的。凡是能拼的一律走 [zhNarrationWords]。
+const Map<String, String> zhNarrationPhrases = {
+  'zh.phrase.tenOnesMakeATen': '十个一，是一个十',
+};
+
+const Map<String, String> enNarrationPhrases = {
+  'en.phrase.tenOnesMakeATen': 'ten ones make one ten',
+};
+
+void _collectNarrationWords(Map<String, VoiceEntry> out) {
+  void addAll(Map<String, String> words, String voice) {
+    for (final entry in words.entries) {
+      out[entry.key] = VoiceEntry(
+        key: entry.key,
+        text: entry.value,
+        voice: voice,
+        source: '<narration>',
+      );
+    }
+  }
+
+  addAll(zhNarrationWords, zhVoice);
+  addAll(enNarrationWords, enVoice);
+  addAll(zhNarrationPhrases, zhVoice);
+  addAll(enNarrationPhrases, enVoice);
 }
 
 void _collect(

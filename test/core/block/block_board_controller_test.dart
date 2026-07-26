@@ -340,4 +340,185 @@ void main() {
       expect(c.blockById('b')!.anchor, const GridCell(1, 0), reason: 'b 不动');
     });
   });
+
+  group('mergeBlocks——三条合体路径共用的实现', () {
+    BlockBoardController joinable(List<BlockBody> blocks) =>
+        BlockBoardController(
+          grid: grid,
+          blocks: blocks,
+          mergeResolver: (moving, target) => BlockBody(
+            id: 'merged',
+            colorIndex: target.colorIndex,
+            widthUnits: moving.widthUnits + target.widthUnits,
+          ),
+        );
+
+    test('合体后两块变一块，落在目标原处', () {
+      final c = joinable([
+        block('a', at: const GridCell(0, 0)),
+        block('b', at: const GridCell(2, 0)),
+      ]);
+
+      final merged = c.mergeBlocks('a', 'b');
+
+      expect(merged, isNotNull);
+      expect(c.blocks, hasLength(1));
+      expect(c.blocks.single.widthUnits, 2);
+      expect(c.blocks.single.anchor, const GridCell(2, 0), reason: '被撞的不动');
+    });
+
+    test('规则返回的锚点优先于目标原处', () {
+      final c = BlockBoardController(
+        grid: grid,
+        blocks: [
+          block('a', at: const GridCell(0, 0)),
+          block('b', at: const GridCell(2, 0)),
+        ],
+        mergeResolver: (moving, target) => BlockBody(
+          id: 'merged',
+          colorIndex: 0,
+          widthUnits: 2,
+          anchor: moving.anchor,
+        ),
+      );
+
+      c.mergeBlocks('a', 'b');
+      expect(c.blocks.single.anchor, const GridCell(0, 0));
+    });
+
+    test('规则说不能合 → 不返回、也不动任何状态', () {
+      final c = BlockBoardController(
+        grid: grid,
+        blocks: [
+          block('a', at: const GridCell(0, 0)),
+          block('b', at: const GridCell(2, 0)),
+        ],
+        mergeResolver: (_, _) => null,
+      );
+
+      expect(c.mergeBlocks('a', 'b'), isNull);
+      expect(c.blocks, hasLength(2));
+    });
+
+    test('没装规则、自己合自己、id 不存在——一律安全返回 null', () {
+      final plain = BlockBoardController(
+        grid: grid,
+        blocks: [block('a', at: const GridCell(0, 0))],
+      );
+      expect(plain.mergeBlocks('a', 'a'), isNull);
+
+      final c = joinable([block('a', at: const GridCell(0, 0))]);
+      expect(c.mergeBlocks('a', 'a'), isNull);
+      expect(c.mergeBlocks('a', 'nope'), isNull);
+      expect(c.blocks, hasLength(1));
+    });
+
+    test('合体发出 merge 音效事件', () {
+      final events = <BlockSoundEvent>[];
+      final c = BlockBoardController(
+        grid: grid,
+        blocks: [
+          block('a', at: const GridCell(0, 0)),
+          block('b', at: const GridCell(2, 0)),
+        ],
+        mergeResolver: (moving, target) =>
+            BlockBody(id: 'merged', colorIndex: 0, widthUnits: 2),
+        onSound: events.add,
+      );
+
+      c.mergeBlocks('a', 'b');
+      expect(events, [BlockSoundEvent.merge]);
+    });
+  });
+
+  group('blocksAreJoined——「拼到一起」的判定', () {
+    test('同一行、边挨着边 → 拼上了（两个方向都算）', () {
+      final left = block('a', w: 2, at: const GridCell(0, 0));
+      final right = block('b', at: const GridCell(2, 0));
+      expect(blocksAreJoined(left, right), isTrue);
+      expect(blocksAreJoined(right, left), isTrue, reason: '与顺序无关');
+    });
+
+    test('中间有空格 → 没拼上', () {
+      expect(
+        blocksAreJoined(
+          block('a', at: const GridCell(0, 0)),
+          block('b', at: const GridCell(2, 0)),
+        ),
+        isFalse,
+      );
+    });
+
+    test('不同行 → 没拼上，哪怕列号挨着', () {
+      expect(
+        blocksAreJoined(
+          block('a', at: const GridCell(0, 0)),
+          block('b', at: const GridCell(1, 1)),
+        ),
+        isFalse,
+      );
+    });
+
+    test('正被捏在手里的积木（未落位）不算拼上', () {
+      expect(
+        blocksAreJoined(
+          block('a', at: const GridCell(0, 0)),
+          block('b'),
+        ),
+        isFalse,
+      );
+    });
+
+    test('高度不同不算拼上', () {
+      const tall = BlockBody(
+        id: 'tall',
+        colorIndex: 0,
+        heightUnits: 2,
+        anchor: GridCell(1, 0),
+      );
+      expect(blocksAreJoined(block('a', at: const GridCell(0, 0)), tall), isFalse);
+    });
+  });
+
+  group('onBlockTapped——模块自行消费点击', () {
+    test('返回 true 时不进入选中态', () {
+      final tapped = <String>[];
+      final c = BlockBoardController(
+        grid: grid,
+        blocks: [block('a', at: const GridCell(0, 0))],
+        onBlockTapped: (b) {
+          tapped.add(b.id);
+          return true;
+        },
+      );
+
+      c.tapBlock('a');
+      expect(tapped, ['a']);
+      expect(c.selectedId, isNull, reason: '点击已被模块消费');
+    });
+
+    test('返回 false 时走引擎默认的点选通道', () {
+      final c = BlockBoardController(
+        grid: grid,
+        blocks: [block('a', at: const GridCell(0, 0))],
+        onBlockTapped: (_) => false,
+      );
+
+      c.tapBlock('a');
+      expect(c.selectedId, 'a');
+    });
+
+    test('音效先于任何分支触发——触摸必有回应优先于点击归谁', () {
+      final events = <BlockSoundEvent>[];
+      final c = BlockBoardController(
+        grid: grid,
+        blocks: [block('a', at: const GridCell(0, 0))],
+        onBlockTapped: (_) => true,
+        onSound: events.add,
+      );
+
+      c.tapBlock('a');
+      expect(events, [BlockSoundEvent.tap]);
+    });
+  });
 }

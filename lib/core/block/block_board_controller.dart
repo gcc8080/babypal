@@ -198,15 +198,8 @@ class BlockBoardController extends ChangeNotifier {
 
     // ① 先看是否落在某块可合体的积木上。
     final target = _blockAt(center, excludingId: block.id);
-    if (target != null && mergeResolver != null) {
-      final merged = mergeResolver!(block, target);
-      if (merged != null) {
-        _blocks.removeWhere((b) => b.id == block.id || b.id == target.id);
-        _blocks.add(merged.copyWith(anchor: target.anchor));
-        onSound?.call(BlockSoundEvent.merge);
-        notifyListeners();
-        return;
-      }
+    if (target != null && mergeBlocks(block.id, target.id) != null) {
+      return;
     }
 
     // ② 否则吸附到最近的空闲合法格位。
@@ -332,6 +325,36 @@ class BlockBoardController extends ChangeNotifier {
   }
 
   // ─── 合体 / 分裂 / 群组 ─────────────────────────────────────────────
+
+  /// 把 [movingId] 合到 [targetId] 上。
+  ///
+  /// 合体成不成由 [mergeResolver] 说了算；返回合体后的积木，不能合体时返回
+  /// null 且**不改动任何状态**。
+  ///
+  /// 三条路径共用这一个实现：拖拽落在目标身上、点选通道点中目标、内容模块
+  /// 自行判定「两块拼到一起了」。合体是有语义的动作（3+2=5、木+木=林），
+  /// 让三条路径各写一遍必然出现行为不一致。
+  ///
+  /// 落位规则：合体结果优先用 [MergeResolver] 返回的锚点，未指定则落在
+  /// 目标原处——「被撞的那块不动」符合直觉。
+  BlockBody? mergeBlocks(String movingId, String targetId) {
+    final resolver = mergeResolver;
+    if (resolver == null || movingId == targetId) return null;
+
+    final moving = blockById(movingId);
+    final target = blockById(targetId);
+    if (moving == null || target == null) return null;
+
+    final merged = resolver(moving, target);
+    if (merged == null) return null;
+
+    _blocks.removeWhere((b) => b.id == movingId || b.id == targetId);
+    final landed = merged.copyWith(anchor: merged.anchor ?? target.anchor);
+    _blocks.add(landed);
+    onSound?.call(BlockSoundEvent.merge);
+    notifyListeners();
+    return landed;
+  }
 
   /// 把一块积木分裂成多块。
   ///

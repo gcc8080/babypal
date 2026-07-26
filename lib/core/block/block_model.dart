@@ -37,6 +37,22 @@ class GridCell {
   String toString() => 'GridCell($col, $row)';
 }
 
+/// 两块积木是否**拼到一起**了：同一行、同高、边挨着边。
+///
+/// 规格里加法的说法是「两组积木**拼接**合体」，不是「叠在一起」——对 3 岁的
+/// 手来说，把 A 放到 B 旁边比放到 B 正上方容易得多，前者只要落在同一行附近，
+/// 后者要瞄准一块可能只有一格宽的目标。
+///
+/// 未落位的积木（[BlockBody.anchor] 为 null）永远返回 false：正被捏在手里的
+/// 积木不算拼上了。
+bool blocksAreJoined(BlockBody x, BlockBody y) {
+  final ax = x.anchor;
+  final ay = y.anchor;
+  if (ax == null || ay == null) return false;
+  if (ax.row != ay.row || x.heightUnits != y.heightUnits) return false;
+  return ax.col + x.widthUnits == ay.col || ay.col + y.widthUnits == ax.col;
+}
+
 /// 一块积木。
 ///
 /// 尺寸以「单位格」计而非像素：一个单位块是 1×1，数字模块的「十条」是 10×1。

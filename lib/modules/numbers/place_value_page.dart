@@ -6,11 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/audio_bus.dart';
 import '../../core/audio/audio_providers.dart';
+import '../../core/audio/narration.dart';
 import '../../core/audio/sfx.dart';
 import '../../core/block/block_board.dart';
 import '../../core/block/block_board_controller.dart';
 import '../../core/block/block_model.dart';
 import '../../core/block/snap_grid.dart';
+import '../../core/design/controls.dart';
 import '../../core/design/tokens.dart';
 import 'place_value.dart';
 
@@ -217,9 +219,13 @@ class _PlaceValuePageState extends ConsumerState<PlaceValuePage> {
     });
 
     _audio.playSfx(Sfx.merge);
-    // 「十」——目前只有数词音频，等 4.4 补上算式短语后换成完整播报。
-    unawaited(_audio.speak('zh.number.10', policy: VoicePolicy.interrupt));
-    unawaited(_audio.speak('en.number.10'));
+    // 「十个一，是一个十」——这一课要说的就是这一句。
+    unawaited(
+      _audio.speakSequence(
+        Narration.tenOnesMakeATen,
+        policy: VoicePolicy.interrupt,
+      ),
+    );
   }
 
   void _celebrate() {
@@ -252,12 +258,11 @@ class _PlaceValuePageState extends ConsumerState<PlaceValuePage> {
   /// 所以没有语言开关，也没有两个入口。
   void _announceTarget({bool interrupt = false}) {
     unawaited(
-      _audio.speak(
-        'zh.number.$_target',
+      _audio.speakSequence(
+        Narration.bilingualNumber(_target),
         policy: interrupt ? VoicePolicy.interrupt : VoicePolicy.queue,
       ),
     );
-    unawaited(_audio.speak('en.number.$_target'));
   }
 
   // ─── 布局 ──────────────────────────────────────────────────────────
@@ -396,13 +401,13 @@ class _Tray extends StatelessWidget {
             ),
           ),
           SizedBox(width: gap),
-          _RoundButton(
+          RoundActionButton(
             key: const ValueKey('clear'),
             icon: Icons.refresh_rounded,
             onPressed: onClear,
           ),
           SizedBox(width: gap),
-          _RoundButton(
+          RoundActionButton(
             key: const ValueKey('next'),
             icon: Icons.arrow_forward_rounded,
             // 答对后才点亮，但**任何时候都能点**——他想跳过就跳过。
@@ -430,7 +435,7 @@ class _TargetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PressableTile(
+    return PressableTile(
       width: BlockMetrics.minGrabTarget * 1.4,
       onPressed: onTap,
       color: solved
@@ -464,7 +469,7 @@ class _PieceSource extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PressableTile(
+    return PressableTile(
       onPressed: onPressed,
       color: Colors.white,
       child: Padding(
@@ -522,101 +527,6 @@ class _PieceGlyph extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _RoundButton extends StatelessWidget {
-  const _RoundButton({
-    super.key,
-    required this.icon,
-    required this.onPressed,
-    this.highlighted = false,
-  });
-
-  final IconData icon;
-  final VoidCallback onPressed;
-  final bool highlighted;
-
-  @override
-  Widget build(BuildContext context) {
-    return _PressableTile(
-      width: BlockMetrics.minGrabTarget,
-      onPressed: onPressed,
-      color: highlighted ? BlockColors.forIndex(4) : Colors.white,
-      child: Icon(
-        icon,
-        size: BlockMetrics.minGrabTarget * 0.42,
-        color: highlighted ? Colors.white : BlockColors.ink,
-      ),
-    );
-  }
-}
-
-/// 托盘里所有可按的东西的共同外壳。
-///
-/// 用原始 [Listener] 而非 `GestureDetector`：手势竞技场要等到抬手才判定，
-/// 而「触摸必有回应」这条红线要求按下的**那一瞬间**就有动静。首页的大陆
-/// 瓦片也是同样的原因（见 2.11 的实现说明）。
-class _PressableTile extends StatefulWidget {
-  const _PressableTile({
-    required this.child,
-    required this.onPressed,
-    required this.color,
-    this.width,
-  });
-
-  final Widget child;
-  final VoidCallback onPressed;
-  final Color color;
-  final double? width;
-
-  @override
-  State<_PressableTile> createState() => _PressableTileState();
-}
-
-class _PressableTileState extends State<_PressableTile> {
-  bool _pressed = false;
-
-  void _down(PointerDownEvent _) {
-    setState(() => _pressed = true);
-    // 按下即触发。抬手才响会慢半拍，连按也会丢。
-    widget.onPressed();
-  }
-
-  void _release() {
-    if (mounted) setState(() => _pressed = false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: _down,
-      onPointerUp: (_) => _release(),
-      onPointerCancel: (_) => _release(),
-      child: AnimatedScale(
-        scale: _pressed ? BlockMetrics.squashScale : 1.0,
-        duration: Duration(milliseconds: _pressed ? 90 : 320),
-        curve: _pressed ? Curves.easeOut : Curves.elasticOut,
-        child: SizedBox(
-          width: widget.width,
-          height: BlockMetrics.minGrabTarget,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: widget.color,
-              borderRadius: BorderRadius.circular(BlockMetrics.blockRadius),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.12),
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: widget.child,
-          ),
-        ),
-      ),
     );
   }
 }

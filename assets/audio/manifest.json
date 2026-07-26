@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-26T17:08:06.546918",
+  "generatedAt": "2026-07-26T23:25:55.318770",
   "zhVoice": "Tingting",
   "enVoice": "Samantha",
   "format": "WAV 22050Hz mono 16-bit",
@@ -105,6 +105,11 @@
     "en.number.97",
     "en.number.98",
     "en.number.99",
+    "en.phrase.tenOnesMakeATen",
+    "en.word.and",
+    "en.word.equals",
+    "en.word.isMadeOf",
+    "en.word.plus",
     "zh.number.0",
     "zh.number.1",
     "zh.number.10",
@@ -205,6 +210,11 @@
     "zh.number.96",
     "zh.number.97",
     "zh.number.98",
-    "zh.number.99"
+    "zh.number.99",
+    "zh.phrase.tenOnesMakeATen",
+    "zh.word.and",
+    "zh.word.equals",
+    "zh.word.isMadeOf",
+    "zh.word.plus"
   ]
 }

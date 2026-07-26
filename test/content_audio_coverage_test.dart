@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:baby_pal/core/audio/narration.dart';
 import 'package:baby_pal/core/audio/voice_resolver.dart';
 import 'package:baby_pal/core/content/models.dart';
 import 'package:baby_pal/core/content/pack_loader.dart';
@@ -51,6 +52,20 @@ void main() {
       isEmpty,
       reason: '缺少 ${missing.length} 条音频，跑 '
           '`dart run tool/gen_audio.dart` 补齐：\n${missing.take(20).join('\n')}',
+    );
+  });
+
+  test('播报用的连接词与整句都已生成', () {
+    // 这些键不来自任何内容包——它们是界面播报用词（加 / 等于 / 可以分成 /
+    // 十个一是一个十），由 gen_audio 的内置表产出。少一条就会让算式播报
+    // 中间缺一块，而这种缺失在儿童端表现为「说一半就停了」。
+    final missing = Narration.connectiveKeys.difference(audioFiles).toList()
+      ..sort();
+    expect(
+      missing,
+      isEmpty,
+      reason: '缺少 ${missing.length} 条播报用音频，跑 '
+          '`dart run tool/gen_audio.dart` 补齐：\n${missing.join('\n')}',
     );
   });
 

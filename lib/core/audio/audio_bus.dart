@@ -108,6 +108,23 @@ class AudioBus {
     }
   }
 
+  /// 按顺序播报一串语音键。
+  ///
+  /// 算式播报走这条路：「三」「加」「二」「等于」「五」是五条独立音频，
+  /// 靠队列串起来。[policy] 只作用于第一条——后面几条必须排在它后面，
+  /// 否则整句会自己打断自己。
+  Future<void> speakSequence(
+    List<String> voiceKeys, {
+    VoicePolicy policy = VoicePolicy.queue,
+  }) async {
+    for (var i = 0; i < voiceKeys.length; i++) {
+      await speak(
+        voiceKeys[i],
+        policy: i == 0 ? policy : VoicePolicy.queue,
+      );
+    }
+  }
+
   /// 停止当前语音并清空队列。切换模块时调用。
   Future<void> stopSpeech() async {
     _voiceQueue.clear();
