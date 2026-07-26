@@ -264,7 +264,10 @@ class _DecomposePageState extends ConsumerState<DecomposePage> {
           0,
           double.infinity,
         ),
-        0,
+        ((constraints.maxHeight - cell * kAdditionRows) / 2).clamp(
+          0,
+          double.infinity,
+        ),
       ),
     );
   }

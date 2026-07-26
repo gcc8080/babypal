@@ -284,7 +284,10 @@ class _PlaceValuePageState extends ConsumerState<PlaceValuePage> {
       cellSize: cell,
       origin: Offset(
         ((constraints.maxWidth - boardWidth) / 2).clamp(0, double.infinity),
-        0,
+        ((constraints.maxHeight - cell * kPlaceValueRows) / 2).clamp(
+          0,
+          double.infinity,
+        ),
       ),
     );
   }

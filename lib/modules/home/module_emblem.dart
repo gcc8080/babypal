@@ -20,23 +20,23 @@ class ModuleEmblem extends StatelessWidget {
     return switch (module) {
       // 三块方块堆成塔 → 数量。
       ModuleId.numbers => CustomPaint(
-          size: Size.square(size),
-          painter: _StackPainter(count: 3),
-        ),
+        size: Size.square(size),
+        painter: _StackPainter(count: 3),
+      ),
       // 两块方块 + 一个加号 → 合体。
       ModuleId.addition => CustomPaint(
-          size: Size.square(size),
-          painter: _PlusPainter(),
-        ),
+        size: Size.square(size),
+        painter: _PlusPainter(),
+      ),
       // 字母本身即内容。
       ModuleId.letters => _Glyph(text: 'A', size: size),
       // 汉字本身即内容。取「木」——他已经认识，且是部件加法的起点。
       ModuleId.hanzi => _Glyph(text: '木', size: size),
       // 散落的方块 → 想怎么摆就怎么摆。
       ModuleId.sandbox => CustomPaint(
-          size: Size.square(size),
-          painter: _ScatterPainter(),
-        ),
+        size: Size.square(size),
+        painter: _ScatterPainter(),
+      ),
     };
   }
 }
@@ -92,11 +92,7 @@ class _StackPainter extends CustomPainter {
     final left = (size.width - chip) / 2;
 
     for (var i = 0; i < count; i++) {
-      _drawChip(
-        canvas,
-        Rect.fromLTWH(left, top, chip, chip),
-        chip * 0.24,
-      );
+      _drawChip(canvas, Rect.fromLTWH(left, top, chip, chip), chip * 0.24);
       top += chip + gap;
     }
   }

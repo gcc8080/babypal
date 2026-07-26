@@ -246,7 +246,12 @@ class _AdditionPageState extends ConsumerState<AdditionPage> {
           0,
           double.infinity,
         ),
-        0,
+        // 纵向也居中：格边长由宽度决定，棋盘往往比可用高度矮一截，
+        // 顶着上边缘会在下方留一条空白带。
+        ((constraints.maxHeight - cell * kAdditionRows) / 2).clamp(
+          0,
+          double.infinity,
+        ),
       ),
     );
   }

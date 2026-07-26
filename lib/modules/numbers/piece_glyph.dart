@@ -46,6 +46,11 @@ class PieceGlyph extends StatelessWidget {
             width: segment * segments,
             height: segment,
             child: Row(
+              // **必须 stretch**：`DecoratedBox` 没有子节点，在 `Row` 默认的
+              // `center` 对齐下拿到的是松约束，于是取 `constraints.smallest`
+              // ——高度 0，整个缩略图什么都画不出来，托盘看上去就是两个空白
+              // 方块。真机验收才发现，组件测试只量了外层瓦片的尺寸。
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 for (var i = 0; i < segments; i++)
                   Expanded(

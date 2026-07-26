@@ -24,10 +24,10 @@ enum ModuleId {
   /// 刻意打散而非按枚举顺序 0/1/2/3/4——避免与受保护作品的
   /// 数字—颜色对应关系产生任何相似（见 design.md D13）。
   int get colorIndex => switch (this) {
-        ModuleId.numbers => 6,
-        ModuleId.addition => 2,
-        ModuleId.letters => 0,
-        ModuleId.hanzi => 4,
-        ModuleId.sandbox => 8,
-      };
+    ModuleId.numbers => 6,
+    ModuleId.addition => 2,
+    ModuleId.letters => 0,
+    ModuleId.hanzi => 4,
+    ModuleId.sandbox => 8,
+  };
 }

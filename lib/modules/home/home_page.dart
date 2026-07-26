@@ -40,13 +40,9 @@ class HomePage extends StatelessWidget {
             // 下限是**绝对的 90dp**，不乘缩放因子。dp 已经是密度无关单位，
             // 90dp 对应的是手指的物理尺寸；小屏上再乘 0.85 就成了 76dp，
             // 恰好击穿这条红线本身要守的东西。缩放只能把入口放大。
-            final tileSize = [
-              byWidth,
-              byHeight,
-            ].reduce((a, b) => a < b ? a : b).clamp(
-                  BlockMetrics.minGrabTarget,
-                  double.infinity,
-                );
+            final tileSize = [byWidth, byHeight]
+                .reduce((a, b) => a < b ? a : b)
+                .clamp(BlockMetrics.minGrabTarget, double.infinity);
 
             return Stack(
               children: [
@@ -117,16 +113,14 @@ class _ContinentTileState extends State<_ContinentTile>
     reverseDuration: const Duration(milliseconds: 320),
   );
 
-  late final Animation<double> _scale = Tween<double>(
-    begin: 1.0,
-    end: BlockMetrics.squashScale,
-  ).animate(
-    CurvedAnimation(
-      parent: _squash,
-      curve: Curves.easeOut,
-      reverseCurve: Curves.elasticOut.flipped,
-    ),
-  );
+  late final Animation<double> _scale =
+      Tween<double>(begin: 1.0, end: BlockMetrics.squashScale).animate(
+        CurvedAnimation(
+          parent: _squash,
+          curve: Curves.easeOut,
+          reverseCurve: Curves.elasticOut.flipped,
+        ),
+      );
 
   bool _pressed = false;
 
