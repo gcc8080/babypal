@@ -14,7 +14,9 @@
 - [ ] 1.8 建立 `lib/core/design/tokens.dart`：设计基准短边 360dp、缩放因子 `shortestSide / 360`、可拖拽积木与按钮下限 90dp、放置区下限 60dp、吸附半径系数 1.5、原创配色表
 - [ ] 1.9 在 `lib/main.dart` 接入 `wakelock_plus` 前台常亮并在退到后台时解除
 - [ ] 1.10 新建 `.github/workflows/ci.yml`（仓库当前无任何 workflow）：ubuntu job 固定 Flutter 3.44.8 跑 `flutter analyze`、`flutter test`、`flutter build apk --debug`；macos job 跑 `flutter build ios --no-codesign`
-- [ ] 1.11 确认生日交付的目标真机（建议 Android——iOS 免费 personal team 签名 7 天过期），并在本机跑通该设备的安装流程
+- [ ] 1.11 选定生日交付用的 Android 真机（有多台时优先屏幕较大的一台），开启开发者选项与 USB 调试，跑通 `fvm flutter run -d <android>` 与 `fvm flutter install --release` 两条链路
+- [ ] 1.12 确认 iOS 侧能力保留：本机 `fvm flutter run -d <ios-simulator>` 可跑，CI 的 `flutter build ios --no-codesign` 通过。iOS **不做真机验收**，回归职责全部由 CI 承担
+- [ ] 1.13 确认代码中不存在 Android 专有分支，保留日后取得开发者账号后直接上 iOS 真机的能力
 
 ## 2. P1 积木引擎与地基（约 1 周，本阶段做扎实，后面五个模块全靠它）
 
@@ -98,8 +100,9 @@
 - [ ] 8.6 家人相册：真实照片 + 家人真人语音走覆盖层，未录制时回落 TTS；照片未配置时优雅跳过该环节
 - [ ] 8.7 全端合规自查：权限清单无网络声明、无第三方 SDK、无埋点；儿童端无任何跳出应用的入口
 - [ ] 8.8 版权自查：应用名与角色名不含「Numberblocks / 数字积木」，角色造型与数字—颜色对应关系为原创
-- [ ] 8.9 真机手感终调：挤压回弹时长、音效延迟、吸附宽容度——这三项是 3 岁儿童唯一在意的东西
-- [ ] 8.10 交付前完整回归：`fvm flutter analyze` 无告警、`fvm flutter test` 全绿、目标真机安装并跑完全部模块与彩蛋
+- [ ] 8.9 **Android 真机**手感终调：挤压回弹时长、音效延迟、吸附宽容度——这三项是 3 岁儿童唯一在意的东西。必须在 **release 构建**上调（debug 构建性能偏低，会误导判断）
+- [ ] 8.10 交付前完整回归：`fvm flutter analyze` 无告警、`fvm flutter test` 全绿、CI 的 iOS 免签名构建通过、Android 真机装上 release APK 并跑完全部模块与彩蛋
+- [ ] 8.11 生日前在 Android 设备上留存上一个可用的 release APK 作为回滚版本
 
 ## 9. 真实验收（让他玩，只看三个指标）
 

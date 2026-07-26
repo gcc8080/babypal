@@ -51,6 +51,6 @@
 
 **刻意不引入**：游戏/物理引擎、Rive/Lottie、任何网络 / 分析 / 广告 SDK、完整 `intl` 本地化。理由见 `design.md`。
 
-**平台**：Android 侧载无约束；iOS 在无开发者账号时只能用免费 personal team 签名，**证书 7 天过期**——详见 `design.md` 的风险取舍。
+**平台**：生日交付目标为 **Android 真机**（侧载 release APK，无签名过期约束）。iOS 保留「模拟器可跑 + CI 免签名可编译」的能力但 v1 不上真机——无开发者账号时免费 personal team 签名的证书 7 天过期，不适合作为礼物的交付形态。代码不做 Android 专有分支，保留日后上 iOS 真机的能力。详见 `design.md` D12。
 
 **法务红线**：教学法（立方体表数量、位值、Base-10 blocks / Cuisenaire 数棒）属公共领域，可自由借鉴；但角色形象、配色方案与「Numberblocks / 数字积木」名称受 BBC/Blue Zoo 保护，**必须原创造型与配色，且不得用作 App 名或角色名**。OpenMoji 图标为 CC BY-SA 4.0，**须署名并对图形衍生作品同协议共享**。
