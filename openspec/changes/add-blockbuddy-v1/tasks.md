@@ -14,7 +14,13 @@
 - [x] 1.8 建立 `lib/core/design/tokens.dart`：设计基准短边 360dp、缩放因子 `shortestSide / 360`、可拖拽积木与按钮下限 90dp、放置区下限 60dp、吸附半径系数 1.5、原创配色表
 - [x] 1.9 在 `lib/main.dart` 接入 `wakelock_plus` 前台常亮并在退到后台时解除
 - [x] 1.10 新建 `.github/workflows/ci.yml`（仓库当前无任何 workflow）：ubuntu job 固定 Flutter 3.44.8 跑 `flutter analyze`、`flutter test`、`flutter build apk --debug`；macos job 跑 `flutter build ios --no-codesign`
-- [ ] 1.11 选定生日交付用的 Android 真机（有多台时优先屏幕较大的一台），开启开发者选项与 USB 调试，跑通 `fvm flutter run -d <android>` 与 `fvm flutter install --release` 两条链路
+- [x] 1.11 选定生日交付用的 Android 真机（有多台时优先屏幕较大的一台），开启开发者选项与 USB 调试，跑通 `fvm flutter run -d <android>` 与 `fvm flutter install --release` 两条链路
+
+> 实测设备：**MI 8 SE**（Android 9 / API 28 / arm64）。可用区域 2029×1080 物理像素，dpr 2.75 → 横屏逻辑尺寸约 **738 × 393 dp**，短边 393dp，`BlockScale = 1.09`。两条链路均已跑通，release APK 49.2 MB，启动无崩溃。
+>
+> ⚠️ 该机为 5.88 寸小屏，与 D12「有多台时优先屏幕较大的一台」的建议不符。横屏拼搭受益于物理尺寸，若家中另有 Android 平板应优先考虑。**孩子实际要玩哪台设备仍待确认。**
+>
+> 构建环境问题与修复：NDK 28.2 搭配 Android SDK 自带的 CMake 3.22.1 在 macOS 上不传 `--target=` 三元组给 clang，导致其误选 Mach-O 链接器 `ld64.lld`（报 `unknown argument '--build-id=sha1'`），`flutter_soloud` 原生编译失败。已在 `android/build.gradle.kts` 中仅对 macOS 覆盖 CMake 版本为 4.0.2。
 - [ ] 1.12 确认 iOS 侧能力保留：本机 `fvm flutter run -d <ios-simulator>` 可跑，CI 的 `flutter build ios --no-codesign` 通过。iOS **不做真机验收**，回归职责全部由 CI 承担
 - [x] 1.13 确认代码中不存在 Android 专有分支，保留日后取得开发者账号后直接上 iOS 真机的能力
 
