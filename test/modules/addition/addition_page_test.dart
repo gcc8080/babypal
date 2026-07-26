@@ -11,9 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-AudioBus _silentBus() => AudioBus(
-      resolver: VoiceResolver(overridesDir: Directory.systemTemp),
-    );
+AudioBus _silentBus() =>
+    AudioBus(resolver: VoiceResolver(overridesDir: Directory.systemTemp));
 
 /// 两个加数各自的取色，页面里写死的常量——测试靠它认人。
 const int _colorA = 1;
@@ -21,8 +20,8 @@ const int _colorB = 3;
 const int _colorSum = 4;
 
 Finder _blockOfColor(int colorIndex) => find.byWidgetPredicate(
-      (w) => w is BlockWidget && w.body.colorIndex == colorIndex,
-    );
+  (w) => w is BlockWidget && w.body.colorIndex == colorIndex,
+);
 
 extension on WidgetTester {
   Future<void> pumpAddition() async {
@@ -200,9 +199,9 @@ void main() {
   testWidgets('题序：从 1+1 起步，后段是凑十', (tester) async {
     expect(kAdditionProblems.first, const AdditionProblem(1, 1));
     expect(
-      kAdditionProblems.skip(kAdditionProblems.length - 3).every(
-            (p) => p.makesTen,
-          ),
+      kAdditionProblems
+          .skip(kAdditionProblems.length - 3)
+          .every((p) => p.makesTen),
       isTrue,
     );
     for (final p in kAdditionProblems) {

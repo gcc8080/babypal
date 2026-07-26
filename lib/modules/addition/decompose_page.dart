@@ -15,7 +15,7 @@ import '../../core/block/snap_grid.dart';
 import '../../core/design/controls.dart';
 import '../../core/design/tokens.dart';
 import 'addition.dart';
-import 'addition_page.dart';
+import 'equation_page.dart';
 
 /// 反向分解。
 ///
@@ -180,9 +180,7 @@ class _DecomposePageState extends ConsumerState<DecomposePage> {
     if (controller == null || controller.blocks.length != 2) return;
 
     final cut = _cut;
-    _mutate(
-      (c) => c.mergeBlocks(c.blocks.first.id, c.blocks.last.id),
-    );
+    _mutate((c) => c.mergeBlocks(c.blocks.first.id, c.blocks.last.id));
 
     // 合回去时报的是加法算式——分解与合体是同一件事的两个方向，
     // 不是两个玩法。
@@ -262,8 +260,10 @@ class _DecomposePageState extends ConsumerState<DecomposePage> {
       rows: kAdditionRows,
       cellSize: cell,
       origin: Offset(
-        ((constraints.maxWidth - cell * kAdditionColumns) / 2)
-            .clamp(0, double.infinity),
+        ((constraints.maxWidth - cell * kAdditionColumns) / 2).clamp(
+          0,
+          double.infinity,
+        ),
         0,
       ),
     );
@@ -280,9 +280,13 @@ class _DecomposePageState extends ConsumerState<DecomposePage> {
     });
   }
 
-  void _goToAddition() {
+  /// 三个玩法接成一个环：合体 → 分解 → 等式 → 合体。图标画的是**下一站**。
+  ///
+  /// 一律 `pushReplacement` 而不是叠层——返回键始终直接回星球地图，
+  /// 不会越按越深。
+  void _goToEquation() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => const AdditionPage()),
+      MaterialPageRoute<void>(builder: (_) => const EquationPage()),
     );
   }
 
@@ -343,8 +347,8 @@ class _DecomposePageState extends ConsumerState<DecomposePage> {
                     SizedBox(width: BlockMetrics.gap / 2),
                     RoundActionButton(
                       key: const ValueKey('mode'),
-                      icon: Icons.call_merge_rounded,
-                      onPressed: _goToAddition,
+                      icon: Icons.calculate_rounded,
+                      onPressed: _goToEquation,
                     ),
                     SizedBox(width: BlockMetrics.gap / 2),
                     RoundActionButton(

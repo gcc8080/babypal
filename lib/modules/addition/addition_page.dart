@@ -242,15 +242,16 @@ class _AdditionPageState extends ConsumerState<AdditionPage> {
       rows: kAdditionRows,
       cellSize: cell,
       origin: Offset(
-        ((constraints.maxWidth - cell * kAdditionColumns) / 2)
-            .clamp(0, double.infinity),
+        ((constraints.maxWidth - cell * kAdditionColumns) / 2).clamp(
+          0,
+          double.infinity,
+        ),
         0,
       ),
     );
   }
 
-  /// 去反向分解。两个玩法是同一件事的两个方向，因此**互相替换**而不是
-  /// 叠层——返回键始终直接回星球地图，不会越按越深。
+  /// 三个玩法接成一个环：合体 → 分解 → 等式 → 合体。图标画的是**下一站**。
   void _goToDecompose() {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(builder: (_) => const DecomposePage()),

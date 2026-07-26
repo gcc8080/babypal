@@ -7,23 +7,22 @@ import 'package:baby_pal/core/block/block_widget.dart';
 import 'package:baby_pal/core/design/controls.dart';
 import 'package:baby_pal/core/design/tokens.dart';
 import 'package:baby_pal/modules/addition/addition.dart';
-import 'package:baby_pal/modules/addition/addition_page.dart';
+import 'package:baby_pal/modules/addition/equation_page.dart';
 import 'package:baby_pal/modules/addition/decompose_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-AudioBus _silentBus() => AudioBus(
-      resolver: VoiceResolver(overridesDir: Directory.systemTemp),
-    );
+AudioBus _silentBus() =>
+    AudioBus(resolver: VoiceResolver(overridesDir: Directory.systemTemp));
 
 const int _colorWhole = 4;
 const int _colorLeft = 1;
 const int _colorRight = 3;
 
 Finder _blockOfColor(int colorIndex) => find.byWidgetPredicate(
-      (w) => w is BlockWidget && w.body.colorIndex == colorIndex,
-    );
+  (w) => w is BlockWidget && w.body.colorIndex == colorIndex,
+);
 
 extension on WidgetTester {
   Future<void> pumpDecompose() async {
@@ -114,7 +113,8 @@ void main() {
 
     expect(tester.blocks, hasLength(2), reason: '任何落点都必须切出点什么来');
     expect(
-      tester.blocks.firstWhere((w) => w.body.colorIndex == _colorLeft)
+      tester.blocks
+          .firstWhere((w) => w.body.colorIndex == _colorLeft)
           .body
           .widthUnits,
       1,
@@ -182,9 +182,8 @@ void main() {
   testWidgets('找齐全部分法后「下一个」点亮，但任何时候都能走', (tester) async {
     await tester.pumpDecompose();
 
-    RoundActionButton nextButton() => tester.widget<RoundActionButton>(
-          find.byKey(const ValueKey('next')),
-        );
+    RoundActionButton nextButton() =>
+        tester.widget<RoundActionButton>(find.byKey(const ValueKey('next')));
 
     expect(nextButton().highlighted, isFalse);
 
@@ -221,10 +220,7 @@ void main() {
     for (var i = 0; i < kDecompositionTargets.length; i++) {
       final n = tester.blocks.single.body;
       expect(n.widthUnits, kDecompositionTargets[i]);
-      expect(
-        n.anchor!.col + n.widthUnits,
-        lessThanOrEqualTo(kAdditionColumns),
-      );
+      expect(n.anchor!.col + n.widthUnits, lessThanOrEqualTo(kAdditionColumns));
 
       for (var left = 1; left < n.widthUnits; left++) {
         await tester.cutAt(left.toDouble());
@@ -245,13 +241,14 @@ void main() {
     }
   });
 
-  testWidgets('玩法切换按钮通向合体求和，且是替换不是叠层', (tester) async {
+  testWidgets('玩法切换：合体 → 分解 → 等式 → 合体，环上的下一站是等式槽', (tester) async {
     await tester.pumpDecompose();
 
     await tester.tap(find.byKey(const ValueKey('mode')));
     await tester.pumpAndSettle();
 
-    expect(find.byType(AdditionPage), findsOneWidget);
+    // pushReplacement 而非叠层——返回键始终直接回星球地图。
+    expect(find.byType(EquationPage), findsOneWidget);
     expect(find.byType(DecomposePage), findsNothing);
   });
 

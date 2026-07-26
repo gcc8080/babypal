@@ -3,9 +3,7 @@ import 'package:flutter/foundation.dart';
 /// 一道加法题。
 @immutable
 class AdditionProblem {
-  const AdditionProblem(this.a, this.b)
-      : assert(a > 0),
-        assert(b > 0);
+  const AdditionProblem(this.a, this.b) : assert(a > 0), assert(b > 0);
 
   final int a;
   final int b;
@@ -57,8 +55,8 @@ const List<AdditionProblem> kAdditionProblems = [
 /// 加数必须是正整数，因此 `total <= 1` 返回空集，且界面
 /// **MUST NOT** 因此给任何错误提示。
 List<AdditionProblem> decompositions(int total) => [
-      for (var a = 1; a < total; a++) AdditionProblem(a, total - a),
-    ];
+  for (var a = 1; a < total; a++) AdditionProblem(a, total - a),
+];
 
 /// 反向分解的题序。
 ///
@@ -78,6 +76,35 @@ int cutIndexAt(double localX, double cellSize, int total) {
   assert(total >= 2, '只有 2 格以上的积木才切得开');
   if (cellSize <= 0) return 1;
   return (localX / cellSize).round().clamp(1, total - 1);
+}
+
+/// 等式槽的候选答案个数。
+///
+/// 三个：两个太容易蒙对，四个在 90dp 的托盘里排不下（还要给等式条留位置）。
+const int kEquationChoices = 3;
+
+/// 生成等式槽的候选答案。
+///
+/// 正确答案的位置按 [round] 轮换——固定在中间他很快就会靠位置记答案，
+/// 那就变成了记位置而不是算加法。
+///
+/// 干扰项取得**紧贴正确答案**（±1）：差得远的选项一眼就能排除，等于没考。
+/// 全部保证为正整数。
+List<int> equationChoices(AdditionProblem problem, int round) {
+  final sum = problem.sum;
+  final distractors = <int>[
+    // sum 为 2 时 sum-1=1 仍合法；真正要防的是 sum<=1，那不会出现在题序里。
+    if (sum > 1) sum - 1 else sum + 2,
+    sum + 1,
+  ];
+
+  final slot = round % kEquationChoices;
+  final out = <int>[];
+  var next = 0;
+  for (var i = 0; i < kEquationChoices; i++) {
+    out.add(i == slot ? sum : distractors[next++]);
+  }
+  return out;
 }
 
 /// 拼搭台列数。得数最大的那道题也必须一行摆得下。
