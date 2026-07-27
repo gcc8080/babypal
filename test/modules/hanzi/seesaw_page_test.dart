@@ -27,9 +27,12 @@ ContentLibrary _library() => ContentLibrary([
     {"char": "多", "pinyin": "duō", "type": "simple", "voiceKey": "zh.hanzi.duo"},
     {"char": "少", "pinyin": "shǎo", "type": "simple", "voiceKey": "zh.hanzi.shao"},
     {"char": "前", "pinyin": "qián", "type": "simple", "voiceKey": "zh.hanzi.qian"},
-    {"char": "后", "pinyin": "hòu", "type": "simple", "voiceKey": "zh.hanzi.hou"}
+    {"char": "后", "pinyin": "hòu", "type": "simple", "voiceKey": "zh.hanzi.hou"},
+    {"char": "高", "pinyin": "gāo", "type": "simple", "voiceKey": "zh.hanzi.gao"},
+    {"char": "矮", "pinyin": "ǎi", "type": "simple", "voiceKey": "zh.hanzi.ai"},
+    {"char": "低", "pinyin": "dī", "type": "simple", "voiceKey": "zh.hanzi.di"}
   ],
-  "antonyms": [["大", "小"], ["多", "少"], ["前", "后"]]
+  "antonyms": [["大", "小"], ["多", "少"], ["前", "后"], ["高", "矮"], ["高", "低"]]
 }
 ''', source: 'hanzi.json')!,
 ]);
@@ -110,7 +113,7 @@ void main() {
         '大',
       );
 
-      for (final expected in ['多', '前', '大']) {
+      for (final expected in ['多', '前', '高', '高', '大']) {
         await tester.tap(find.byKey(const ValueKey('next')));
         await tester.pumpAndSettle();
         expect(
@@ -210,6 +213,69 @@ void main() {
 
       expect(seated(tester), '小');
       expect(find.byKey(const ValueKey('choice-小')), findsNothing);
+    });
+  });
+
+  group('一个字可以有不止一个反义词', () {
+    /// 内容包里同时写着「高—矮」和「高—低」，两个答案都对。
+    ///
+    /// 这不是假想的边界情况：一份正常的反义词表里必然出现（生—死 与 生—熟
+    /// 也是）。跷跷板若只认排在前面的那个，他把「低」放到「高」对面会被
+    /// 「演示」成放错了——**那是在教他一件假事**，也是「无挫败」红线最难受的
+    /// 一种破法：他明明答对了。
+    ///
+    /// 这一组刻意只放三对：干扰项的候选池小到「低」**必然**被抽中，于是
+    /// 「另一个答案不会出现在托盘里」这条断言才真的压得住。用主 fixture 的
+    /// 五对时抽样恰好绕开了「低」，那条断言把 bug 版本也放过了。
+    ContentLibrary small() => ContentLibrary([
+      const PackLoader().parse('''
+{
+  "schemaVersion": 1,
+  "hanzi": [
+    {"char": "高", "pinyin": "gāo", "type": "simple", "voiceKey": "zh.hanzi.gao"},
+    {"char": "矮", "pinyin": "ǎi", "type": "simple", "voiceKey": "zh.hanzi.ai"},
+    {"char": "低", "pinyin": "dī", "type": "simple", "voiceKey": "zh.hanzi.di"},
+    {"char": "大", "pinyin": "dà", "type": "simple", "voiceKey": "zh.hanzi.da"},
+    {"char": "小", "pinyin": "xiǎo", "type": "simple", "voiceKey": "zh.hanzi.xiao"}
+  ],
+  "antonyms": [["高", "矮"], ["高", "低"], ["大", "小"]]
+}
+''', source: 'hanzi.json')!,
+    ]);
+
+    testWidgets('另一个正确答案不会被当成干扰项摆出来', (tester) async {
+      await pumpPage(tester, library: small());
+      expect(
+        tester.widget<GlyphTile>(find.byKey(const ValueKey('prompt'))).glyph,
+        '高',
+      );
+
+      // 这一关演的答案是「矮」。「低」同样说得通，所以它绝不能作为干扰项
+      // 摆出来——他一拿起来放上去就会被判成要演示。
+      expect(find.byKey(const ValueKey('choice-矮')), findsOneWidget);
+      expect(find.byKey(const ValueKey('choice-低')), findsNothing);
+    });
+
+    testWidgets('真放上去也算对：高 配 低 与 高 配 矮 一样成立', (tester) async {
+      await pumpPage(tester, library: small());
+      audio.spoken.clear();
+
+      // 绕过托盘直接走落位逻辑——正是拖拽通道会发生的事。
+      final seesaw = tester.widget<DragTarget<String>>(
+        find.byType(DragTarget<String>),
+      );
+      seesaw.onAcceptWithDetails!(
+        DragTargetDetails<String>(data: '低', offset: Offset.zero),
+      );
+      await tester.pumpAndSettle();
+
+      expect(seated(tester), '低', reason: '座位上该是他放的那个字，不是包里排第一的');
+      // 念的也是他配出来的那一对。
+      expect(audio.spoken, ['zh.hanzi.gao', 'zh.hanzi.di']);
+      final next = tester.widget<RoundActionButton>(
+        find.byKey(const ValueKey('next')),
+      );
+      expect(next.highlighted, isTrue);
     });
   });
 

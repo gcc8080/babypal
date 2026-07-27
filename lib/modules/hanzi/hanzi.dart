@@ -106,6 +106,21 @@ bool _sameTally(Map<String, int> a, Map<String, int> b) {
   return true;
 }
 
+/// 与 [char] 构成反义词的**全部**字。
+///
+/// 不是「那一个」，是「那些」：内容包里同时写着 `高—矮` 和 `高—低`、
+/// `生—死` 和 `生—熟`，两个答案都对。跷跷板只认 `pair.right` 的话，他把「低」
+/// 放到「高」的对面会被演示成「你放错了，应该是矮」——**那是在教他一件假事**，
+/// 而且是「无挫败」红线最难受的一种破法：他明明答对了。
+Set<String> antonymsOf(String char, ContentLibrary library) {
+  final result = <String>{};
+  for (final pair in library.antonyms) {
+    if (pair.left == char) result.add(pair.right);
+    if (pair.right == char) result.add(pair.left);
+  }
+  return result;
+}
+
 /// 象形动画的时长。
 ///
 /// 前 70% 是图渐变成字骨架，后 30% 交叉淡入真正的字形。两秒是量出来的下限：

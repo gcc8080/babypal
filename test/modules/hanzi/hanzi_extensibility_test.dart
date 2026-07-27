@@ -107,8 +107,11 @@ void main() {
       await pumpComponent(tester);
 
       // 一路按「下一题」，直到出现火 + 火。
+      // 上限跟着数据走：写死一个 20 会在内容包变大时静默失效——反义词那条
+      // 用例就是这么挂的（反义词涨到 71 对，第 71 关永远翻不到）。
+      final rounds = extended().hanzi.where((h) => h.isCompound).length + 1;
       var found = false;
-      for (var i = 0; i < 20; i++) {
+      for (var i = 0; i < rounds; i++) {
         final labels = blocks(tester).map((w) => w.body.label).toList();
         if (labels.length == 2 && labels.every((l) => l == '火')) {
           found = true;
@@ -155,8 +158,9 @@ void main() {
       String prompt() =>
           tester.widget<GlyphTile>(find.byKey(const ValueKey('prompt'))).glyph;
 
+      final rounds = extended().antonyms.length + 1;
       var found = false;
-      for (var i = 0; i < 20; i++) {
+      for (var i = 0; i < rounds; i++) {
         if (prompt() == '凸') {
           found = true;
           break;

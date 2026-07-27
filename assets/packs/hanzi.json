@@ -6,161 +6,1205 @@
       "pinyin": "shān",
       "type": "pictograph",
       "imageKey": "mountain",
-      "voiceKey": "zh.hanzi.shan"
+      "voiceKey": "zh.hanzi.5c71"
     },
     {
       "char": "田",
       "pinyin": "tián",
       "type": "pictograph",
       "imageKey": "field",
-      "voiceKey": "zh.hanzi.tian"
+      "voiceKey": "zh.hanzi.7530"
     },
     {
       "char": "土",
       "pinyin": "tǔ",
       "type": "pictograph",
       "imageKey": "soil",
-      "voiceKey": "zh.hanzi.tu"
+      "voiceKey": "zh.hanzi.571f"
     },
     {
       "char": "木",
       "pinyin": "mù",
       "type": "pictograph",
       "imageKey": "tree",
-      "voiceKey": "zh.hanzi.mu"
+      "voiceKey": "zh.hanzi.6728"
     },
     {
       "char": "日",
       "pinyin": "rì",
       "type": "pictograph",
       "imageKey": "sun",
-      "voiceKey": "zh.hanzi.ri"
+      "voiceKey": "zh.hanzi.65e5"
     },
     {
       "char": "月",
       "pinyin": "yuè",
       "type": "pictograph",
       "imageKey": "moon",
-      "voiceKey": "zh.hanzi.yue"
+      "voiceKey": "zh.hanzi.6708"
     },
     {
       "char": "水",
       "pinyin": "shuǐ",
       "type": "pictograph",
       "imageKey": "water",
-      "voiceKey": "zh.hanzi.shui"
+      "voiceKey": "zh.hanzi.6c34"
     },
     {
       "char": "火",
       "pinyin": "huǒ",
       "type": "pictograph",
       "imageKey": "fire",
-      "voiceKey": "zh.hanzi.huo"
+      "voiceKey": "zh.hanzi.706b"
     },
     {
       "char": "人",
       "pinyin": "rén",
       "type": "pictograph",
       "imageKey": "person",
-      "voiceKey": "zh.hanzi.ren"
+      "voiceKey": "zh.hanzi.4eba"
     },
-
     {
       "char": "林",
       "pinyin": "lín",
       "type": "compound",
-      "parts": ["木", "木"],
-      "voiceKey": "zh.hanzi.lin"
+      "parts": [
+        "木",
+        "木"
+      ],
+      "voiceKey": "zh.hanzi.6797"
     },
     {
       "char": "森",
       "pinyin": "sēn",
       "type": "compound",
-      "parts": ["木", "木", "木"],
-      "voiceKey": "zh.hanzi.sen"
+      "parts": [
+        "木",
+        "木",
+        "木"
+      ],
+      "voiceKey": "zh.hanzi.68ee"
     },
     {
       "char": "明",
       "pinyin": "míng",
       "type": "compound",
-      "parts": ["日", "月"],
-      "voiceKey": "zh.hanzi.ming"
+      "parts": [
+        "日",
+        "月"
+      ],
+      "voiceKey": "zh.hanzi.660e"
     },
     {
       "char": "休",
       "pinyin": "xiū",
       "type": "compound",
-      "parts": ["人", "木"],
-      "voiceKey": "zh.hanzi.xiu"
+      "parts": [
+        "人",
+        "木"
+      ],
+      "voiceKey": "zh.hanzi.4f11"
     },
     {
       "char": "从",
       "pinyin": "cóng",
       "type": "compound",
-      "parts": ["人", "人"],
-      "voiceKey": "zh.hanzi.cong"
+      "parts": [
+        "人",
+        "人"
+      ],
+      "voiceKey": "zh.hanzi.4ece"
     },
     {
       "char": "众",
       "pinyin": "zhòng",
       "type": "compound",
-      "parts": ["人", "人", "人"],
-      "voiceKey": "zh.hanzi.zhong"
+      "parts": [
+        "人",
+        "人",
+        "人"
+      ],
+      "voiceKey": "zh.hanzi.4f17"
     },
-
     {
       "char": "大",
       "pinyin": "dà",
       "type": "simple",
-      "voiceKey": "zh.hanzi.da"
+      "voiceKey": "zh.hanzi.5927"
     },
     {
       "char": "小",
       "pinyin": "xiǎo",
       "type": "simple",
-      "voiceKey": "zh.hanzi.xiao"
+      "voiceKey": "zh.hanzi.5c0f"
     },
     {
       "char": "多",
       "pinyin": "duō",
       "type": "simple",
-      "voiceKey": "zh.hanzi.duo"
+      "voiceKey": "zh.hanzi.591a"
     },
     {
       "char": "少",
       "pinyin": "shǎo",
       "type": "simple",
-      "voiceKey": "zh.hanzi.shao"
+      "voiceKey": "zh.hanzi.5c11"
     },
     {
       "char": "前",
       "pinyin": "qián",
       "type": "simple",
-      "voiceKey": "zh.hanzi.qian"
+      "voiceKey": "zh.hanzi.524d"
     },
     {
       "char": "后",
       "pinyin": "hòu",
       "type": "simple",
-      "voiceKey": "zh.hanzi.hou"
+      "voiceKey": "zh.hanzi.540e"
     },
     {
       "char": "左",
       "pinyin": "zuǒ",
       "type": "simple",
-      "voiceKey": "zh.hanzi.zuo"
+      "voiceKey": "zh.hanzi.5de6"
     },
     {
       "char": "右",
       "pinyin": "yòu",
       "type": "simple",
-      "voiceKey": "zh.hanzi.you"
+      "voiceKey": "zh.hanzi.53f3"
+    },
+    {
+      "char": "长",
+      "pinyin": "cháng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.957f"
+    },
+    {
+      "char": "短",
+      "pinyin": "duǎn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.77ed"
+    },
+    {
+      "char": "高",
+      "pinyin": "gāo",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.9ad8"
+    },
+    {
+      "char": "矮",
+      "pinyin": "ǎi",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.77ee"
+    },
+    {
+      "char": "低",
+      "pinyin": "dī",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.4f4e"
+    },
+    {
+      "char": "胖",
+      "pinyin": "pàng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.80d6"
+    },
+    {
+      "char": "瘦",
+      "pinyin": "shòu",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.7626"
+    },
+    {
+      "char": "粗",
+      "pinyin": "cū",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.7c97"
+    },
+    {
+      "char": "细",
+      "pinyin": "xì",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.7ec6"
+    },
+    {
+      "char": "宽",
+      "pinyin": "kuān",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5bbd"
+    },
+    {
+      "char": "窄",
+      "pinyin": "zhǎi",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.7a84"
+    },
+    {
+      "char": "厚",
+      "pinyin": "hòu",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.539a"
+    },
+    {
+      "char": "薄",
+      "pinyin": "báo",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.8584"
+    },
+    {
+      "char": "深",
+      "pinyin": "shēn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6df1"
+    },
+    {
+      "char": "浅",
+      "pinyin": "qiǎn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6d45"
+    },
+    {
+      "char": "远",
+      "pinyin": "yuǎn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.8fdc"
+    },
+    {
+      "char": "近",
+      "pinyin": "jìn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.8fd1"
+    },
+    {
+      "char": "轻",
+      "pinyin": "qīng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.8f7b"
+    },
+    {
+      "char": "重",
+      "pinyin": "zhòng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.91cd"
+    },
+    {
+      "char": "快",
+      "pinyin": "kuài",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5feb"
+    },
+    {
+      "char": "慢",
+      "pinyin": "màn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6162"
+    },
+    {
+      "char": "满",
+      "pinyin": "mǎn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6ee1"
+    },
+    {
+      "char": "空",
+      "pinyin": "kōng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.7a7a"
+    },
+    {
+      "char": "冷",
+      "pinyin": "lěng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.51b7"
+    },
+    {
+      "char": "热",
+      "pinyin": "rè",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.70ed"
+    },
+    {
+      "char": "暖",
+      "pinyin": "nuǎn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6696"
+    },
+    {
+      "char": "凉",
+      "pinyin": "liáng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.51c9"
+    },
+    {
+      "char": "干",
+      "pinyin": "gān",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5e72"
+    },
+    {
+      "char": "湿",
+      "pinyin": "shī",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6e7f"
+    },
+    {
+      "char": "硬",
+      "pinyin": "yìng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.786c"
+    },
+    {
+      "char": "软",
+      "pinyin": "ruǎn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.8f6f"
+    },
+    {
+      "char": "甜",
+      "pinyin": "tián",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.751c"
+    },
+    {
+      "char": "苦",
+      "pinyin": "kǔ",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.82e6"
+    },
+    {
+      "char": "香",
+      "pinyin": "xiāng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.9999"
+    },
+    {
+      "char": "臭",
+      "pinyin": "chòu",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.81ed"
+    },
+    {
+      "char": "浓",
+      "pinyin": "nóng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6d53"
+    },
+    {
+      "char": "淡",
+      "pinyin": "dàn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6de1"
+    },
+    {
+      "char": "新",
+      "pinyin": "xīn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.65b0"
+    },
+    {
+      "char": "旧",
+      "pinyin": "jiù",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.65e7"
+    },
+    {
+      "char": "好",
+      "pinyin": "hǎo",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.597d"
+    },
+    {
+      "char": "坏",
+      "pinyin": "huài",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.574f"
+    },
+    {
+      "char": "美",
+      "pinyin": "měi",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.7f8e"
+    },
+    {
+      "char": "丑",
+      "pinyin": "chǒu",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.4e11"
+    },
+    {
+      "char": "黑",
+      "pinyin": "hēi",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.9ed1"
+    },
+    {
+      "char": "白",
+      "pinyin": "bái",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.767d"
+    },
+    {
+      "char": "暗",
+      "pinyin": "àn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6697"
+    },
+    {
+      "char": "亮",
+      "pinyin": "liàng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.4eae"
+    },
+    {
+      "char": "响",
+      "pinyin": "xiǎng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.54cd"
+    },
+    {
+      "char": "静",
+      "pinyin": "jìng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.9759"
+    },
+    {
+      "char": "上",
+      "pinyin": "shàng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.4e0a"
+    },
+    {
+      "char": "下",
+      "pinyin": "xià",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.4e0b"
+    },
+    {
+      "char": "里",
+      "pinyin": "lǐ",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.91cc"
+    },
+    {
+      "char": "外",
+      "pinyin": "wài",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5916"
+    },
+    {
+      "char": "内",
+      "pinyin": "nèi",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5185"
+    },
+    {
+      "char": "东",
+      "pinyin": "dōng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.4e1c"
+    },
+    {
+      "char": "西",
+      "pinyin": "xī",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.897f"
+    },
+    {
+      "char": "南",
+      "pinyin": "nán",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5357"
+    },
+    {
+      "char": "北",
+      "pinyin": "běi",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5317"
+    },
+    {
+      "char": "来",
+      "pinyin": "lái",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6765"
+    },
+    {
+      "char": "去",
+      "pinyin": "qù",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.53bb"
+    },
+    {
+      "char": "进",
+      "pinyin": "jìn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.8fdb"
+    },
+    {
+      "char": "出",
+      "pinyin": "chū",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.51fa"
+    },
+    {
+      "char": "开",
+      "pinyin": "kāi",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5f00"
+    },
+    {
+      "char": "关",
+      "pinyin": "guān",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5173"
+    },
+    {
+      "char": "推",
+      "pinyin": "tuī",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.63a8"
+    },
+    {
+      "char": "拉",
+      "pinyin": "lā",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.62c9"
+    },
+    {
+      "char": "拿",
+      "pinyin": "ná",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.62ff"
+    },
+    {
+      "char": "放",
+      "pinyin": "fàng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.653e"
+    },
+    {
+      "char": "穿",
+      "pinyin": "chuān",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.7a7f"
+    },
+    {
+      "char": "脱",
+      "pinyin": "tuō",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.8131"
+    },
+    {
+      "char": "哭",
+      "pinyin": "kū",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.54ed"
+    },
+    {
+      "char": "笑",
+      "pinyin": "xiào",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.7b11"
+    },
+    {
+      "char": "醒",
+      "pinyin": "xǐng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.9192"
+    },
+    {
+      "char": "睡",
+      "pinyin": "shuì",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.7761"
+    },
+    {
+      "char": "升",
+      "pinyin": "shēng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5347"
+    },
+    {
+      "char": "降",
+      "pinyin": "jiàng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.964d"
+    },
+    {
+      "char": "起",
+      "pinyin": "qǐ",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.8d77"
+    },
+    {
+      "char": "落",
+      "pinyin": "luò",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.843d"
+    },
+    {
+      "char": "合",
+      "pinyin": "hé",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5408"
+    },
+    {
+      "char": "分",
+      "pinyin": "fēn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5206"
+    },
+    {
+      "char": "买",
+      "pinyin": "mǎi",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.4e70"
+    },
+    {
+      "char": "卖",
+      "pinyin": "mài",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5356"
+    },
+    {
+      "char": "借",
+      "pinyin": "jiè",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.501f"
+    },
+    {
+      "char": "还",
+      "pinyin": "huán",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.8fd8"
+    },
+    {
+      "char": "动",
+      "pinyin": "dòng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.52a8"
+    },
+    {
+      "char": "早",
+      "pinyin": "zǎo",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.65e9"
+    },
+    {
+      "char": "晚",
+      "pinyin": "wǎn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.665a"
+    },
+    {
+      "char": "先",
+      "pinyin": "xiān",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5148"
+    },
+    {
+      "char": "古",
+      "pinyin": "gǔ",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.53e4"
+    },
+    {
+      "char": "今",
+      "pinyin": "jīn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.4eca"
+    },
+    {
+      "char": "生",
+      "pinyin": "shēng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.751f"
+    },
+    {
+      "char": "死",
+      "pinyin": "sǐ",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6b7b"
+    },
+    {
+      "char": "熟",
+      "pinyin": "shú",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.719f"
+    },
+    {
+      "char": "真",
+      "pinyin": "zhēn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.771f"
+    },
+    {
+      "char": "假",
+      "pinyin": "jiǎ",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5047"
+    },
+    {
+      "char": "对",
+      "pinyin": "duì",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5bf9"
+    },
+    {
+      "char": "错",
+      "pinyin": "cuò",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.9519"
+    },
+    {
+      "char": "是",
+      "pinyin": "shì",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.662f"
+    },
+    {
+      "char": "非",
+      "pinyin": "fēi",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.975e"
+    },
+    {
+      "char": "有",
+      "pinyin": "yǒu",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6709"
+    },
+    {
+      "char": "无",
+      "pinyin": "wú",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.65e0"
+    },
+    {
+      "char": "加",
+      "pinyin": "jiā",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.52a0"
+    },
+    {
+      "char": "减",
+      "pinyin": "jiǎn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.51cf"
+    },
+    {
+      "char": "正",
+      "pinyin": "zhèng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6b63"
+    },
+    {
+      "char": "反",
+      "pinyin": "fǎn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.53cd"
+    },
+    {
+      "char": "同",
+      "pinyin": "tóng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.540c"
+    },
+    {
+      "char": "异",
+      "pinyin": "yì",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5f02"
+    },
+    {
+      "char": "输",
+      "pinyin": "shū",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.8f93"
+    },
+    {
+      "char": "赢",
+      "pinyin": "yíng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.8d62"
+    },
+    {
+      "char": "强",
+      "pinyin": "qiáng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5f3a"
+    },
+    {
+      "char": "弱",
+      "pinyin": "ruò",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5f31"
+    },
+    {
+      "char": "紧",
+      "pinyin": "jǐn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.7d27"
+    },
+    {
+      "char": "松",
+      "pinyin": "sōng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.677e"
+    },
+    {
+      "char": "忙",
+      "pinyin": "máng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5fd9"
+    },
+    {
+      "char": "闲",
+      "pinyin": "xián",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.95f2"
+    },
+    {
+      "char": "饱",
+      "pinyin": "bǎo",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.9971"
+    },
+    {
+      "char": "饿",
+      "pinyin": "è",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.997f"
+    },
+    {
+      "char": "勤",
+      "pinyin": "qín",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.52e4"
+    },
+    {
+      "char": "懒",
+      "pinyin": "lǎn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.61d2"
+    },
+    {
+      "char": "善",
+      "pinyin": "shàn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.5584"
+    },
+    {
+      "char": "恶",
+      "pinyin": "è",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6076"
+    },
+    {
+      "char": "勇",
+      "pinyin": "yǒng",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.52c7"
+    },
+    {
+      "char": "怯",
+      "pinyin": "qiè",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.602f"
+    },
+    {
+      "char": "爱",
+      "pinyin": "ài",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.7231"
+    },
+    {
+      "char": "恨",
+      "pinyin": "hèn",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.6068"
     }
   ],
   "antonyms": [
-    ["大", "小"],
-    ["多", "少"],
-    ["前", "后"],
-    ["左", "右"]
+    [
+      "大",
+      "小"
+    ],
+    [
+      "多",
+      "少"
+    ],
+    [
+      "前",
+      "后"
+    ],
+    [
+      "左",
+      "右"
+    ],
+    [
+      "长",
+      "短"
+    ],
+    [
+      "高",
+      "矮"
+    ],
+    [
+      "高",
+      "低"
+    ],
+    [
+      "胖",
+      "瘦"
+    ],
+    [
+      "粗",
+      "细"
+    ],
+    [
+      "宽",
+      "窄"
+    ],
+    [
+      "厚",
+      "薄"
+    ],
+    [
+      "深",
+      "浅"
+    ],
+    [
+      "远",
+      "近"
+    ],
+    [
+      "轻",
+      "重"
+    ],
+    [
+      "快",
+      "慢"
+    ],
+    [
+      "满",
+      "空"
+    ],
+    [
+      "冷",
+      "热"
+    ],
+    [
+      "暖",
+      "凉"
+    ],
+    [
+      "干",
+      "湿"
+    ],
+    [
+      "硬",
+      "软"
+    ],
+    [
+      "甜",
+      "苦"
+    ],
+    [
+      "香",
+      "臭"
+    ],
+    [
+      "浓",
+      "淡"
+    ],
+    [
+      "新",
+      "旧"
+    ],
+    [
+      "好",
+      "坏"
+    ],
+    [
+      "美",
+      "丑"
+    ],
+    [
+      "黑",
+      "白"
+    ],
+    [
+      "明",
+      "暗"
+    ],
+    [
+      "亮",
+      "暗"
+    ],
+    [
+      "响",
+      "静"
+    ],
+    [
+      "上",
+      "下"
+    ],
+    [
+      "里",
+      "外"
+    ],
+    [
+      "内",
+      "外"
+    ],
+    [
+      "东",
+      "西"
+    ],
+    [
+      "南",
+      "北"
+    ],
+    [
+      "来",
+      "去"
+    ],
+    [
+      "进",
+      "出"
+    ],
+    [
+      "开",
+      "关"
+    ],
+    [
+      "推",
+      "拉"
+    ],
+    [
+      "拿",
+      "放"
+    ],
+    [
+      "穿",
+      "脱"
+    ],
+    [
+      "哭",
+      "笑"
+    ],
+    [
+      "醒",
+      "睡"
+    ],
+    [
+      "升",
+      "降"
+    ],
+    [
+      "起",
+      "落"
+    ],
+    [
+      "合",
+      "分"
+    ],
+    [
+      "买",
+      "卖"
+    ],
+    [
+      "借",
+      "还"
+    ],
+    [
+      "动",
+      "静"
+    ],
+    [
+      "早",
+      "晚"
+    ],
+    [
+      "先",
+      "后"
+    ],
+    [
+      "古",
+      "今"
+    ],
+    [
+      "生",
+      "死"
+    ],
+    [
+      "生",
+      "熟"
+    ],
+    [
+      "真",
+      "假"
+    ],
+    [
+      "对",
+      "错"
+    ],
+    [
+      "是",
+      "非"
+    ],
+    [
+      "有",
+      "无"
+    ],
+    [
+      "加",
+      "减"
+    ],
+    [
+      "正",
+      "反"
+    ],
+    [
+      "同",
+      "异"
+    ],
+    [
+      "输",
+      "赢"
+    ],
+    [
+      "强",
+      "弱"
+    ],
+    [
+      "紧",
+      "松"
+    ],
+    [
+      "忙",
+      "闲"
+    ],
+    [
+      "饱",
+      "饿"
+    ],
+    [
+      "勤",
+      "懒"
+    ],
+    [
+      "善",
+      "恶"
+    ],
+    [
+      "勇",
+      "怯"
+    ],
+    [
+      "爱",
+      "恨"
+    ]
   ]
 }

@@ -44,8 +44,11 @@ class SeesawPage extends ConsumerStatefulWidget {
 class _SeesawPageState extends ConsumerState<SeesawPage> {
   int _pairIndex = 0;
 
-  /// 已经配对成功了。
-  bool _solved = false;
+  /// 他放上去的那个字。null 表示还没配对成功。
+  ///
+  /// 存字而不是存 bool：一个题面可能有**多个都对的答案**（高—矮 与 高—低），
+  /// 座位上该显示的是他自己放的那一个，不是内容包里排第一的那一个。
+  String? _placed;
 
   /// 正在演示正确答案——**不是错误状态**。
   bool _demo = false;
@@ -66,10 +69,26 @@ class _SeesawPageState extends ConsumerState<SeesawPage> {
     return all[_pairIndex % all.length];
   }
 
+  bool get _solved => _placed != null;
+
+  /// 这一关**全部**说得通的答案。
+  ///
+  /// 内容包里「高」既配「矮」也配「低」，「生」既配「死」也配「熟」。这两个
+  /// 都对，判定和干扰项都得按这个集合来。
+  Set<String> get _answers {
+    final pair = _pair;
+    if (pair == null) return const {};
+    return antonymsOf(pair.left, _library);
+  }
+
   /// 托盘里的候选字：正确答案 + 两个来自别的反义词对的字。
   ///
   /// 干扰项**取自其他反义词对**而不是随便找几个字——他要做的判断因此是
   /// 「哪个跟『大』是一对」，而不是「哪个字我认识」。
+  ///
+  /// 干扰项里必须剔掉**这一关所有说得通的答案**：内容包里「高」既配「矮」
+  /// 也配「低」，把「低」当干扰项摆出来，他放上去却被判成要演示，就是在教
+  /// 他一件假事。
   ///
   /// 用 `Random(_pairIndex)` 而不是全局随机：同一关反复重建组件树时顺序必须
   /// 一样，否则他会看见候选字自己在跳。
@@ -77,6 +96,7 @@ class _SeesawPageState extends ConsumerState<SeesawPage> {
     final pair = _pair;
     if (pair == null) return const [];
 
+    final answers = _answers;
     final others = <String>[];
     for (final other in _pairs) {
       if (other == pair) continue;
@@ -84,7 +104,7 @@ class _SeesawPageState extends ConsumerState<SeesawPage> {
         ..add(other.left)
         ..add(other.right);
     }
-    others.removeWhere((c) => c == pair.left || c == pair.right);
+    others.removeWhere((c) => c == pair.left || answers.contains(c));
 
     final picked = <String>[pair.right];
     for (var i = 0; i < kSeesawChoices - 1 && i < others.length; i++) {
@@ -93,12 +113,8 @@ class _SeesawPageState extends ConsumerState<SeesawPage> {
     return picked.toSet().toList()..shuffle(math.Random(_pairIndex * 17 + 3));
   }
 
-  /// 当前压在右座上的字：配对成功是他放的，演示中是系统请上来的。
-  String? get _seated {
-    final pair = _pair;
-    if (pair == null) return null;
-    return (_solved || _demo) ? pair.right : null;
-  }
+  /// 当前压在右座上的字：配对成功是**他放的那个**，演示中是系统请上来的。
+  String? get _seated => _placed ?? (_demo ? _pair?.right : null);
 
   @override
   void initState() {
@@ -137,15 +153,16 @@ class _SeesawPageState extends ConsumerState<SeesawPage> {
     final pair = _pair;
     if (pair == null || _solved) return;
 
-    if (char == pair.right) {
+    // 说得通的答案都算数，不只是内容包里排第一的那个。
+    if (_answers.contains(char)) {
       _audio.playSfx(Sfx.merge);
       _demoTimer?.cancel();
       setState(() {
-        _solved = true;
+        _placed = char;
         _demo = false;
         _selected = null;
       });
-      _speakPair(VoicePolicy.interrupt);
+      _speak(pair.left, char);
       return;
     }
 
@@ -157,12 +174,15 @@ class _SeesawPageState extends ConsumerState<SeesawPage> {
   /// 刻意用 `snap` 而不是任何带挫败感的音：他听到的是「啪，配好了」，和配对
   /// 成功时同一族的声音，只是没有庆祝的那一下。他放错的那块留在托盘里没动。
   void _demonstrate() {
+    final pair = _pair;
+    if (pair == null) return;
     _audio.playSfx(Sfx.snap);
     setState(() {
       _demo = true;
       _selected = null;
     });
-    _speakPair(VoicePolicy.interrupt);
+    // 演示用内容包里排第一的那个答案——多个都对时总得挑一个演。
+    _speak(pair.left, pair.right);
 
     _demoTimer?.cancel();
     _demoTimer = Timer(kSeesawDemoHold, () {
@@ -170,14 +190,16 @@ class _SeesawPageState extends ConsumerState<SeesawPage> {
     });
   }
 
-  void _speakPair(VoicePolicy policy) {
-    final pair = _pair;
-    if (pair == null) return;
-    final left = _library.hanziByChar(pair.left);
-    final right = _library.hanziByChar(pair.right);
+  /// 把这一对念出来。
+  void _speak(String a, String b) {
+    final left = _library.hanziByChar(a);
+    final right = _library.hanziByChar(b);
     if (left == null || right == null) return;
     unawaited(
-      _audio.speakSequence(HanziNarration.antonym(left, right), policy: policy),
+      _audio.speakSequence(
+        HanziNarration.antonym(left, right),
+        policy: VoicePolicy.interrupt,
+      ),
     );
   }
 
@@ -200,9 +222,11 @@ class _SeesawPageState extends ConsumerState<SeesawPage> {
 
   void _tapPrompt() {
     _audio.playSfx(Sfx.tap);
-    // 配好之后再点，念的是这一对；还没配好就只念题面那个字。
-    if (_solved) {
-      _speakPair(VoicePolicy.interrupt);
+    // 配好之后再点，念的是他配出来的那一对；还没配好就只念题面那个字。
+    final pair = _pair;
+    final placed = _placed;
+    if (pair != null && placed != null) {
+      _speak(pair.left, placed);
     } else {
       _announcePrompt();
     }
@@ -213,7 +237,7 @@ class _SeesawPageState extends ConsumerState<SeesawPage> {
     _audio.playSfx(Sfx.pickup);
     setState(() {
       _pairIndex = (_pairIndex + 1) % math.max(1, _pairs.length);
-      _solved = false;
+      _placed = null;
       _demo = false;
       _selected = null;
     });
@@ -261,7 +285,7 @@ class _SeesawPageState extends ConsumerState<SeesawPage> {
                 child: Row(
                   children: [
                     for (final char in _choices) ...[
-                      if (!(_solved && char == pair?.right))
+                      if (_placed != char)
                         SizedBox(
                           width: BlockMetrics.minGrabTarget,
                           child: _ChoiceTile(
