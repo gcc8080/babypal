@@ -7,6 +7,7 @@ import 'package:baby_pal/core/audio/voice_resolver.dart';
 import 'package:baby_pal/core/content/models.dart';
 import 'package:baby_pal/core/content/pack_loader.dart';
 import 'package:baby_pal/modules/hanzi/hanzi.dart';
+import 'package:baby_pal/modules/letters/letters.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// 内容包与音频资源的一致性校验（openspec 任务 3.5）。
@@ -87,7 +88,20 @@ void main() {
       if (words.length != letter.wordNounIds.length) {
         problems.add('${letter.letter}: 有 id 解析不到名词');
       }
-      if (words.isEmpty) problems.add('${letter.letter}: 一个名词都没有');
+      // **必须正好 kMaxWordCards 张。**
+      //
+      // 原来这里只查「至少一个」，于是 Q/X/Z 各只配了两张、安安静静地过了
+      // 所有检查，直到孩子他爸在真机上翻到 Q 才发现。少一张卡本身不违反任何
+      // 规格（点哪张都对，两张也成立），但它**从来不是一个决定**——是写内容
+      // 包时凑不出第三个词、又没有任何东西提醒我。
+      //
+      // 所以这条断言真正拦的不是「卡片少」，是「悄悄地少」。日后哪个字母
+      // 确实只配得出两张，那就得来这里显式写下例外，顺手把理由留下。
+      if (words.length != kMaxWordCards) {
+        problems.add(
+          '${letter.letter}: 配了 ${words.length} 张卡，应为 $kMaxWordCards 张',
+        );
+      }
       for (final noun in words) {
         final en = noun.textEn;
         if (en == null || !en.toUpperCase().startsWith(letter.letter)) {

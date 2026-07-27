@@ -35,9 +35,20 @@ String normalizeCodepoint(String raw) {
   final parts = raw
       .toUpperCase()
       .split(RegExp(r'[-_\s]+'))
-      .where((p) => p.isNotEmpty && p != 'FE0F')
+      .where((p) => p.isNotEmpty)
       .toList();
-  return parts.join('-');
+
+  // 键帽（0️⃣ 1️⃣ #️⃣ …）是唯一**必须留着 FE0F** 的一类：OpenMoji 那边的文件名
+  // 就叫 `0030-FE0F-20E3.svg`，剥掉之后 `0030-20E3.svg` 是 404。
+  //
+  // 其余序列则相反，必须剥掉：✈️ 的码点是 `2708 FE0F`，文件却叫 `2708.svg`。
+  //
+  // 两条规则冲突，只能按是不是键帽分开处理。分辨方法是看结尾的 U+20E3
+  // COMBINING ENCLOSING KEYCAP——有它就是键帽，没有就不是。
+  final isKeycap = parts.isNotEmpty && parts.last == '20E3';
+  if (isKeycap) return parts.join('-');
+
+  return parts.where((p) => p != 'FE0F').join('-');
 }
 
 Future<void> main(List<String> args) async {

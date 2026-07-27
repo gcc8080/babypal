@@ -670,11 +670,38 @@
     {
       "id": "zero",
       "category": "number",
-      "iconKey": "1F9EE",
+      "iconKey": "0030-FE0F-20E3",
       "text": "零",
       "textEn": "zero",
       "voiceKey": "zh.noun.zero",
       "voiceKeyEn": "en.noun.zero"
+    },
+    {
+      "id": "quiet",
+      "category": "action",
+      "iconKey": "1F92B",
+      "text": "安静",
+      "textEn": "quiet",
+      "voiceKey": "zh.noun.quiet",
+      "voiceKeyEn": "en.noun.quiet"
+    },
+    {
+      "id": "xray",
+      "category": "thing",
+      "iconKey": "1FA7B",
+      "text": "X 光片",
+      "textEn": "X-ray",
+      "voiceKey": "zh.noun.xray",
+      "voiceKeyEn": "en.noun.xray"
+    },
+    {
+      "id": "zombie",
+      "category": "thing",
+      "iconKey": "1F9DF",
+      "text": "僵尸",
+      "textEn": "zombie",
+      "voiceKey": "zh.noun.zombie",
+      "voiceKeyEn": "en.noun.zombie"
     }
   ]
 }
