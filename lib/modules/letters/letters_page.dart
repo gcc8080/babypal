@@ -13,6 +13,7 @@ import '../../core/content/models.dart';
 import '../../core/design/controls.dart';
 import '../../core/design/tokens.dart';
 import 'letter_tile.dart';
+import 'outline_page.dart';
 import 'letters.dart';
 
 /// 「A is for Apple」交互版。
@@ -152,6 +153,14 @@ class _LettersPageState extends ConsumerState<LettersPage>
     );
   }
 
+  /// 字母模块的玩法之间一律 `pushReplacement`，返回键始终直接回星球地图，
+  /// 不会越按越深——与数字、加法两个模块的规矩一致。
+  void _goToOutline() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(builder: (_) => const OutlinePage()),
+    );
+  }
+
   // ─── 布局 ──────────────────────────────────────────────────────────
 
   @override
@@ -222,6 +231,12 @@ class _LettersPageState extends ConsumerState<LettersPage>
                       key: const ValueKey('replay'),
                       icon: Icons.replay_rounded,
                       onPressed: () => _present(interrupt: true),
+                    ),
+                    SizedBox(width: BlockMetrics.gap / 2),
+                    RoundActionButton(
+                      key: const ValueKey('mode'),
+                      icon: Icons.grid_view_rounded,
+                      onPressed: _goToOutline,
                     ),
                   ],
                 ),

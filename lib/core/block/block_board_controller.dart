@@ -107,6 +107,22 @@ class BlockBoardController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 永久不可落子的格位。
+  ///
+  /// 与「被别的积木占着」是两回事：那是暂时的，这是这块棋盘的形状本身。
+  /// 字母轮廓填充就靠它——把轮廓**之外**的格子全标成不可落子，吸附便自然
+  /// 只会落进轮廓里，不需要在引擎里加一条「轮廓」的概念。
+  ///
+  /// 之所以合进 [occupiedCells] 而不是新开一条判定路径：吸附、落点搜索、
+  /// 满盘判定用的都是它，分成两套迟早会有一处忘了带上。
+  Set<GridCell> blockedCells = const {};
+
+  void updateBlockedCells(Set<GridCell> value) {
+    if (setEquals(blockedCells, value)) return;
+    blockedCells = value;
+    notifyListeners();
+  }
+
   final List<BlockBody> _blocks;
   List<BlockBody> get blocks => List.unmodifiable(_blocks);
 
@@ -133,7 +149,7 @@ class BlockBoardController extends ChangeNotifier {
   /// 当前被占用的格位。[excluding] 用于把正在移动的积木自身排除在外，
   /// 否则它永远会挡住自己的落点。
   Set<GridCell> occupiedCells({Set<String> excluding = const {}}) {
-    final cells = <GridCell>{};
+    final cells = <GridCell>{...blockedCells};
     for (final b in _blocks) {
       if (excluding.contains(b.id)) continue;
       if (b.anchor == null) continue;

@@ -20,12 +20,19 @@ class LetterTile extends StatelessWidget {
     this.expression = BlockExpression.idle,
     this.showFace = true,
     this.dimmed = false,
+    this.glyphColor,
   });
 
   /// 显示的字形。大写小写都由调用方决定——大小写配对玩法要的正是这个自由度。
   final String letter;
   final Color color;
   final BlockExpression expression;
+
+  /// 字形的颜色，默认白色。
+  ///
+  /// 拼名字的空槽要用它：影子槽的底色本来就淡，再用白字画上去就几乎看不见，
+  /// 而那个字形正是「这一格要哪个字母」的全部提示——真机上一眼就发现读不出来。
+  final Color? glyphColor;
 
   /// 关掉脸：轮廓填充里的小方块太小了，画上脸只会变成一团墨点。
   final bool showFace;
@@ -53,6 +60,14 @@ class LetterTile extends StatelessWidget {
               ],
             ),
             child: Column(
+              // **必须 stretch**：`BlockFace` 里是一个无子节点的 `CustomPaint`，
+              // 默认尺寸是 `Size.zero`。`Column` 默认的 `center` 交叉轴对齐给的
+              // 是松约束，于是宽度被约束成 0——高度被 `Expanded` 撑满，看上去
+              // 一切正常，只是脸什么都没画出来。真机上就是一块没有五官的方块。
+              //
+              // 与托盘缩略图那次（`PieceGlyph`）是同一个坑。凡是「无子节点的
+              // 绘制型组件放进 Flex」，交叉轴就必须给紧约束。
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (showFace)
                   Expanded(
@@ -73,8 +88,8 @@ class LetterTile extends StatelessWidget {
                     child: FittedBox(
                       child: Text(
                         letter,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: glyphColor ?? Colors.white,
                           fontWeight: FontWeight.w800,
                           height: 1.0,
                         ),
