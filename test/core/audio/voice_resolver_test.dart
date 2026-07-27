@@ -44,10 +44,7 @@ void main() {
       final source = await resolver.resolve('zh.hanzi.mu');
 
       expect(source, isA<OverrideVoice>());
-      expect(
-        (source as OverrideVoice).path,
-        endsWith('zh.hanzi.mu.wav'),
-      );
+      expect((source as OverrideVoice).path, endsWith('zh.hanzi.mu.wav'));
     });
 
     test('录完立即生效——解析不缓存，同一 key 前后两次结果不同', () async {
@@ -67,10 +64,7 @@ void main() {
       final source = await resolver.resolve('zh.hanzi.mu');
 
       expect(source, isA<AssetVoice>());
-      expect(
-        (source as AssetVoice).assetKey,
-        'assets/audio/zh.hanzi.mu.wav',
-      );
+      expect((source as AssetVoice).assetKey, 'assets/audio/zh.hanzi.mu.wav');
     });
   });
 
@@ -92,8 +86,7 @@ void main() {
     });
 
     test('长度够但不是 RIFF/WAVE（比如误存成 mp3）→ 回落', () async {
-      final notWav = List<int>.filled(200, 0)
-        ..setRange(0, 3, 'ID3'.codeUnits);
+      final notWav = List<int>.filled(200, 0)..setRange(0, 3, 'ID3'.codeUnits);
 
       await writeOverride('zh.hanzi.mu', notWav);
 
@@ -146,10 +139,7 @@ void main() {
         resolver.overridePathFor('k'),
         endsWith(VoiceResolver.audioExtension),
       );
-      expect(
-        resolver.assetKeyFor('k'),
-        endsWith(VoiceResolver.audioExtension),
-      );
+      expect(resolver.assetKeyFor('k'), endsWith(VoiceResolver.audioExtension));
     });
   });
 }

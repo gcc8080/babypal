@@ -19,6 +19,7 @@ class PressableTile extends StatefulWidget {
     required this.onPressed,
     required this.color,
     this.width,
+    this.expand = false,
   });
 
   final Widget child;
@@ -27,6 +28,13 @@ class PressableTile extends StatefulWidget {
 
   /// 为 null 时由父级约束决定宽度（如放进 `Expanded`）。
   final double? width;
+
+  /// 撑满父级高度，而不是锁死 90dp。
+  ///
+  /// 只在**父级已经保证了不低于 90dp** 的场合用——比如字母页里占满上半屏的
+  /// 名词卡。父级必须给紧约束（`Expanded` / `stretch`），否则没有子节点的
+  /// 装饰盒会取 `constraints.smallest` 塌成 0，正是托盘缩略图那个真机 bug。
+  final bool expand;
 
   @override
   State<PressableTile> createState() => _PressableTileState();
@@ -56,7 +64,7 @@ class _PressableTileState extends State<PressableTile> {
         curve: _pressed ? Curves.easeOut : Curves.elasticOut,
         child: SizedBox(
           width: widget.width,
-          height: BlockMetrics.minGrabTarget,
+          height: widget.expand ? null : BlockMetrics.minGrabTarget,
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: widget.color,

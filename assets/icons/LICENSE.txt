@@ -1,0 +1,15 @@
+OpenMoji — the open-source emoji and icon project
+https://openmoji.org/
+
+版本 / Version: 15.1.0
+许可 / License: Creative Commons Attribution-ShareAlike 4.0 International
+                (CC BY-SA 4.0)
+https://creativecommons.org/licenses/by-sa/4.0/
+
+本目录下的 75 个 SVG 文件由 OpenMoji 项目设计，按 CC BY-SA 4.0
+使用。未作修改。
+
+All emojis in this directory are designed by OpenMoji – the open-source emoji
+and icon project. License: CC BY-SA 4.0. No modifications were made.
+
+本目录由 tool/fetch_openmoji.dart 生成，请勿手工编辑。

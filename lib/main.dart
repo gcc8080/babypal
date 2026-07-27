@@ -4,10 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'core/audio/audio_providers.dart';
+import 'core/content/content_providers.dart';
 import 'core/design/tokens.dart';
 import 'modules/addition/addition_page.dart';
 import 'modules/home/home_page.dart';
 import 'modules/home/module_id.dart';
+import 'modules/letters/letters_page.dart';
 import 'modules/numbers/place_value_page.dart';
 import 'modules/sandbox/sandbox_page.dart';
 
@@ -28,9 +30,16 @@ Future<void> main() async {
   // 在 runApp 之前完成音频初始化与音效预加载：首次点击不能等在磁盘 IO 上。
   final audioBus = await createAudioBus();
 
+  // 内容包同样在开屏前读完——只有几十 KB，而做成异步 provider 就得给儿童端
+  // 加一个「加载中」的转圈，那对三岁的他没有任何意义。
+  final content = await loadContentLibrary();
+
   runApp(
     ProviderScope(
-      overrides: [audioBusProvider.overrideWithValue(audioBus)],
+      overrides: [
+        audioBusProvider.overrideWithValue(audioBus),
+        contentLibraryProvider.overrideWithValue(content),
+      ],
       child: const BlockPlanetApp(),
     ),
   );
@@ -90,10 +99,13 @@ class _BlockPlanetAppState extends State<BlockPlanetApp>
               ModuleId.sandbox => (_) => const SandboxPage(),
               ModuleId.numbers => (_) => const PlaceValuePage(),
               ModuleId.addition => (_) => const AdditionPage(),
+              ModuleId.letters => (_) => const LettersPage(),
               _ => null,
             };
             if (builder == null) return;
-            Navigator.of(context).push(MaterialPageRoute<void>(builder: builder));
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute<void>(builder: builder));
           },
         ),
       ),

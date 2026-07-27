@@ -67,8 +67,8 @@ class BlockBody {
     this.expression = BlockExpression.idle,
     this.groupId,
     this.anchor,
-  })  : assert(widthUnits > 0),
-        assert(heightUnits > 0);
+  }) : assert(widthUnits > 0),
+       assert(heightUnits > 0);
 
   /// 稳定标识。合体/分裂会生成新 id，便于动画层做进出场匹配。
   final String id;
@@ -140,14 +140,14 @@ class BlockBody {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        colorIndex,
-        widthUnits,
-        heightUnits,
-        expression,
-        groupId,
-        anchor,
-      );
+    id,
+    colorIndex,
+    widthUnits,
+    heightUnits,
+    expression,
+    groupId,
+    anchor,
+  );
 
   @override
   String toString() =>

@@ -138,7 +138,10 @@ void main() {
       await tester.pump(const Duration(milliseconds: 32));
 
       final transforms = tester.widgetList<Transform>(
-        find.descendant(of: tile(ModuleId.numbers), matching: find.byType(Transform)),
+        find.descendant(
+          of: tile(ModuleId.numbers),
+          matching: find.byType(Transform),
+        ),
       );
       expect(
         transforms.any((t) => t.transform.getMaxScaleOnAxis() != 1.0),
@@ -161,7 +164,10 @@ void main() {
       await tester.pumpAndSettle();
 
       final transforms = tester.widgetList<Transform>(
-        find.descendant(of: tile(ModuleId.numbers), matching: find.byType(Transform)),
+        find.descendant(
+          of: tile(ModuleId.numbers),
+          matching: find.byType(Transform),
+        ),
       );
       expect(
         transforms.every(

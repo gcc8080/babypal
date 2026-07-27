@@ -118,10 +118,7 @@ class AudioBus {
     VoicePolicy policy = VoicePolicy.queue,
   }) async {
     for (var i = 0; i < voiceKeys.length; i++) {
-      await speak(
-        voiceKeys[i],
-        policy: i == 0 ? policy : VoicePolicy.queue,
-      );
+      await speak(voiceKeys[i], policy: i == 0 ? policy : VoicePolicy.queue);
     }
   }
 

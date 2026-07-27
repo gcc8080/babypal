@@ -23,16 +23,16 @@ class ItemStat {
   double? get accuracy => attempts == 0 ? null : successes / attempts;
 
   ItemStat merge({required bool success, required int nowMs}) => ItemStat(
-        attempts: attempts + 1,
-        successes: successes + (success ? 1 : 0),
-        lastSeenEpochMs: nowMs,
-      );
+    attempts: attempts + 1,
+    successes: successes + (success ? 1 : 0),
+    lastSeenEpochMs: nowMs,
+  );
 
   Map<String, Object?> toJson() => {
-        'a': attempts,
-        's': successes,
-        'l': lastSeenEpochMs,
-      };
+    'a': attempts,
+    's': successes,
+    'l': lastSeenEpochMs,
+  };
 
   static ItemStat fromJson(Object? json) {
     if (json is! Map) return const ItemStat();
@@ -79,22 +79,21 @@ class ProgressSnapshot {
     int? dailyLimitSeconds,
     Map<String, ItemStat>? items,
     Map<String, int>? moduleSeconds,
-  }) =>
-      ProgressSnapshot(
-        dayKey: dayKey ?? this.dayKey,
-        playedSeconds: playedSeconds ?? this.playedSeconds,
-        dailyLimitSeconds: dailyLimitSeconds ?? this.dailyLimitSeconds,
-        items: items ?? this.items,
-        moduleSeconds: moduleSeconds ?? this.moduleSeconds,
-      );
+  }) => ProgressSnapshot(
+    dayKey: dayKey ?? this.dayKey,
+    playedSeconds: playedSeconds ?? this.playedSeconds,
+    dailyLimitSeconds: dailyLimitSeconds ?? this.dailyLimitSeconds,
+    items: items ?? this.items,
+    moduleSeconds: moduleSeconds ?? this.moduleSeconds,
+  );
 
   Map<String, Object?> toJson() => {
-        'day': dayKey,
-        'played': playedSeconds,
-        'limit': dailyLimitSeconds,
-        'items': {for (final e in items.entries) e.key: e.value.toJson()},
-        'modules': moduleSeconds,
-      };
+    'day': dayKey,
+    'played': playedSeconds,
+    'limit': dailyLimitSeconds,
+    'items': {for (final e in items.entries) e.key: e.value.toJson()},
+    'modules': moduleSeconds,
+  };
 
   static ProgressSnapshot fromJson(Object? json) {
     if (json is! Map) return const ProgressSnapshot();
@@ -109,7 +108,8 @@ class ProgressSnapshot {
       items: rawItems is Map
           ? {
               for (final e in rawItems.entries)
-                if (e.key is String) e.key as String: ItemStat.fromJson(e.value),
+                if (e.key is String)
+                  e.key as String: ItemStat.fromJson(e.value),
             }
           : const {},
       moduleSeconds: rawModules is Map
@@ -132,10 +132,8 @@ class ProgressSnapshot {
 /// 「哪些内容练过几次」量级，引入嵌入式数据库要付 codegen 与 schema 迁移
 /// 成本，收益为零。
 class ProgressStore {
-  ProgressStore(
-    this._prefs, {
-    DateTime Function()? clock,
-  }) : _clock = clock ?? DateTime.now;
+  ProgressStore(this._prefs, {DateTime Function()? clock})
+    : _clock = clock ?? DateTime.now;
 
   static const String storageKey = 'baby_pal.progress.v1';
 
@@ -254,8 +252,8 @@ class ProgressStore {
     final pending = start == null
         ? Duration.zero
         : _clock().difference(start).isNegative
-            ? Duration.zero
-            : _clock().difference(start);
+        ? Duration.zero
+        : _clock().difference(start);
     return Duration(seconds: _snapshot.playedSeconds) + pending;
   }
 
@@ -282,8 +280,10 @@ class ProgressStore {
   Future<void> recordAttempt(String itemKey, {required bool success}) async {
     final nowMs = _clock().millisecondsSinceEpoch;
     final items = Map<String, ItemStat>.from(_snapshot.items);
-    items[itemKey] =
-        (items[itemKey] ?? const ItemStat()).merge(success: success, nowMs: nowMs);
+    items[itemKey] = (items[itemKey] ?? const ItemStat()).merge(
+      success: success,
+      nowMs: nowMs,
+    );
     _snapshot = _snapshot.copyWith(items: items);
     await _persist();
   }
@@ -296,15 +296,14 @@ class ProgressStore {
   /// 只取练过的——没练过的属于「还没教」，不是「没掌握」，混在一起会让家长
   /// 看板变成一份无用的长名单。
   List<String> weakestItems({int limit = 5}) {
-    final practiced = _snapshot.items.entries
-        .where((e) => e.value.attempts > 0)
-        .toList()
-      ..sort((a, b) {
-        final byAccuracy = a.value.accuracy!.compareTo(b.value.accuracy!);
-        if (byAccuracy != 0) return byAccuracy;
-        // 正确率相同时，练得少的排前面。
-        return a.value.attempts.compareTo(b.value.attempts);
-      });
+    final practiced =
+        _snapshot.items.entries.where((e) => e.value.attempts > 0).toList()
+          ..sort((a, b) {
+            final byAccuracy = a.value.accuracy!.compareTo(b.value.accuracy!);
+            if (byAccuracy != 0) return byAccuracy;
+            // 正确率相同时，练得少的排前面。
+            return a.value.attempts.compareTo(b.value.attempts);
+          });
     return practiced.take(limit).map((e) => e.key).toList();
   }
 

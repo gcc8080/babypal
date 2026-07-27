@@ -103,6 +103,12 @@ class PackLoader {
       source: source,
       skipped: skipped,
     );
+    final spellingTargets = _parseList(
+      decoded['spellingTargets'],
+      source: source,
+      skipped: skipped,
+      parseOne: _parseSpellingTarget,
+    );
 
     return ContentPack(
       schemaVersion: version,
@@ -112,6 +118,7 @@ class PackLoader {
       hanzi: hanzi,
       nouns: nouns,
       antonyms: antonyms,
+      spellingTargets: spellingTargets,
       skipped: skipped,
     );
   }
@@ -167,7 +174,7 @@ class PackLoader {
       letter: letter.toUpperCase(),
       voiceKey: voiceKey,
       phonemeVoiceKey: _optionalString(json['phonemeVoiceKey']),
-      wordIconKeys: _stringList(json['wordIconKeys']),
+      wordNounIds: _stringList(json['wordNounIds']),
       voiceKeyEn: _optionalString(json['voiceKeyEn']),
     );
   }
@@ -176,18 +183,39 @@ class PackLoader {
     final id = json['id'];
     final category = json['category'];
     final iconKey = json['iconKey'];
+    final text = json['text'];
     final voiceKey = json['voiceKey'];
     if (id is! String || id.isEmpty) return null;
     if (category is! String || category.isEmpty) return null;
     if (iconKey is! String || iconKey.isEmpty) return null;
+    // `text` 是必填：没有名字的名词既合不出语音，家长录音界面也没法显示
+    // 「这条在录什么」。缺了它这条内容是死的，留下来只会安静地不出声。
+    if (text is! String || text.isEmpty) return null;
     if (voiceKey is! String || voiceKey.isEmpty) return null;
     return NounItem(
       id: id,
       category: category,
       iconKey: iconKey,
+      text: text,
+      textEn: _optionalString(json['textEn']),
       voiceKey: voiceKey,
       voiceKeyEn: _optionalString(json['voiceKeyEn']),
     );
+  }
+
+  SpellingTarget? _parseSpellingTarget(Map<String, dynamic> json) {
+    final id = json['id'];
+    final voiceKey = json['voiceKey'];
+    if (id is! String || id.isEmpty) return null;
+    if (voiceKey is! String || voiceKey.isEmpty) return null;
+
+    // 字母序列写成字符串（"Emmett"）而不是数组，内容包才好手写。
+    final raw = json['letters'];
+    if (raw is! String || raw.isEmpty) return null;
+    final letters = raw.toUpperCase().split('');
+    if (letters.any((c) => !RegExp(r'^[A-Z]$').hasMatch(c))) return null;
+
+    return SpellingTarget(id: id, letters: letters, voiceKey: voiceKey);
   }
 
   /// 汉字要分两趟解析。
@@ -210,13 +238,12 @@ class PackLoader {
     final result = <HanziItem>[];
     for (final item in parsed) {
       if (item.isCompound) {
-        final missing =
-            item.parts.where((p) => !available.contains(p)).toList();
+        final missing = item.parts
+            .where((p) => !available.contains(p))
+            .toList();
         if (missing.isNotEmpty) {
           // 不能留着——运行时会拿不到部件积木，变成空引用。
-          skipped.add(
-            '$source: 合体字「${item.char}」引用了包内不存在的部件 $missing',
-          );
+          skipped.add('$source: 合体字「${item.char}」引用了包内不存在的部件 $missing');
           continue;
         }
       }
@@ -277,7 +304,10 @@ class PackLoader {
       }
       final left = pair[0];
       final right = pair[1];
-      if (left is! String || right is! String || left.isEmpty || right.isEmpty) {
+      if (left is! String ||
+          right is! String ||
+          left.isEmpty ||
+          right.isEmpty) {
         skipped.add('$source.antonyms[$i]: 元素非法');
         continue;
       }
@@ -307,13 +337,14 @@ class ContentLibrary {
   List<HanziItem> get hanzi => [for (final p in packs) ...p.hanzi];
   List<NounItem> get nouns => [for (final p in packs) ...p.nouns];
   List<AntonymPair> get antonyms => [for (final p in packs) ...p.antonyms];
+  List<SpellingTarget> get spellingTargets => [
+    for (final p in packs) ...p.spellingTargets,
+  ];
 
   /// 全部被跳过的条目，供开发期排查内容包错误。
   List<String> get skipped => [for (final p in packs) ...p.skipped];
 
-  Set<String> get allVoiceKeys => {
-        for (final p in packs) ...p.allVoiceKeys,
-      };
+  Set<String> get allVoiceKeys => {for (final p in packs) ...p.allVoiceKeys};
 
   HanziItem? hanziByChar(String char) {
     for (final item in hanzi) {
@@ -321,6 +352,29 @@ class ContentLibrary {
     }
     return null;
   }
+
+  LetterItem? letterByChar(String letter) {
+    final upper = letter.toUpperCase();
+    for (final item in letters) {
+      if (item.letter == upper) return item;
+    }
+    return null;
+  }
+
+  NounItem? nounById(String id) {
+    for (final item in nouns) {
+      if (item.id == id) return item;
+    }
+    return null;
+  }
+
+  /// 按 [LetterItem.wordNounIds] 取出该字母的名词，跳过找不到的。
+  ///
+  /// 跳过而不是抛错：内容包写错一个 id，代价应该是「少飞进来一张图」，
+  /// 而不是整个字母模块打不开。
+  List<NounItem> wordsFor(LetterItem letter) => [
+    for (final id in letter.wordNounIds) ?nounById(id),
+  ];
 
   NumberItem? numberByValue(int value) {
     for (final item in numbers) {

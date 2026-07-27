@@ -43,10 +43,7 @@ class MissingVoice extends VoiceSource {
 /// 刻意把文档目录作为构造参数而非内部调用 `path_provider`：这样三种优先级
 /// 场景（有覆盖 / 无覆盖 / 覆盖损坏）都能用临时目录做纯逻辑单测。
 class VoiceResolver {
-  VoiceResolver({
-    required this.overridesDir,
-    this.availableAssetKeys,
-  });
+  VoiceResolver({required this.overridesDir, this.availableAssetKeys});
 
   /// 音频扩展名。**全链路唯一常量**——见 design.md D4：日后若要压体积改用
   /// OGG，只需改这一处加一步离线转码，不动任何调用方。
@@ -71,9 +68,7 @@ class VoiceResolver {
   final Set<String>? availableAssetKeys;
 
   /// 生产环境入口：文档目录由 `path_provider` 提供。
-  static Future<VoiceResolver> forApp({
-    Set<String>? availableAssetKeys,
-  }) async {
+  static Future<VoiceResolver> forApp({Set<String>? availableAssetKeys}) async {
     final docs = await getApplicationDocumentsDirectory();
     final dir = Directory('${docs.path}/$overridesFolderName');
     if (!await dir.exists()) {
@@ -130,11 +125,13 @@ class VoiceResolver {
       if (header.length < 12) return false;
 
       // "RIFF" .... "WAVE"
-      final isRiff = header[0] == 0x52 &&
+      final isRiff =
+          header[0] == 0x52 &&
           header[1] == 0x49 &&
           header[2] == 0x46 &&
           header[3] == 0x46;
-      final isWave = header[8] == 0x57 &&
+      final isWave =
+          header[8] == 0x57 &&
           header[9] == 0x41 &&
           header[10] == 0x56 &&
           header[11] == 0x45;

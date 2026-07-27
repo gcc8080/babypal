@@ -1,0 +1,680 @@
+{
+  "schemaVersion": 1,
+  "nouns": [
+    {
+      "id": "apple",
+      "category": "fruit",
+      "iconKey": "1F34E",
+      "text": "苹果",
+      "textEn": "apple",
+      "voiceKey": "zh.noun.apple",
+      "voiceKeyEn": "en.noun.apple"
+    },
+    {
+      "id": "ant",
+      "category": "animal",
+      "iconKey": "1F41C",
+      "text": "蚂蚁",
+      "textEn": "ant",
+      "voiceKey": "zh.noun.ant",
+      "voiceKeyEn": "en.noun.ant"
+    },
+    {
+      "id": "airplane",
+      "category": "vehicle",
+      "iconKey": "2708",
+      "text": "飞机",
+      "textEn": "airplane",
+      "voiceKey": "zh.noun.airplane",
+      "voiceKeyEn": "en.noun.airplane"
+    },
+    {
+      "id": "banana",
+      "category": "fruit",
+      "iconKey": "1F34C",
+      "text": "香蕉",
+      "textEn": "banana",
+      "voiceKey": "zh.noun.banana",
+      "voiceKeyEn": "en.noun.banana"
+    },
+    {
+      "id": "bear",
+      "category": "animal",
+      "iconKey": "1F43B",
+      "text": "熊",
+      "textEn": "bear",
+      "voiceKey": "zh.noun.bear",
+      "voiceKeyEn": "en.noun.bear"
+    },
+    {
+      "id": "bus",
+      "category": "vehicle",
+      "iconKey": "1F68C",
+      "text": "公交车",
+      "textEn": "bus",
+      "voiceKey": "zh.noun.bus",
+      "voiceKeyEn": "en.noun.bus"
+    },
+    {
+      "id": "cat",
+      "category": "animal",
+      "iconKey": "1F408",
+      "text": "猫",
+      "textEn": "cat",
+      "voiceKey": "zh.noun.cat",
+      "voiceKeyEn": "en.noun.cat"
+    },
+    {
+      "id": "car",
+      "category": "vehicle",
+      "iconKey": "1F697",
+      "text": "汽车",
+      "textEn": "car",
+      "voiceKey": "zh.noun.car",
+      "voiceKeyEn": "en.noun.car"
+    },
+    {
+      "id": "cake",
+      "category": "food",
+      "iconKey": "1F370",
+      "text": "蛋糕",
+      "textEn": "cake",
+      "voiceKey": "zh.noun.cake",
+      "voiceKeyEn": "en.noun.cake"
+    },
+    {
+      "id": "dog",
+      "category": "animal",
+      "iconKey": "1F415",
+      "text": "狗",
+      "textEn": "dog",
+      "voiceKey": "zh.noun.dog",
+      "voiceKeyEn": "en.noun.dog"
+    },
+    {
+      "id": "duck",
+      "category": "animal",
+      "iconKey": "1F986",
+      "text": "鸭子",
+      "textEn": "duck",
+      "voiceKey": "zh.noun.duck",
+      "voiceKeyEn": "en.noun.duck"
+    },
+    {
+      "id": "drum",
+      "category": "thing",
+      "iconKey": "1F941",
+      "text": "鼓",
+      "textEn": "drum",
+      "voiceKey": "zh.noun.drum",
+      "voiceKeyEn": "en.noun.drum"
+    },
+    {
+      "id": "elephant",
+      "category": "animal",
+      "iconKey": "1F418",
+      "text": "大象",
+      "textEn": "elephant",
+      "voiceKey": "zh.noun.elephant",
+      "voiceKeyEn": "en.noun.elephant"
+    },
+    {
+      "id": "egg",
+      "category": "food",
+      "iconKey": "1F95A",
+      "text": "鸡蛋",
+      "textEn": "egg",
+      "voiceKey": "zh.noun.egg",
+      "voiceKeyEn": "en.noun.egg"
+    },
+    {
+      "id": "eye",
+      "category": "body",
+      "iconKey": "1F441",
+      "text": "眼睛",
+      "textEn": "eye",
+      "voiceKey": "zh.noun.eye",
+      "voiceKeyEn": "en.noun.eye"
+    },
+    {
+      "id": "fish",
+      "category": "animal",
+      "iconKey": "1F41F",
+      "text": "鱼",
+      "textEn": "fish",
+      "voiceKey": "zh.noun.fish",
+      "voiceKeyEn": "en.noun.fish"
+    },
+    {
+      "id": "flower",
+      "category": "nature",
+      "iconKey": "1F33B",
+      "text": "花",
+      "textEn": "flower",
+      "voiceKey": "zh.noun.flower",
+      "voiceKeyEn": "en.noun.flower"
+    },
+    {
+      "id": "fire",
+      "category": "nature",
+      "iconKey": "1F525",
+      "text": "火",
+      "textEn": "fire",
+      "voiceKey": "zh.noun.fire",
+      "voiceKeyEn": "en.noun.fire"
+    },
+    {
+      "id": "grapes",
+      "category": "fruit",
+      "iconKey": "1F347",
+      "text": "葡萄",
+      "textEn": "grapes",
+      "voiceKey": "zh.noun.grapes",
+      "voiceKeyEn": "en.noun.grapes"
+    },
+    {
+      "id": "giraffe",
+      "category": "animal",
+      "iconKey": "1F992",
+      "text": "长颈鹿",
+      "textEn": "giraffe",
+      "voiceKey": "zh.noun.giraffe",
+      "voiceKeyEn": "en.noun.giraffe"
+    },
+    {
+      "id": "guitar",
+      "category": "thing",
+      "iconKey": "1F3B8",
+      "text": "吉他",
+      "textEn": "guitar",
+      "voiceKey": "zh.noun.guitar",
+      "voiceKeyEn": "en.noun.guitar"
+    },
+    {
+      "id": "horse",
+      "category": "animal",
+      "iconKey": "1F40E",
+      "text": "马",
+      "textEn": "horse",
+      "voiceKey": "zh.noun.horse",
+      "voiceKeyEn": "en.noun.horse"
+    },
+    {
+      "id": "house",
+      "category": "thing",
+      "iconKey": "1F3E0",
+      "text": "房子",
+      "textEn": "house",
+      "voiceKey": "zh.noun.house",
+      "voiceKeyEn": "en.noun.house"
+    },
+    {
+      "id": "hand",
+      "category": "body",
+      "iconKey": "270B",
+      "text": "手",
+      "textEn": "hand",
+      "voiceKey": "zh.noun.hand",
+      "voiceKeyEn": "en.noun.hand"
+    },
+    {
+      "id": "icecream",
+      "category": "food",
+      "iconKey": "1F368",
+      "text": "冰淇淋",
+      "textEn": "ice cream",
+      "voiceKey": "zh.noun.icecream",
+      "voiceKeyEn": "en.noun.icecream"
+    },
+    {
+      "id": "ice",
+      "category": "nature",
+      "iconKey": "1F9CA",
+      "text": "冰",
+      "textEn": "ice",
+      "voiceKey": "zh.noun.ice",
+      "voiceKeyEn": "en.noun.ice"
+    },
+    {
+      "id": "island",
+      "category": "nature",
+      "iconKey": "1F3DD",
+      "text": "小岛",
+      "textEn": "island",
+      "voiceKey": "zh.noun.island",
+      "voiceKeyEn": "en.noun.island"
+    },
+    {
+      "id": "jellyfish",
+      "category": "animal",
+      "iconKey": "1FABC",
+      "text": "水母",
+      "textEn": "jellyfish",
+      "voiceKey": "zh.noun.jellyfish",
+      "voiceKeyEn": "en.noun.jellyfish"
+    },
+    {
+      "id": "juice",
+      "category": "food",
+      "iconKey": "1F9C3",
+      "text": "果汁",
+      "textEn": "juice",
+      "voiceKey": "zh.noun.juice",
+      "voiceKeyEn": "en.noun.juice"
+    },
+    {
+      "id": "jeans",
+      "category": "thing",
+      "iconKey": "1F456",
+      "text": "牛仔裤",
+      "textEn": "jeans",
+      "voiceKey": "zh.noun.jeans",
+      "voiceKeyEn": "en.noun.jeans"
+    },
+    {
+      "id": "kangaroo",
+      "category": "animal",
+      "iconKey": "1F998",
+      "text": "袋鼠",
+      "textEn": "kangaroo",
+      "voiceKey": "zh.noun.kangaroo",
+      "voiceKeyEn": "en.noun.kangaroo"
+    },
+    {
+      "id": "key",
+      "category": "thing",
+      "iconKey": "1F511",
+      "text": "钥匙",
+      "textEn": "key",
+      "voiceKey": "zh.noun.key",
+      "voiceKeyEn": "en.noun.key"
+    },
+    {
+      "id": "kite",
+      "category": "thing",
+      "iconKey": "1FA81",
+      "text": "风筝",
+      "textEn": "kite",
+      "voiceKey": "zh.noun.kite",
+      "voiceKeyEn": "en.noun.kite"
+    },
+    {
+      "id": "lion",
+      "category": "animal",
+      "iconKey": "1F981",
+      "text": "狮子",
+      "textEn": "lion",
+      "voiceKey": "zh.noun.lion",
+      "voiceKeyEn": "en.noun.lion"
+    },
+    {
+      "id": "lemon",
+      "category": "fruit",
+      "iconKey": "1F34B",
+      "text": "柠檬",
+      "textEn": "lemon",
+      "voiceKey": "zh.noun.lemon",
+      "voiceKeyEn": "en.noun.lemon"
+    },
+    {
+      "id": "leaf",
+      "category": "nature",
+      "iconKey": "1F343",
+      "text": "叶子",
+      "textEn": "leaf",
+      "voiceKey": "zh.noun.leaf",
+      "voiceKeyEn": "en.noun.leaf"
+    },
+    {
+      "id": "monkey",
+      "category": "animal",
+      "iconKey": "1F412",
+      "text": "猴子",
+      "textEn": "monkey",
+      "voiceKey": "zh.noun.monkey",
+      "voiceKeyEn": "en.noun.monkey"
+    },
+    {
+      "id": "moon",
+      "category": "nature",
+      "iconKey": "1F319",
+      "text": "月亮",
+      "textEn": "moon",
+      "voiceKey": "zh.noun.moon",
+      "voiceKeyEn": "en.noun.moon"
+    },
+    {
+      "id": "milk",
+      "category": "food",
+      "iconKey": "1F95B",
+      "text": "牛奶",
+      "textEn": "milk",
+      "voiceKey": "zh.noun.milk",
+      "voiceKeyEn": "en.noun.milk"
+    },
+    {
+      "id": "nose",
+      "category": "body",
+      "iconKey": "1F443",
+      "text": "鼻子",
+      "textEn": "nose",
+      "voiceKey": "zh.noun.nose",
+      "voiceKeyEn": "en.noun.nose"
+    },
+    {
+      "id": "noodles",
+      "category": "food",
+      "iconKey": "1F35C",
+      "text": "面条",
+      "textEn": "noodles",
+      "voiceKey": "zh.noun.noodles",
+      "voiceKeyEn": "en.noun.noodles"
+    },
+    {
+      "id": "newspaper",
+      "category": "thing",
+      "iconKey": "1F4F0",
+      "text": "报纸",
+      "textEn": "newspaper",
+      "voiceKey": "zh.noun.newspaper",
+      "voiceKeyEn": "en.noun.newspaper"
+    },
+    {
+      "id": "orange",
+      "category": "fruit",
+      "iconKey": "1F34A",
+      "text": "橘子",
+      "textEn": "orange",
+      "voiceKey": "zh.noun.orange",
+      "voiceKeyEn": "en.noun.orange"
+    },
+    {
+      "id": "owl",
+      "category": "animal",
+      "iconKey": "1F989",
+      "text": "猫头鹰",
+      "textEn": "owl",
+      "voiceKey": "zh.noun.owl",
+      "voiceKeyEn": "en.noun.owl"
+    },
+    {
+      "id": "octopus",
+      "category": "animal",
+      "iconKey": "1F419",
+      "text": "章鱼",
+      "textEn": "octopus",
+      "voiceKey": "zh.noun.octopus",
+      "voiceKeyEn": "en.noun.octopus"
+    },
+    {
+      "id": "pig",
+      "category": "animal",
+      "iconKey": "1F416",
+      "text": "猪",
+      "textEn": "pig",
+      "voiceKey": "zh.noun.pig",
+      "voiceKeyEn": "en.noun.pig"
+    },
+    {
+      "id": "pizza",
+      "category": "food",
+      "iconKey": "1F355",
+      "text": "披萨",
+      "textEn": "pizza",
+      "voiceKey": "zh.noun.pizza",
+      "voiceKeyEn": "en.noun.pizza"
+    },
+    {
+      "id": "pencil",
+      "category": "thing",
+      "iconKey": "270F",
+      "text": "铅笔",
+      "textEn": "pencil",
+      "voiceKey": "zh.noun.pencil",
+      "voiceKeyEn": "en.noun.pencil"
+    },
+    {
+      "id": "queen",
+      "category": "people",
+      "iconKey": "1F478",
+      "text": "女王",
+      "textEn": "queen",
+      "voiceKey": "zh.noun.queen",
+      "voiceKeyEn": "en.noun.queen"
+    },
+    {
+      "id": "question",
+      "category": "shape",
+      "iconKey": "2753",
+      "text": "问号",
+      "textEn": "question mark",
+      "voiceKey": "zh.noun.question",
+      "voiceKeyEn": "en.noun.question"
+    },
+    {
+      "id": "rabbit",
+      "category": "animal",
+      "iconKey": "1F407",
+      "text": "兔子",
+      "textEn": "rabbit",
+      "voiceKey": "zh.noun.rabbit",
+      "voiceKeyEn": "en.noun.rabbit"
+    },
+    {
+      "id": "rainbow",
+      "category": "nature",
+      "iconKey": "1F308",
+      "text": "彩虹",
+      "textEn": "rainbow",
+      "voiceKey": "zh.noun.rainbow",
+      "voiceKeyEn": "en.noun.rainbow"
+    },
+    {
+      "id": "robot",
+      "category": "thing",
+      "iconKey": "1F916",
+      "text": "机器人",
+      "textEn": "robot",
+      "voiceKey": "zh.noun.robot",
+      "voiceKeyEn": "en.noun.robot"
+    },
+    {
+      "id": "sun",
+      "category": "nature",
+      "iconKey": "2600",
+      "text": "太阳",
+      "textEn": "sun",
+      "voiceKey": "zh.noun.sun",
+      "voiceKeyEn": "en.noun.sun"
+    },
+    {
+      "id": "snake",
+      "category": "animal",
+      "iconKey": "1F40D",
+      "text": "蛇",
+      "textEn": "snake",
+      "voiceKey": "zh.noun.snake",
+      "voiceKeyEn": "en.noun.snake"
+    },
+    {
+      "id": "star",
+      "category": "shape",
+      "iconKey": "2B50",
+      "text": "星星",
+      "textEn": "star",
+      "voiceKey": "zh.noun.star",
+      "voiceKeyEn": "en.noun.star"
+    },
+    {
+      "id": "tiger",
+      "category": "animal",
+      "iconKey": "1F405",
+      "text": "老虎",
+      "textEn": "tiger",
+      "voiceKey": "zh.noun.tiger",
+      "voiceKeyEn": "en.noun.tiger"
+    },
+    {
+      "id": "tree",
+      "category": "nature",
+      "iconKey": "1F333",
+      "text": "树",
+      "textEn": "tree",
+      "voiceKey": "zh.noun.tree",
+      "voiceKeyEn": "en.noun.tree"
+    },
+    {
+      "id": "train",
+      "category": "vehicle",
+      "iconKey": "1F686",
+      "text": "火车",
+      "textEn": "train",
+      "voiceKey": "zh.noun.train",
+      "voiceKeyEn": "en.noun.train"
+    },
+    {
+      "id": "umbrella",
+      "category": "thing",
+      "iconKey": "2602",
+      "text": "雨伞",
+      "textEn": "umbrella",
+      "voiceKey": "zh.noun.umbrella",
+      "voiceKeyEn": "en.noun.umbrella"
+    },
+    {
+      "id": "unicorn",
+      "category": "animal",
+      "iconKey": "1F984",
+      "text": "独角兽",
+      "textEn": "unicorn",
+      "voiceKey": "zh.noun.unicorn",
+      "voiceKeyEn": "en.noun.unicorn"
+    },
+    {
+      "id": "ufo",
+      "category": "vehicle",
+      "iconKey": "1F6F8",
+      "text": "飞碟",
+      "textEn": "U F O",
+      "voiceKey": "zh.noun.ufo",
+      "voiceKeyEn": "en.noun.ufo"
+    },
+    {
+      "id": "violin",
+      "category": "thing",
+      "iconKey": "1F3BB",
+      "text": "小提琴",
+      "textEn": "violin",
+      "voiceKey": "zh.noun.violin",
+      "voiceKeyEn": "en.noun.violin"
+    },
+    {
+      "id": "volcano",
+      "category": "nature",
+      "iconKey": "1F30B",
+      "text": "火山",
+      "textEn": "volcano",
+      "voiceKey": "zh.noun.volcano",
+      "voiceKeyEn": "en.noun.volcano"
+    },
+    {
+      "id": "volleyball",
+      "category": "thing",
+      "iconKey": "1F3D0",
+      "text": "排球",
+      "textEn": "volleyball",
+      "voiceKey": "zh.noun.volleyball",
+      "voiceKeyEn": "en.noun.volleyball"
+    },
+    {
+      "id": "watermelon",
+      "category": "fruit",
+      "iconKey": "1F349",
+      "text": "西瓜",
+      "textEn": "watermelon",
+      "voiceKey": "zh.noun.watermelon",
+      "voiceKeyEn": "en.noun.watermelon"
+    },
+    {
+      "id": "whale",
+      "category": "animal",
+      "iconKey": "1F433",
+      "text": "鲸鱼",
+      "textEn": "whale",
+      "voiceKey": "zh.noun.whale",
+      "voiceKeyEn": "en.noun.whale"
+    },
+    {
+      "id": "water",
+      "category": "nature",
+      "iconKey": "1F4A7",
+      "text": "水",
+      "textEn": "water",
+      "voiceKey": "zh.noun.water",
+      "voiceKeyEn": "en.noun.water"
+    },
+    {
+      "id": "xylophone",
+      "category": "thing",
+      "iconKey": "1F3B9",
+      "text": "木琴",
+      "textEn": "xylophone",
+      "voiceKey": "zh.noun.xylophone",
+      "voiceKeyEn": "en.noun.xylophone"
+    },
+    {
+      "id": "xmark",
+      "category": "shape",
+      "iconKey": "274C",
+      "text": "叉",
+      "textEn": "X",
+      "voiceKey": "zh.noun.xmark",
+      "voiceKeyEn": "en.noun.xmark"
+    },
+    {
+      "id": "yarn",
+      "category": "thing",
+      "iconKey": "1F9F6",
+      "text": "毛线",
+      "textEn": "yarn",
+      "voiceKey": "zh.noun.yarn",
+      "voiceKeyEn": "en.noun.yarn"
+    },
+    {
+      "id": "yoyo",
+      "category": "thing",
+      "iconKey": "1FA80",
+      "text": "悠悠球",
+      "textEn": "yo-yo",
+      "voiceKey": "zh.noun.yoyo",
+      "voiceKeyEn": "en.noun.yoyo"
+    },
+    {
+      "id": "yellow",
+      "category": "color",
+      "iconKey": "1F49B",
+      "text": "黄色",
+      "textEn": "yellow",
+      "voiceKey": "zh.noun.yellow",
+      "voiceKeyEn": "en.noun.yellow"
+    },
+    {
+      "id": "zebra",
+      "category": "animal",
+      "iconKey": "1F993",
+      "text": "斑马",
+      "textEn": "zebra",
+      "voiceKey": "zh.noun.zebra",
+      "voiceKeyEn": "en.noun.zebra"
+    },
+    {
+      "id": "zero",
+      "category": "number",
+      "iconKey": "1F9EE",
+      "text": "零",
+      "textEn": "zero",
+      "voiceKey": "zh.noun.zero",
+      "voiceKeyEn": "en.noun.zero"
+    }
+  ]
+}

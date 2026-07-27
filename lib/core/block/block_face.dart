@@ -40,7 +40,8 @@ class BlockFacePainter extends CustomPainter {
     final eyeY = size.height * 0.38;
     final leftEye = Offset(size.width * 0.32, eyeY);
     final rightEye = Offset(size.width * 0.68, eyeY);
-    final eyeRadius = unit * (expression == BlockExpression.surprised ? 0.12 : 0.09);
+    final eyeRadius =
+        unit * (expression == BlockExpression.surprised ? 0.12 : 0.09);
 
     switch (expression) {
       case BlockExpression.happy:

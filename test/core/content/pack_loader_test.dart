@@ -15,7 +15,11 @@ void main() {
         pack({
           'schemaVersion': PackLoader.supportedSchemaVersion,
           'numbers': [
-            {'value': 7, 'voiceKey': 'zh.number.7', 'voiceKeyEn': 'en.number.7'},
+            {
+              'value': 7,
+              'voiceKey': 'zh.number.7',
+              'voiceKeyEn': 'en.number.7',
+            },
           ],
         }),
         source: 'test.json',
@@ -74,10 +78,7 @@ void main() {
     });
 
     test('JSON 本身非法 → 跳过整包但不抛异常', () {
-      expect(
-        loader.parse('{ 这不是 json', source: 'broken.json'),
-        isNull,
-      );
+      expect(loader.parse('{ 这不是 json', source: 'broken.json'), isNull);
     });
 
     test('顶层不是对象 → 跳过整包', () {
@@ -297,14 +298,18 @@ void main() {
         pack({
           'schemaVersion': 1,
           'numbers': [
-            {'value': 1, 'voiceKey': 'zh.number.1', 'voiceKeyEn': 'en.number.1'},
+            {
+              'value': 1,
+              'voiceKey': 'zh.number.1',
+              'voiceKeyEn': 'en.number.1',
+            },
           ],
           'letters': [
             {
               'letter': 'a',
               'voiceKey': 'en.letter.a',
               'phonemeVoiceKey': 'en.phoneme.a',
-              'wordIconKeys': ['apple', 'ant'],
+              'wordNounIds': ['apple', 'ant'],
             },
           ],
         }),
@@ -320,7 +325,7 @@ void main() {
       // 字母统一转成大写，内容包里写小写也不影响。
       expect(result.letters.single.letter, 'A');
       expect(result.letters.single.lowercase, 'a');
-      expect(result.letters.single.wordIconKeys, ['apple', 'ant']);
+      expect(result.letters.single.wordNounIds, ['apple', 'ant']);
     });
   });
 
@@ -355,6 +360,118 @@ void main() {
       expect(library.hanziByChar('山')!.pinyin, 'shān');
       expect(library.hanziByChar('水'), isNull);
       expect(library.numberByValue(99), isNull);
+    });
+
+    test('字母按 wordNounIds 取到名词，取不到的静默跳过', () {
+      final letters = loader.parse(
+        pack({
+          'schemaVersion': 1,
+          'letters': [
+            {
+              'letter': 'A',
+              'voiceKey': 'en.letter.a',
+              // 中间那个 id 在名词包里不存在。
+              'wordNounIds': ['apple', 'aardvark', 'ant'],
+            },
+          ],
+        }),
+        source: 'letters.json',
+      )!;
+      final nouns = loader.parse(
+        pack({
+          'schemaVersion': 1,
+          'nouns': [
+            {
+              'id': 'apple',
+              'category': 'fruit',
+              'iconKey': '1F34E',
+              'text': '苹果',
+              'textEn': 'apple',
+              'voiceKey': 'zh.noun.apple',
+              'voiceKeyEn': 'en.noun.apple',
+            },
+            {
+              'id': 'ant',
+              'category': 'animal',
+              'iconKey': '1F41C',
+              'text': '蚂蚁',
+              'voiceKey': 'zh.noun.ant',
+            },
+          ],
+        }),
+        source: 'nouns.json',
+      )!;
+
+      final library = ContentLibrary([letters, nouns]);
+      expect(library.nounById('apple')!.textEn, 'apple');
+      expect(library.nounById('aardvark'), isNull);
+      expect(library.letterByChar('a')!.letter, 'A');
+
+      // 引用不到的那条被跳过，而不是让整个字母打不开——少一张卡片是可以
+      // 接受的降级，模块崩掉不是。
+      final words = library.wordsFor(library.letterByChar('A')!);
+      expect(words.map((n) => n.id), ['apple', 'ant']);
+    });
+  });
+
+  group('名词', () {
+    test('缺 text 的名词被跳过并记录原因', () {
+      final result = loader.parse(
+        pack({
+          'schemaVersion': 1,
+          'nouns': [
+            {
+              'id': 'apple',
+              'category': 'fruit',
+              'iconKey': '1F34E',
+              'voiceKey': 'zh.noun.apple',
+            },
+          ],
+        }),
+        source: 'n.json',
+      );
+
+      // 没有名字的名词既合不出语音，家长录音界面也没法显示在录什么。
+      expect(result!.nouns, isEmpty);
+      expect(result.skipped.single, contains('n.json[0]'));
+    });
+  });
+
+  group('拼字目标', () {
+    test('字母序列拆成大写单字母，重复字母保留', () {
+      final result = loader.parse(
+        pack({
+          'schemaVersion': 1,
+          'spellingTargets': [
+            {'id': 'child', 'letters': 'Emmett', 'voiceKey': 'en.name.child'},
+          ],
+        }),
+        source: 's.json',
+      );
+
+      final target = result!.spellingTargets.single;
+      // 两个 M、两个 T 必须都在——去重会让拼字关直接错。
+      expect(target.letters, ['E', 'M', 'M', 'E', 'T', 'T']);
+      expect(result.allVoiceKeys, contains('en.name.child'));
+    });
+
+    test('含非字母字符的目标被跳过', () {
+      final result = loader.parse(
+        pack({
+          'schemaVersion': 1,
+          'spellingTargets': [
+            {'id': 'bad', 'letters': '小明', 'voiceKey': 'zh.name.bad'},
+            {'id': 'dash', 'letters': 'A-B', 'voiceKey': 'en.name.dash'},
+            {'id': 'ok', 'letters': 'Mama', 'voiceKey': 'en.name.mama'},
+          ],
+        }),
+        source: 's.json',
+      );
+
+      // 拼字关是把字母积木一个个摆上去，摆不出的字符留在数据里只会变成
+      // 一个永远填不上的空位。
+      expect(result!.spellingTargets.map((t) => t.id), ['ok']);
+      expect(result.skipped.length, 2);
     });
   });
 }

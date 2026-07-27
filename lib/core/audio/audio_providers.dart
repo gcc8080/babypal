@@ -23,9 +23,7 @@ final audioBusProvider = Provider<AudioBus>(
 /// 没有声音的 App 仍然能玩，起不来的不能。
 Future<AudioBus> createAudioBus() async {
   final manifestKeys = await _loadManifestKeys();
-  final resolver = await VoiceResolver.forApp(
-    availableAssetKeys: manifestKeys,
-  );
+  final resolver = await VoiceResolver.forApp(availableAssetKeys: manifestKeys);
   final bus = AudioBus(resolver: resolver);
   await bus.init();
   await bus.preloadSfx(Sfx.assets);

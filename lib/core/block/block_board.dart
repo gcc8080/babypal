@@ -11,11 +11,7 @@ import 'block_widget.dart';
 /// pan 只跟踪单个指针，无法满足规格里「两指同时拖动两个不同积木、互不干扰」
 /// 这条要求。改用按 pointer id 索引的原始事件后，多指是天然支持的。
 class BlockBoard extends StatefulWidget {
-  const BlockBoard({
-    super.key,
-    required this.controller,
-    this.onBlockSound,
-  });
+  const BlockBoard({super.key, required this.controller, this.onBlockSound});
 
   final BlockBoardController controller;
 

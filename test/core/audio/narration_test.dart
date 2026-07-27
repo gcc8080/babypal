@@ -92,9 +92,10 @@ void main() {
       for (var a = 1; a <= 9; a++) {
         for (var b = 1; a + b <= 10; b++) {
           connectives.addAll(
-            Narration.bilingualAddition(a, b).where(
-              (k) => !k.contains('.number.'),
-            ),
+            Narration.bilingualAddition(
+              a,
+              b,
+            ).where((k) => !k.contains('.number.')),
           );
         }
       }

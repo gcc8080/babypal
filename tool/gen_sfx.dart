@@ -54,9 +54,7 @@ class Tone {
 /// 音效定义：名字 → 音符序列。
 final Map<String, List<Tone>> effects = {
   // 按下积木。极短、微微下滑，像手指按在橡胶上。
-  'tap': const [
-    Tone(startMs: 0, durationMs: 70, freq: e5, endFreq: d5),
-  ],
+  'tap': const [Tone(startMs: 0, durationMs: 70, freq: e5, endFreq: d5)],
 
   // 拾起积木。比 tap 高一点，提示「它跟着你了」。
   'pickup': const [
@@ -165,10 +163,12 @@ Uint8List wrapAsWav(Int16List samples) {
   final bytes = BytesBuilder();
 
   void ascii(String s) => bytes.add(s.codeUnits);
-  void uint32(int v) =>
-      bytes.add(Uint8List(4)..buffer.asByteData().setUint32(0, v, Endian.little));
-  void uint16(int v) =>
-      bytes.add(Uint8List(2)..buffer.asByteData().setUint16(0, v, Endian.little));
+  void uint32(int v) => bytes.add(
+    Uint8List(4)..buffer.asByteData().setUint32(0, v, Endian.little),
+  );
+  void uint16(int v) => bytes.add(
+    Uint8List(2)..buffer.asByteData().setUint16(0, v, Endian.little),
+  );
 
   ascii('RIFF');
   uint32(36 + dataBytes);

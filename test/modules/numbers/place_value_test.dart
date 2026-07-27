@@ -33,10 +33,7 @@ void main() {
       final pieces = PlaceValue.of(23).pieces;
       expect(pieces.take(2), everyElement(PlacePiece.rod));
       expect(pieces.skip(2), everyElement(PlacePiece.unit));
-      expect(
-        pieces.fold<int>(0, (sum, p) => sum + p.value),
-        23,
-      );
+      expect(pieces.fold<int>(0, (sum, p) => sum + p.value), 23);
     });
 
     test('十条的格宽等于它的数值——「10 个单块 = 1 个十条」必须一眼可见', () {
@@ -153,10 +150,7 @@ void main() {
 
     test('单块从下往上、从左往右填', () {
       final occupied = <GridCell>{};
-      final first = nextFreeAnchor(
-        piece: PlacePiece.unit,
-        occupied: occupied,
-      );
+      final first = nextFreeAnchor(piece: PlacePiece.unit, occupied: occupied);
       expect(first, const GridCell(0, kPlaceValueRows - 1));
 
       occupied.add(first!);

@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "letters": [
+    {
+      "letter": "A",
+      "voiceKey": "en.letter.a",
+      "phonemeVoiceKey": "en.phoneme.a",
+      "wordNounIds": [
+        "apple",
+        "ant",
+        "airplane"
+      ]
+    },
+    {
+      "letter": "B",
+      "voiceKey": "en.letter.b",
+      "phonemeVoiceKey": "en.phoneme.b",
+      "wordNounIds": [
+        "banana",
+        "bear",
+        "bus"
+      ]
+    },
+    {
+      "letter": "C",
+      "voiceKey": "en.letter.c",
+      "phonemeVoiceKey": "en.phoneme.c",
+      "wordNounIds": [
+        "cat",
+        "car",
+        "cake"
+      ]
+    },
+    {
+      "letter": "D",
+      "voiceKey": "en.letter.d",
+      "phonemeVoiceKey": "en.phoneme.d",
+      "wordNounIds": [
+        "dog",
+        "duck",
+        "drum"
+      ]
+    },
+    {
+      "letter": "E",
+      "voiceKey": "en.letter.e",
+      "phonemeVoiceKey": "en.phoneme.e",
+      "wordNounIds": [
+        "elephant",
+        "egg",
+        "eye"
+      ]
+    },
+    {
+      "letter": "F",
+      "voiceKey": "en.letter.f",
+      "phonemeVoiceKey": "en.phoneme.f",
+      "wordNounIds": [
+        "fish",
+        "flower",
+        "fire"
+      ]
+    },
+    {
+      "letter": "G",
+      "voiceKey": "en.letter.g",
+      "phonemeVoiceKey": "en.phoneme.g",
+      "wordNounIds": [
+        "grapes",
+        "giraffe",
+        "guitar"
+      ]
+    },
+    {
+      "letter": "H",
+      "voiceKey": "en.letter.h",
+      "phonemeVoiceKey": "en.phoneme.h",
+      "wordNounIds": [
+        "horse",
+        "house",
+        "hand"
+      ]
+    },
+    {
+      "letter": "I",
+      "voiceKey": "en.letter.i",
+      "phonemeVoiceKey": "en.phoneme.i",
+      "wordNounIds": [
+        "icecream",
+        "ice",
+        "island"
+      ]
+    },
+    {
+      "letter": "J",
+      "voiceKey": "en.letter.j",
+      "phonemeVoiceKey": "en.phoneme.j",
+      "wordNounIds": [
+        "jellyfish",
+        "juice",
+        "jeans"
+      ]
+    },
+    {
+      "letter": "K",
+      "voiceKey": "en.letter.k",
+      "phonemeVoiceKey": "en.phoneme.k",
+      "wordNounIds": [
+        "kangaroo",
+        "key",
+        "kite"
+      ]
+    },
+    {
+      "letter": "L",
+      "voiceKey": "en.letter.l",
+      "phonemeVoiceKey": "en.phoneme.l",
+      "wordNounIds": [
+        "lion",
+        "lemon",
+        "leaf"
+      ]
+    },
+    {
+      "letter": "M",
+      "voiceKey": "en.letter.m",
+      "phonemeVoiceKey": "en.phoneme.m",
+      "wordNounIds": [
+        "monkey",
+        "moon",
+        "milk"
+      ]
+    },
+    {
+      "letter": "N",
+      "voiceKey": "en.letter.n",
+      "phonemeVoiceKey": "en.phoneme.n",
+      "wordNounIds": [
+        "nose",
+        "noodles",
+        "newspaper"
+      ]
+    },
+    {
+      "letter": "O",
+      "voiceKey": "en.letter.o",
+      "phonemeVoiceKey": "en.phoneme.o",
+      "wordNounIds": [
+        "orange",
+        "owl",
+        "octopus"
+      ]
+    },
+    {
+      "letter": "P",
+      "voiceKey": "en.letter.p",
+      "phonemeVoiceKey": "en.phoneme.p",
+      "wordNounIds": [
+        "pig",
+        "pizza",
+        "pencil"
+      ]
+    },
+    {
+      "letter": "Q",
+      "voiceKey": "en.letter.q",
+      "phonemeVoiceKey": "en.phoneme.q",
+      "wordNounIds": [
+        "queen",
+        "question"
+      ]
+    },
+    {
+      "letter": "R",
+      "voiceKey": "en.letter.r",
+      "phonemeVoiceKey": "en.phoneme.r",
+      "wordNounIds": [
+        "rabbit",
+        "rainbow",
+        "robot"
+      ]
+    },
+    {
+      "letter": "S",
+      "voiceKey": "en.letter.s",
+      "phonemeVoiceKey": "en.phoneme.s",
+      "wordNounIds": [
+        "sun",
+        "snake",
+        "star"
+      ]
+    },
+    {
+      "letter": "T",
+      "voiceKey": "en.letter.t",
+      "phonemeVoiceKey": "en.phoneme.t",
+      "wordNounIds": [
+        "tiger",
+        "tree",
+        "train"
+      ]
+    },
+    {
+      "letter": "U",
+      "voiceKey": "en.letter.u",
+      "phonemeVoiceKey": "en.phoneme.u",
+      "wordNounIds": [
+        "umbrella",
+        "unicorn",
+        "ufo"
+      ]
+    },
+    {
+      "letter": "V",
+      "voiceKey": "en.letter.v",
+      "phonemeVoiceKey": "en.phoneme.v",
+      "wordNounIds": [
+        "violin",
+        "volcano",
+        "volleyball"
+      ]
+    },
+    {
+      "letter": "W",
+      "voiceKey": "en.letter.w",
+      "phonemeVoiceKey": "en.phoneme.w",
+      "wordNounIds": [
+        "watermelon",
+        "whale",
+        "water"
+      ]
+    },
+    {
+      "letter": "X",
+      "voiceKey": "en.letter.x",
+      "phonemeVoiceKey": "en.phoneme.x",
+      "wordNounIds": [
+        "xylophone",
+        "xmark"
+      ]
+    },
+    {
+      "letter": "Y",
+      "voiceKey": "en.letter.y",
+      "phonemeVoiceKey": "en.phoneme.y",
+      "wordNounIds": [
+        "yarn",
+        "yoyo",
+        "yellow"
+      ]
+    },
+    {
+      "letter": "Z",
+      "voiceKey": "en.letter.z",
+      "phonemeVoiceKey": "en.phoneme.z",
+      "wordNounIds": [
+        "zebra",
+        "zero"
+      ]
+    }
+  ],
+  "spellingTargets": [
+    {
+      "id": "child",
+      "letters": "Emmett",
+      "voiceKey": "en.name.child"
+    },
+    {
+      "id": "mama",
+      "letters": "Mama",
+      "voiceKey": "en.name.mama"
+    },
+    {
+      "id": "baba",
+      "letters": "Baba",
+      "voiceKey": "en.name.baba"
+    }
+  ]
+}

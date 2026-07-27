@@ -108,12 +108,13 @@ Future<void> main(List<String> args) async {
   enVoice = en;
   stdout.writeln('音色：中文「$zhVoice」／英文「$enVoice」');
 
-  final packs = Directory(packsDir)
-      .listSync()
-      .whereType<File>()
-      .where((f) => f.path.endsWith('.json'))
-      .toList()
-    ..sort((a, b) => a.path.compareTo(b.path));
+  final packs =
+      Directory(packsDir)
+          .listSync()
+          .whereType<File>()
+          .where((f) => f.path.endsWith('.json'))
+          .toList()
+        ..sort((a, b) => a.path.compareTo(b.path));
 
   if (packs.isEmpty) {
     stderr.writeln('$packsDir 下没有内容包。');
@@ -160,10 +161,12 @@ Future<void> main(List<String> args) async {
     }
 
     final result = await Process.run('say', [
-      '-v', entry.voice,
+      '-v',
+      entry.voice,
       '--file-format=WAVE',
       '--data-format=LEI16@22050',
-      '-o', out.path,
+      '-o',
+      out.path,
       entry.text,
     ]);
 
@@ -187,15 +190,16 @@ Future<void> main(List<String> args) async {
   // manifest 供 VoiceResolver 做缺失检出——「内容包引用了某个 voiceKey 但
   // 音频没生成」这类问题要能离线发现，而不是等孩子点下去才没声音。
   final available = entries.keys.toList()..sort();
-  await File(manifestPath).writeAsString(
-    '${const JsonEncoder.withIndent('  ').convert({
-          'generatedAt': DateTime.now().toIso8601String(),
-          'zhVoice': zhVoice,
-          'enVoice': enVoice,
-          'format': 'WAV 22050Hz mono 16-bit',
-          'keys': available,
-        })}\n',
-  );
+  final manifest = <String, Object?>{
+    'generatedAt': DateTime.now().toIso8601String(),
+    'zhVoice': zhVoice,
+    'enVoice': enVoice,
+    'format': 'WAV 22050Hz mono 16-bit',
+    'keys': available,
+  };
+  await File(
+    manifestPath,
+  ).writeAsString('${const JsonEncoder.withIndent('  ').convert(manifest)}\n');
 
   final totalBytes = Directory(audioDir)
       .listSync()
@@ -205,9 +209,7 @@ Future<void> main(List<String> args) async {
 
   stdout.writeln('');
   stdout.writeln('新生成 $generated 条，已存在跳过 $skipped 条，失败 $failed 条。');
-  stdout.writeln(
-    '音频总体积 ${(totalBytes / 1024 / 1024).toStringAsFixed(1)} MB',
-  );
+  stdout.writeln('音频总体积 ${(totalBytes / 1024 / 1024).toStringAsFixed(1)} MB');
   stdout.writeln('manifest 已写入 $manifestPath');
 }
 
@@ -249,6 +251,56 @@ const Map<String, String> zhNarrationPhrases = {
 
 const Map<String, String> enNarrationPhrases = {
   'en.phrase.tenOnesMakeATen': 'ten ones make one ten',
+};
+
+/// 字母音素（letter sound）的 TTS 拼写。
+///
+/// **`say` 没有音素输入通道**——`[[inpt PHON]]` 这套老的 Speech Manager 转义在
+/// 当前 macOS 上不再被解析，实测会把 `inpt`、`PHON`、`1AE` 当三个词念出来。
+/// 所以只能反过来做：写一个能让英文 TTS 的字素→音素规则**恰好吐出那个音**的
+/// 拼写。
+///
+/// 分两类，界线是语音学事实而不是口味：
+///
+/// - **连续音**（l m n r s v z）可以拖长，写成延长拼写 `ll` `mm` `sss`，
+///   听到的就是纯粹的 /l/ /m/ /s/，没有多余元音。
+/// - **爆破音与塞擦音**（b d g j k p t…）**物理上发不出孤立的音**，离开元音
+///   就只是一声气爆。写成 `buh` `kuh`，即他每天看的字母儿歌里的读法。
+///   拼读教学法反对这个「schwa 尾巴」，但那是给已经能听辨音素的孩子的要求，
+///   对一个三岁的中文母语者，能听清、能模仿比理论纯度重要。
+///
+/// f 本是连续音，但 `ff`/`fff` 都被 TTS 逐字母念成「эф эф」（实测切成 2–5 段），
+/// 只能退回 `fuh`。
+///
+/// 这 26 条是**家长录音的第一优先级**：TTS 拼写再怎么调也只是逼近，爸爸对着
+/// 麦克风说一句 /æ/ 就彻底解决了。见 design.md D5 的覆盖层。
+const Map<String, String> letterPhonemes = {
+  'a': 'ah',
+  'b': 'buh',
+  'c': 'kuh',
+  'd': 'duh',
+  'e': 'eh',
+  'f': 'fuh',
+  'g': 'guh',
+  'h': 'huh',
+  'i': 'ih',
+  'j': 'juh',
+  'k': 'kuh',
+  'l': 'll',
+  'm': 'mm',
+  'n': 'nn',
+  'o': 'aw',
+  'p': 'puh',
+  'q': 'kwuh',
+  'r': 'rr',
+  's': 'sss',
+  't': 'tuh',
+  'u': 'uh',
+  'v': 'vv',
+  'w': 'wuh',
+  'x': 'ks',
+  'y': 'yuh',
+  'z': 'zzz',
 };
 
 // ─── 音色解析 ────────────────────────────────────────────────────────
@@ -428,11 +480,7 @@ void _collectNarrationWords(Map<String, VoiceEntry> out) {
   addAll(enNarrationPhrases, enVoice);
 }
 
-void _collect(
-  File pack,
-  Map<String, VoiceEntry> out,
-  List<String> unresolved,
-) {
+void _collect(File pack, Map<String, VoiceEntry> out, List<String> unresolved) {
   final Object? decoded;
   try {
     decoded = jsonDecode(pack.readAsStringSync());
@@ -472,19 +520,33 @@ void _collect(
   // 字母：字母本身。末尾加句点，让 TTS 读字母名而不是把它当冠词。
   for (final item in _list(decoded['letters'])) {
     final letter = (item['letter'] as String?)?.toUpperCase();
-    add(item['voiceKey'] as String?, letter == null ? null : '$letter.', enVoice);
-    // 音素（如 /æ/）无法由文本 TTS 可靠合成，留给真人录音覆盖。
+    add(
+      item['voiceKey'] as String?,
+      letter == null ? null : '$letter.',
+      enVoice,
+    );
+    // 音素：查 [letterPhonemes] 的拼写近似。查不到就报告缺失而不是猜——
+    // 一条读错的音素比没有音素更糟，它教的是错的东西。
     final phoneme = item['phonemeVoiceKey'];
     if (phoneme is String && phoneme.isNotEmpty) {
-      unresolved.add('${pack.path}: $phoneme（音素需真人录音）');
+      add(phoneme, letterPhonemes[letter?.toLowerCase()], enVoice);
     }
   }
 
-  // 名词：模型目前不携带朗读文本。nouns.json 设计时需补 text / textEn 字段，
-  // 在此之前一律报告缺失，绝不猜测——生成一条读错的音频比没有更糟。
+  // 名词：中英两个声道，朗读文本由内容包直接给出（无法从 id 推导）。
   for (final item in _list(decoded['nouns'])) {
     add(item['voiceKey'] as String?, item['text'] as String?, zhVoice);
     add(item['voiceKeyEn'] as String?, item['textEn'] as String?, enVoice);
+  }
+
+  // 拼字目标：朗读文本就是名字本身，从字母序列还原，避免同一个名字在包里
+  // 写两遍然后哪天改了一处忘了另一处。
+  for (final item in _list(decoded['spellingTargets'])) {
+    final letters = item['letters'] as String?;
+    final name = letters == null || letters.isEmpty
+        ? null
+        : letters[0].toUpperCase() + letters.substring(1).toLowerCase();
+    add(item['voiceKey'] as String?, name, enVoice);
   }
 }
 
@@ -510,14 +572,39 @@ String zhNumber(int n) {
 }
 
 const _enOnes = [
-  'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
-  'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
-  'sixteen', 'seventeen', 'eighteen', 'nineteen',
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'eleven',
+  'twelve',
+  'thirteen',
+  'fourteen',
+  'fifteen',
+  'sixteen',
+  'seventeen',
+  'eighteen',
+  'nineteen',
 ];
 
 const _enTens = [
-  '', '', 'twenty', 'thirty', 'forty', 'fifty',
-  'sixty', 'seventy', 'eighty', 'ninety',
+  '',
+  '',
+  'twenty',
+  'thirty',
+  'forty',
+  'fifty',
+  'sixty',
+  'seventy',
+  'eighty',
+  'ninety',
 ];
 
 /// 0–100 的英文读法。

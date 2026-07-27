@@ -19,9 +19,9 @@ class SnapGrid {
     required this.rows,
     required this.cellSize,
     this.origin = Offset.zero,
-  })  : assert(columns > 0),
-        assert(rows > 0),
-        assert(cellSize > 0);
+  }) : assert(columns > 0),
+       assert(rows > 0),
+       assert(cellSize > 0);
 
   /// 棋盘列数。
   final int columns;
@@ -43,9 +43,9 @@ class SnapGrid {
 
   /// 指定格位中心点的像素坐标。
   Offset centerOf(GridCell cell) => Offset(
-        origin.dx + (cell.col + 0.5) * cellSize,
-        origin.dy + (cell.row + 0.5) * cellSize,
-      );
+    origin.dx + (cell.col + 0.5) * cellSize,
+    origin.dy + (cell.row + 0.5) * cellSize,
+  );
 
   /// 以 [anchor] 为左上角、尺寸为 [widthUnits]×[heightUnits] 的积木，
   /// 其整体覆盖区域的中心点。
@@ -55,18 +55,13 @@ class SnapGrid {
     GridCell anchor, {
     int widthUnits = 1,
     int heightUnits = 1,
-  }) =>
-      Offset(
-        origin.dx + (anchor.col + widthUnits / 2) * cellSize,
-        origin.dy + (anchor.row + heightUnits / 2) * cellSize,
-      );
+  }) => Offset(
+    origin.dx + (anchor.col + widthUnits / 2) * cellSize,
+    origin.dy + (anchor.row + heightUnits / 2) * cellSize,
+  );
 
   /// 该锚点是否完全落在棋盘内。
-  bool isInBounds(
-    GridCell anchor, {
-    int widthUnits = 1,
-    int heightUnits = 1,
-  }) =>
+  bool isInBounds(GridCell anchor, {int widthUnits = 1, int heightUnits = 1}) =>
       anchor.col >= 0 &&
       anchor.row >= 0 &&
       anchor.col + widthUnits <= columns &&
@@ -106,13 +101,14 @@ class SnapGrid {
           continue;
         }
 
-        final distance = (releaseCenter -
-                footprintCenter(
-                  anchor,
-                  widthUnits: widthUnits,
-                  heightUnits: heightUnits,
-                ))
-            .distance;
+        final distance =
+            (releaseCenter -
+                    footprintCenter(
+                      anchor,
+                      widthUnits: widthUnits,
+                      heightUnits: heightUnits,
+                    ))
+                .distance;
 
         if (distance < bestDistance) {
           bestDistance = distance;

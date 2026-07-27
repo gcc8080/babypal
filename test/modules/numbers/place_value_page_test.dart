@@ -13,9 +13,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// 未 init 的音频总线：所有方法都会在 `_ready == false` 处提前返回，
 /// 因此在测试里是天然的静音替身，不需要额外的 mock 框架。
-AudioBus _silentBus() => AudioBus(
-      resolver: VoiceResolver(overridesDir: Directory.systemTemp),
-    );
+AudioBus _silentBus() =>
+    AudioBus(resolver: VoiceResolver(overridesDir: Directory.systemTemp));
 
 extension on WidgetTester {
   /// MI 8 SE 横屏的逻辑尺寸——交付设备就是这台，布局按它把关。
@@ -36,7 +35,8 @@ extension on WidgetTester {
     await pump();
   }
 
-  int get blockCount => widgetList<BlockWidget>(find.byType(BlockWidget)).length;
+  int get blockCount =>
+      widgetList<BlockWidget>(find.byType(BlockWidget)).length;
 
   List<BlockWidget> get blocks =>
       widgetList<BlockWidget>(find.byType(BlockWidget)).toList();
@@ -106,10 +106,12 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('source-unit')));
     await tester.pump();
 
-    final rod = tester.blocks
-        .firstWhere((w) => w.body.widthUnits == PlacePiece.rod.widthUnits);
-    final unit = tester.blocks
-        .firstWhere((w) => w.body.widthUnits == PlacePiece.unit.widthUnits);
+    final rod = tester.blocks.firstWhere(
+      (w) => w.body.widthUnits == PlacePiece.rod.widthUnits,
+    );
+    final unit = tester.blocks.firstWhere(
+      (w) => w.body.widthUnits == PlacePiece.unit.widthUnits,
+    );
 
     expect(rod.body.anchor?.row, 0);
     expect(unit.body.anchor?.row, kPlaceValueRows - 1);

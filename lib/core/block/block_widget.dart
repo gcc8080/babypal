@@ -47,18 +47,16 @@ class _BlockWidgetState extends State<BlockWidget>
     reverseDuration: const Duration(milliseconds: 320),
   );
 
-  late final Animation<double> _squash = Tween<double>(
-    begin: 1.0,
-    end: BlockMetrics.squashScale,
-  ).animate(
-    CurvedAnimation(
-      parent: _squashController,
-      curve: Curves.easeOut,
-      // 回弹用 elasticOut，让方块像橡胶一样"弹"回来而不是平滑滑回。
-      // 这一下弹性是整个手感的核心。
-      reverseCurve: Curves.elasticOut.flipped,
-    ),
-  );
+  late final Animation<double> _squash =
+      Tween<double>(begin: 1.0, end: BlockMetrics.squashScale).animate(
+        CurvedAnimation(
+          parent: _squashController,
+          curve: Curves.easeOut,
+          // 回弹用 elasticOut，让方块像橡胶一样"弹"回来而不是平滑滑回。
+          // 这一下弹性是整个手感的核心。
+          reverseCurve: Curves.elasticOut.flipped,
+        ),
+      );
 
   /// 按下期间的瞬时表情覆盖，松手后回到 [BlockBody.expression]。
   bool _pressed = false;
@@ -92,12 +90,13 @@ class _BlockWidgetState extends State<BlockWidget>
   Widget build(BuildContext context) {
     final width = widget.body.widthUnits * widget.cellSize;
     final height = widget.body.heightUnits * widget.cellSize;
-    final radius = BlockMetrics.blockRadius *
-        (widget.cellSize / BlockMetrics.unit);
+    final radius =
+        BlockMetrics.blockRadius * (widget.cellSize / BlockMetrics.unit);
     final color = BlockColors.forIndex(widget.body.colorIndex);
 
-    final expression =
-        _pressed ? BlockExpression.surprised : widget.body.expression;
+    final expression = _pressed
+        ? BlockExpression.surprised
+        : widget.body.expression;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,

@@ -52,3 +52,6 @@ flutter:
     # 家长录制的真人语音写入应用文档目录，运行时优先于这里的资源，
     # 无需重新打包——见 VoiceResolver。
     - assets/audio/
+    # OpenMoji 彩色 SVG 子集（CC BY-SA 4.0，署名见 assets/icons/LICENSE.txt）。
+    # 由 tool/fetch_openmoji.dart 按内容包里的码点抓取，只含用得上的那些。
+    - assets/icons/

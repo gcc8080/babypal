@@ -23,38 +23,35 @@ enum VoiceLang {
 class Narration {
   const Narration._();
 
-  static String number(int value, VoiceLang lang) => '${lang.prefix}.number.$value';
+  static String number(int value, VoiceLang lang) =>
+      '${lang.prefix}.number.$value';
 
-  static String _word(String name, VoiceLang lang) => '${lang.prefix}.word.$name';
+  static String _word(String name, VoiceLang lang) =>
+      '${lang.prefix}.word.$name';
 
   /// 「三 加 二 等于 五」/「three plus two equals five」
   static List<String> addition(int a, int b, VoiceLang lang) => [
-        number(a, lang),
-        _word('plus', lang),
-        number(b, lang),
-        _word('equals', lang),
-        number(a + b, lang),
-      ];
+    number(a, lang),
+    _word('plus', lang),
+    number(b, lang),
+    _word('equals', lang),
+    number(a + b, lang),
+  ];
 
   /// 「三 加 二」——出题时只报两个加数，**不报得数**。
   ///
   /// 报出得数就等于把答案先说了，他要做的事情就没了。
   static List<String> additionQuestion(int a, int b, VoiceLang lang) => [
-        number(a, lang),
-        _word('plus', lang),
-        number(b, lang),
-      ];
+    number(a, lang),
+    _word('plus', lang),
+    number(b, lang),
+  ];
 
   /// 「五 可以分成 二 和 三」/「five is made of two and three」
   ///
   /// 反向分解的播报。见规格「反向分解」——它的权重不低于合体求和，
   /// 因为凑十法与进位加法全建在这上面。
-  static List<String> decomposition(
-    int total,
-    int a,
-    int b,
-    VoiceLang lang,
-  ) =>
+  static List<String> decomposition(int total, int a, int b, VoiceLang lang) =>
       [
         number(total, lang),
         _word('isMadeOf', lang),
@@ -64,9 +61,7 @@ class Narration {
       ];
 
   /// 双声道：同一内容先中文后英文。
-  static List<String> bilingual(
-    List<String> Function(VoiceLang lang) build,
-  ) =>
+  static List<String> bilingual(List<String> Function(VoiceLang lang) build) =>
       [...build(VoiceLang.zh), ...build(VoiceLang.en)];
 
   static List<String> bilingualNumber(int value) =>

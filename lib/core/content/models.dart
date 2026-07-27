@@ -51,7 +51,7 @@ class LetterItem extends ContentItem {
     required this.letter,
     required super.voiceKey,
     this.phonemeVoiceKey,
-    this.wordIconKeys = const [],
+    this.wordNounIds = const [],
     super.voiceKeyEn,
   });
 
@@ -61,11 +61,14 @@ class LetterItem extends ContentItem {
   /// 音素语音键，如 /æ/。字母名与字母音是两件事，分开存。
   final String? phonemeVoiceKey;
 
-  /// 「A is for Apple」里那几张图的图标键。
+  /// 「A is for Apple」里那几张图对应的 [NounItem.id]。
   ///
-  /// 列表里**每一个都是正确答案**——Apple / Ant / Alligator 都以 A 开头，
+  /// 存 id 而不是图标码点：一张图既要显示又要播报，只有 id 能同时取到
+  /// `iconKey` 和 `voiceKey`，写码点就拿不到读音了。
+  ///
+  /// 列表里**每一个都是正确答案**——Apple / Ant / Airplane 都以 A 开头，
   /// 点哪个都欢呼。这是「无挫败」红线在内容层的体现。
-  final List<String> wordIconKeys;
+  final List<String> wordNounIds;
 
   String get lowercase => letter.toLowerCase();
 
@@ -107,7 +110,9 @@ class NounItem extends ContentItem {
     required this.id,
     required this.category,
     required this.iconKey,
+    required this.text,
     required super.voiceKey,
+    this.textEn,
     super.voiceKeyEn,
   });
 
@@ -116,11 +121,46 @@ class NounItem extends ContentItem {
   /// 动物 / 颜色 / 形状 / 水果 / 交通工具。
   final String category;
 
-  /// OpenMoji 图标键。
+  /// OpenMoji 图标的 Unicode 码点，如 `1F34E`。同时是 SVG 文件名。
   final String iconKey;
+
+  /// 中文名与英文名。
+  ///
+  /// 儿童端是零文字界面，这两个字段**不上屏**，存在是为了另外两件事：
+  /// `tool/gen_audio.dart` 拿它合成打底语音，家长录音界面拿它显示「这条在录
+  /// 什么」。数字能从 `value` 推、汉字就是 `char` 本身，只有名词推不出来——
+  /// 缺了它就只能靠猜，而生成一条读错的音频比没有更糟。
+  final String text;
+  final String? textEn;
 
   @override
   String toString() => 'NounItem($id, $category)';
+}
+
+/// 一个拼字目标，如孩子自己的名字。
+///
+/// 做成内容包里的数据而不是常量：`letters` 规格明确要求目标名字**不得硬编码**
+/// ——换个孩子、加一关「拼 MAMA」，都该是改 JSON 而不是改 Dart。
+@immutable
+class SpellingTarget {
+  const SpellingTarget({
+    required this.id,
+    required this.letters,
+    required this.voiceKey,
+  });
+
+  final String id;
+
+  /// 目标字母序列，大写。如 Emmett → [E, M, M, E, T, T]。
+  ///
+  /// 允许重复字母——名字里出现两个 M 是常态，去重会让拼字关直接错。
+  final List<String> letters;
+
+  /// 整体播报（念出这个名字），拼完时放。
+  final String voiceKey;
+
+  @override
+  String toString() => 'SpellingTarget($id, ${letters.join()})';
 }
 
 /// 一组反义词，如 大↔小。做成跷跷板玩法。
@@ -153,6 +193,7 @@ class ContentPack {
     this.hanzi = const [],
     this.nouns = const [],
     this.antonyms = const [],
+    this.spellingTargets = const [],
     this.skipped = const [],
   });
 
@@ -166,6 +207,7 @@ class ContentPack {
   final List<HanziItem> hanzi;
   final List<NounItem> nouns;
   final List<AntonymPair> antonyms;
+  final List<SpellingTarget> spellingTargets;
 
   /// 被跳过的非法条目及原因。
   ///
@@ -178,15 +220,17 @@ class ContentPack {
       letters.isEmpty &&
       hanzi.isEmpty &&
       nouns.isEmpty &&
-      antonyms.isEmpty;
+      antonyms.isEmpty &&
+      spellingTargets.isEmpty;
 
   /// 本包引用到的全部语音键，供构建工具生成音频清单、离线检出缺失。
   Set<String> get allVoiceKeys => {
-        for (final item in [...numbers, ...letters, ...hanzi, ...nouns]) ...[
-          item.voiceKey,
-          if (item.voiceKeyEn != null) item.voiceKeyEn!,
-        ],
-        for (final letter in letters)
-          if (letter.phonemeVoiceKey != null) letter.phonemeVoiceKey!,
-      };
+    for (final item in [...numbers, ...letters, ...hanzi, ...nouns]) ...[
+      item.voiceKey,
+      if (item.voiceKeyEn != null) item.voiceKeyEn!,
+    ],
+    for (final letter in letters)
+      if (letter.phonemeVoiceKey != null) letter.phonemeVoiceKey!,
+    for (final target in spellingTargets) target.voiceKey,
+  };
 }

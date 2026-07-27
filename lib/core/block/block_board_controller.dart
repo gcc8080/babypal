@@ -72,11 +72,11 @@ class ActiveDrag {
   final GridCell? originAnchor;
 
   ActiveDrag copyWith({Offset? position}) => ActiveDrag(
-        blockId: blockId,
-        grabOffset: grabOffset,
-        position: position ?? this.position,
-        originAnchor: originAnchor,
-      );
+    blockId: blockId,
+    grabOffset: grabOffset,
+    position: position ?? this.position,
+    originAnchor: originAnchor,
+  );
 }
 
 /// 拼搭台的状态与规则。
@@ -193,7 +193,8 @@ class BlockBoardController extends ChangeNotifier {
       return;
     }
 
-    final center = drag.position +
+    final center =
+        drag.position +
         Offset(
           block.widthUnits * grid.cellSize / 2,
           block.heightUnits * grid.cellSize / 2,
@@ -256,7 +257,8 @@ class BlockBoardController extends ChangeNotifier {
         grid.origin.dx + b.anchor!.col * grid.cellSize,
         grid.origin.dy + b.anchor!.row * grid.cellSize,
       );
-      final contains = point.dx >= topLeft.dx &&
+      final contains =
+          point.dx >= topLeft.dx &&
           point.dy >= topLeft.dy &&
           point.dx < topLeft.dx + b.widthUnits * grid.cellSize &&
           point.dy < topLeft.dy + b.heightUnits * grid.cellSize;
@@ -279,8 +281,7 @@ class BlockBoardController extends ChangeNotifier {
     onSound?.call(BlockSoundEvent.tap);
 
     final block = blockById(blockId);
-    if (block != null &&
-        (onBlockTapped?.call(block, localPosition) ?? false)) {
+    if (block != null && (onBlockTapped?.call(block, localPosition) ?? false)) {
       _selectedId = null;
       notifyListeners();
       return;

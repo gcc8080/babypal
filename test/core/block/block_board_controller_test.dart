@@ -461,10 +461,7 @@ void main() {
 
     test('正被捏在手里的积木（未落位）不算拼上', () {
       expect(
-        blocksAreJoined(
-          block('a', at: const GridCell(0, 0)),
-          block('b'),
-        ),
+        blocksAreJoined(block('a', at: const GridCell(0, 0)), block('b')),
         isFalse,
       );
     });
@@ -476,7 +473,10 @@ void main() {
         heightUnits: 2,
         anchor: GridCell(1, 0),
       );
-      expect(blocksAreJoined(block('a', at: const GridCell(0, 0)), tall), isFalse);
+      expect(
+        blocksAreJoined(block('a', at: const GridCell(0, 0)), tall),
+        isFalse,
+      );
     });
   });
 

@@ -23,7 +23,10 @@ void main() {
   group('BlockScale', () {
     testWidgets('按短边缩放：设计基准尺寸得到 1.0', (tester) async {
       // 横屏下短边即高度。
-      final scale = await scaleForSize(tester, const Size(800, kDesignShortSide));
+      final scale = await scaleForSize(
+        tester,
+        const Size(800, kDesignShortSide),
+      );
       expect(scale, 1.0);
     });
 

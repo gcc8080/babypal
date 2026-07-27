@@ -12,11 +12,11 @@ import 'package:flutter_test/flutter_test.dart';
 /// 这是数字模块位值玩法的核心换算。放在测试里先跑通「内容包 → 加载器 → 积木」
 /// 全链路，P2 实现数字模块时再挪进 `lib/modules/numbers/`。
 List<BlockBody> blocksFor(NumberItem item) => [
-      for (var i = 0; i < item.tens; i++)
-        BlockBody(id: '${item.value}-ten-$i', colorIndex: 0, widthUnits: 10),
-      for (var i = 0; i < item.ones; i++)
-        BlockBody(id: '${item.value}-one-$i', colorIndex: 1),
-    ];
+  for (var i = 0; i < item.tens; i++)
+    BlockBody(id: '${item.value}-ten-$i', colorIndex: 0, widthUnits: 10),
+  for (var i = 0; i < item.ones; i++)
+    BlockBody(id: '${item.value}-one-$i', colorIndex: 1),
+];
 
 void main() {
   late ContentPack pack;
@@ -61,10 +61,7 @@ void main() {
       expect(blocks.where((b) => b.widthUnits == 10), hasLength(2));
       expect(blocks.where((b) => b.widthUnits == 1), hasLength(3));
       // 总格数应等于数值本身——位值拆解的自洽性。
-      expect(
-        blocks.fold<int>(0, (sum, b) => sum + b.cellCount),
-        23,
-      );
+      expect(blocks.fold<int>(0, (sum, b) => sum + b.cellCount), 23);
     });
 
     test('100 拆成 10 个十条，正好填满百格板', () {

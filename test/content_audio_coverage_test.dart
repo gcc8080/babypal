@@ -14,6 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// 字却忘了跑 `dart run tool/gen_audio.dart`，构建阶段就应该发现，而不是等
 /// 孩子点下去发现没声音——静默是 3 岁用户无法理解的失败模式。
 void main() {
+  late ContentLibrary library;
   late Set<String> packVoiceKeys;
   late Set<String> audioFiles;
 
@@ -28,21 +29,83 @@ void main() {
         .toList();
 
     expect(packs, isNotEmpty, reason: 'assets/packs 下应有内容包');
-    packVoiceKeys = ContentLibrary(packs).allVoiceKeys;
+    library = ContentLibrary(packs);
+    packVoiceKeys = library.allVoiceKeys;
 
     final dir = Directory('assets/audio');
     audioFiles = !dir.existsSync()
         ? <String>{}
         : dir
-            .listSync()
-            .whereType<File>()
-            .where((f) => f.path.endsWith(VoiceResolver.audioExtension))
-            .map((f) => f.uri.pathSegments.last)
-            .map((n) => n.substring(
+              .listSync()
+              .whereType<File>()
+              .where((f) => f.path.endsWith(VoiceResolver.audioExtension))
+              .map((f) => f.uri.pathSegments.last)
+              .map(
+                (n) => n.substring(
                   0,
                   n.length - VoiceResolver.audioExtension.length,
-                ))
-            .toSet();
+                ),
+              )
+              .toSet();
+  });
+
+  test('内容包引用的每个 iconKey 都有对应 SVG 文件', () {
+    // 与音频同理：名词图是「A is for Apple」里飞进来的那张卡，缺一张就是那个
+    // 字母少一张卡片。而 flutter_svg 加载失败的表现是一片空白——正是上次托盘
+    // 缩略图那类「测试全绿、真机什么都没有」的失败模式。
+    final missing = <String>[];
+    for (final noun in library.nouns) {
+      if (!File('assets/icons/${noun.iconKey}.svg').existsSync()) {
+        missing.add('${noun.iconKey} ← ${noun.id}');
+      }
+    }
+    expect(
+      missing,
+      isEmpty,
+      reason:
+          '缺少 ${missing.length} 个图标，跑 '
+          '`dart run tool/fetch_openmoji.dart` 补齐：\n${missing.join('\n')}',
+    );
+  });
+
+  test('图标目录带着 CC BY-SA 4.0 许可与署名', () {
+    // 不是礼节而是发行条件：CC BY-SA 要求署名，家长区素材署名页也直接读它。
+    final license = File('assets/icons/LICENSE.txt');
+    expect(license.existsSync(), isTrue, reason: 'OpenMoji 许可证文件缺失');
+    final text = license.readAsStringSync();
+    expect(text, contains('CC BY-SA 4.0'));
+    expect(text, contains('OpenMoji'));
+  });
+
+  test('每个字母的名词都能解析到，且首字母对得上', () {
+    // 「A is for Apple」的全部承诺就在这一句上：飞进来的每张图都必须真的以
+    // 这个字母开头，否则规格里「全部为正确答案」就是假的。
+    final problems = <String>[];
+    for (final letter in library.letters) {
+      final words = library.wordsFor(letter);
+      if (words.length != letter.wordNounIds.length) {
+        problems.add('${letter.letter}: 有 id 解析不到名词');
+      }
+      if (words.isEmpty) problems.add('${letter.letter}: 一个名词都没有');
+      for (final noun in words) {
+        final en = noun.textEn;
+        if (en == null || !en.toUpperCase().startsWith(letter.letter)) {
+          problems.add('${letter.letter}: ${noun.id} 的英文名「$en」不以该字母开头');
+        }
+      }
+    }
+    expect(problems, isEmpty, reason: problems.join('\n'));
+  });
+
+  test('拼字目标用到的字母都在字母表里', () {
+    final known = library.letters.map((l) => l.letter).toSet();
+    for (final target in library.spellingTargets) {
+      expect(
+        target.letters.toSet().difference(known),
+        isEmpty,
+        reason: '${target.id} 需要的字母积木不存在',
+      );
+    }
   });
 
   test('内容包引用的每个 voiceKey 都有对应音频文件', () {
@@ -50,7 +113,8 @@ void main() {
     expect(
       missing,
       isEmpty,
-      reason: '缺少 ${missing.length} 条音频，跑 '
+      reason:
+          '缺少 ${missing.length} 条音频，跑 '
           '`dart run tool/gen_audio.dart` 补齐：\n${missing.take(20).join('\n')}',
     );
   });
@@ -64,7 +128,8 @@ void main() {
     expect(
       missing,
       isEmpty,
-      reason: '缺少 ${missing.length} 条播报用音频，跑 '
+      reason:
+          '缺少 ${missing.length} 条播报用音频，跑 '
           '`dart run tool/gen_audio.dart` 补齐：\n${missing.join('\n')}',
     );
   });
@@ -73,14 +138,11 @@ void main() {
     final file = File('assets/audio/manifest.json');
     expect(file.existsSync(), isTrue, reason: 'manifest 应由 gen_audio 产出');
 
-    final manifest = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+    final manifest =
+        jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
     final keys = (manifest['keys'] as List).cast<String>().toSet();
 
-    expect(
-      keys.difference(audioFiles),
-      isEmpty,
-      reason: 'manifest 声称存在但文件缺失',
-    );
+    expect(keys.difference(audioFiles), isEmpty, reason: 'manifest 声称存在但文件缺失');
     expect(
       packVoiceKeys.difference(keys),
       isEmpty,
@@ -93,8 +155,9 @@ void main() {
     // 统一产出，抽样足以发现格式性错误。
     final sample = audioFiles.take(12);
     for (final key in sample) {
-      final bytes = File('assets/audio/$key${VoiceResolver.audioExtension}')
-          .readAsBytesSync();
+      final bytes = File(
+        'assets/audio/$key${VoiceResolver.audioExtension}',
+      ).readAsBytesSync();
       expect(bytes.length, greaterThan(44), reason: '$key 文件过小');
 
       final header = bytes.buffer.asByteData(0, 44);
