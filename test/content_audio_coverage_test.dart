@@ -6,6 +6,7 @@ import 'package:baby_pal/core/audio/narration.dart';
 import 'package:baby_pal/core/audio/voice_resolver.dart';
 import 'package:baby_pal/core/content/models.dart';
 import 'package:baby_pal/core/content/pack_loader.dart';
+import 'package:baby_pal/modules/hanzi/hanzi.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// 内容包与音频资源的一致性校验（openspec 任务 3.5）。
@@ -108,6 +109,54 @@ void main() {
     }
   });
 
+  test('合体字的部件在内容库里都找得到', () {
+    // 找不到的部件会被 ContentLibrary 悄悄剔除，表现为「这个字在游戏里没有」。
+    expect(
+      library.unresolvedCompounds,
+      isEmpty,
+      reason: library.unresolvedCompounds.join('\n'),
+    );
+  });
+
+  test('三部件以上的合体字，都有一条两两合成的路可走', () {
+    // 部件加法只能两块两块地合（三岁的手凑不齐三块），所以「森 = 木+木+木」
+    // 必须先合得出「林」。少了这个中间字，这道题就**无解**——而它在界面上
+    // 与一道普通题长得一模一样，孩子会一直试到放弃。
+    final compounds = library.hanzi.where((h) => h.isCompound).toList();
+    List<String> flatten(String char) {
+      final item = library.hanziByChar(char);
+      if (item == null || !item.isCompound) return [char];
+      return [for (final p in item.parts) ...flatten(p)];
+    }
+
+    String tally(List<String> parts) => (parts.toList()..sort()).join();
+
+    final available = {for (final c in compounds) tally(flatten(c.char))};
+    final unsolvable = <String>[];
+    for (final compound in compounds) {
+      final parts = flatten(compound.char);
+      if (parts.length <= 2) continue;
+      // 任取两个部件先合，合出来的东西必须也是个字。
+      final pair = tally([parts[0], parts[1]]);
+      if (!available.contains(pair)) {
+        unsolvable.add('${compound.char}（${parts.join('+')}）缺少两两合成的中间字');
+      }
+    }
+    expect(unsolvable, isEmpty, reason: unsolvable.join('\n'));
+  });
+
+  test('反义词两边的字都在内容包里，否则跷跷板会哑掉', () {
+    final missing = <String>[];
+    for (final pair in library.antonyms) {
+      for (final char in [pair.left, pair.right]) {
+        if (library.hanziByChar(char) == null) {
+          missing.add('$char（来自 ${pair.left}↔${pair.right}）');
+        }
+      }
+    }
+    expect(missing, isEmpty, reason: '这些字取不到读音：${missing.join('、')}');
+  });
+
   test('内容包引用的每个 voiceKey 都有对应音频文件', () {
     final missing = packVoiceKeys.difference(audioFiles).toList()..sort();
     expect(
@@ -123,8 +172,13 @@ void main() {
     // 这些键不来自任何内容包——它们是界面播报用词（加 / 等于 / 可以分成 /
     // 十个一是一个十），由 gen_audio 的内置表产出。少一条就会让算式播报
     // 中间缺一块，而这种缺失在儿童端表现为「说一半就停了」。
-    final missing = Narration.connectiveKeys.difference(audioFiles).toList()
-      ..sort();
+    // 汉字模块的「木 加 木 等于 林」复用的正是加法那两条，所以并进来一起查：
+    // 它们哪天被从 gen_audio 的表里删掉，两个模块会一起哑，而不是只哑一个。
+    final needed = {
+      ...Narration.connectiveKeys,
+      ...HanziNarration.connectiveKeys,
+    };
+    final missing = needed.difference(audioFiles).toList()..sort();
     expect(
       missing,
       isEmpty,

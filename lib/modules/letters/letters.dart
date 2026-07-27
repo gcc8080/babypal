@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart' show Color;
+
 import '../../core/audio/narration.dart';
 import '../../core/content/models.dart';
+import '../../core/design/tokens.dart';
 
 /// 字母模块的播报。
 ///
@@ -62,4 +65,13 @@ const int kMaxWordCards = 3;
 int nextLetterIndex(int current, int count, {bool forward = true}) {
   if (count <= 0) return 0;
   return (current + (forward ? 1 : -1) + count) % count;
+}
+
+/// 字母的取色。
+///
+/// 按字母在表中的位置取，因此 A 永远是同一个颜色——「我的名字第一个字母是
+/// 蓝色的那个」是三岁孩子真的会用的记忆抓手。
+Color letterColor(String letter) {
+  final code = letter.toUpperCase().codeUnitAt(0) - 0x41;
+  return BlockColors.forIndex(code);
 }

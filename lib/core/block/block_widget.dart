@@ -145,13 +145,69 @@ class _BlockWidgetState extends State<BlockWidget>
                 child: SizedBox(
                   width: widget.cellSize,
                   height: widget.cellSize,
-                  child: BlockFace(expression: expression),
+                  child: widget.body.label == null
+                      ? BlockFace(expression: expression)
+                      : _FaceAndLabel(
+                          expression: expression,
+                          label: widget.body.label!,
+                          cellSize: widget.cellSize,
+                        ),
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+/// 写着字的积木：脸占上 34%，字占下 66%。
+///
+/// 与 `GlyphTile` 同一套比例，因为它们在孩子眼里就是同一种东西——托盘里那块
+/// 写着「木」的积木和拼搭台上那块，不该长得不一样。这里不直接复用 `GlyphTile`
+/// 是因为外壳（底色、圆角、选中描边、挤压回弹）已经由 [BlockWidget] 画完了，
+/// 套进来只会多一层重复的装饰盒。
+class _FaceAndLabel extends StatelessWidget {
+  const _FaceAndLabel({
+    required this.expression,
+    required this.label,
+    required this.cellSize,
+  });
+
+  final BlockExpression expression;
+  final String label;
+  final double cellSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      // 无子节点的 `CustomPaint`（`BlockFace`）放进 Flex，交叉轴必须给紧
+      // 约束，否则宽度塌成 0，真机上就是一块没有五官的方块。
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(flex: 34, child: BlockFace(expression: expression)),
+        Expanded(
+          flex: 66,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: cellSize * 0.14,
+              right: cellSize * 0.14,
+              bottom: cellSize * 0.08,
+            ),
+            child: FittedBox(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  height: 1.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

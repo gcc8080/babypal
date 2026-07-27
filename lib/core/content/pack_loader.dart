@@ -218,39 +218,25 @@ class PackLoader {
     return SpellingTarget(id: id, letters: letters, voiceKey: voiceKey);
   }
 
-  /// 汉字要分两趟解析。
+  /// 合体字的 `parts` **不在这里校验**。
   ///
-  /// 第一趟解析出全部合法条目，第二趟才能校验合体字的 `parts` 是否都在包内——
-  /// 因为部件可能定义在引用它的合体字**后面**，一趟扫描会误判。
+  /// 原本是在这里查的：解析完一个包，把包内不存在的部件所引用的合体字丢掉。
+  /// 那条检查看着合理，却把内容可扩展性堵死了——明年新增 `hanzi_l2.json`，
+  /// 里面的新合体字引用的部件都在 `hanzi.json` 里，于是**整包新内容会被静默
+  /// 丢弃**，表现为「加了内容但游戏里没有」，是最难查的那种故障。
+  ///
+  /// 部件能不能找到，是**整个内容库**的问题，不是单个包的问题。检查因此搬到
+  /// [ContentLibrary.hanzi]，在所有包合并之后再做。
   List<HanziItem> _parseHanziList(
     Object? raw, {
     required String source,
     required List<String> skipped,
-  }) {
-    final parsed = _parseList<HanziItem>(
-      raw,
-      source: source,
-      skipped: skipped,
-      parseOne: _parseHanzi,
-    );
-
-    final available = parsed.map((h) => h.char).toSet();
-    final result = <HanziItem>[];
-    for (final item in parsed) {
-      if (item.isCompound) {
-        final missing = item.parts
-            .where((p) => !available.contains(p))
-            .toList();
-        if (missing.isNotEmpty) {
-          // 不能留着——运行时会拿不到部件积木，变成空引用。
-          skipped.add('$source: 合体字「${item.char}」引用了包内不存在的部件 $missing');
-          continue;
-        }
-      }
-      result.add(item);
-    }
-    return result;
-  }
+  }) => _parseList<HanziItem>(
+    raw,
+    source: source,
+    skipped: skipped,
+    parseOne: _parseHanzi,
+  );
 
   HanziItem? _parseHanzi(Map<String, dynamic> json) {
     final char = json['char'];
@@ -265,6 +251,7 @@ class PackLoader {
     final type = switch (typeName) {
       'pictograph' => HanziType.pictograph,
       'compound' => HanziType.compound,
+      'simple' => HanziType.simple,
       _ => null,
     };
     if (type == null) return null;
@@ -334,15 +321,47 @@ class ContentLibrary {
 
   List<NumberItem> get numbers => [for (final p in packs) ...p.numbers];
   List<LetterItem> get letters => [for (final p in packs) ...p.letters];
-  List<HanziItem> get hanzi => [for (final p in packs) ...p.hanzi];
   List<NounItem> get nouns => [for (final p in packs) ...p.nouns];
+
+  /// 全部汉字，**部件找不到的合体字已被剔除**。
+  ///
+  /// 剔除是必要的：留着它，部件加法会摆出一块写着不存在的字的积木，而那个字
+  /// 既没有读音也合不出任何东西——比没有这条内容更糟。
+  ///
+  /// 校验放在这里而不是 [PackLoader]，是因为部件可以来自**另一个包**：
+  /// 明年的 `hanzi_l2.json` 只写新合体字，部件仍在 `hanzi.json` 里。逐包校验
+  /// 会把它整包误杀，而那正是内容可扩展性要保住的场景。
+  List<HanziItem> get hanzi {
+    final all = [for (final p in packs) ...p.hanzi];
+    final available = all.map((h) => h.char).toSet();
+    return [
+      for (final item in all)
+        if (!item.isCompound || item.parts.every(available.contains)) item,
+    ];
+  }
+
+  /// 因为部件找不到而被剔除的合体字，供开发期排查内容包错误。
+  List<String> get unresolvedCompounds {
+    final all = [for (final p in packs) ...p.hanzi];
+    final available = all.map((h) => h.char).toSet();
+    return [
+      for (final item in all)
+        if (item.isCompound && !item.parts.every(available.contains))
+          '合体字「${item.char}」引用了内容库里不存在的部件 '
+              '${item.parts.where((p) => !available.contains(p)).toList()}',
+    ];
+  }
+
   List<AntonymPair> get antonyms => [for (final p in packs) ...p.antonyms];
   List<SpellingTarget> get spellingTargets => [
     for (final p in packs) ...p.spellingTargets,
   ];
 
   /// 全部被跳过的条目，供开发期排查内容包错误。
-  List<String> get skipped => [for (final p in packs) ...p.skipped];
+  List<String> get skipped => [
+    for (final p in packs) ...p.skipped,
+    ...unresolvedCompounds,
+  ];
 
   Set<String> get allVoiceKeys => {for (final p in packs) ...p.allVoiceKeys};
 

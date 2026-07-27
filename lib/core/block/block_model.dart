@@ -65,6 +65,7 @@ class BlockBody {
     this.widthUnits = 1,
     this.heightUnits = 1,
     this.expression = BlockExpression.idle,
+    this.label,
     this.groupId,
     this.anchor,
   }) : assert(widthUnits > 0),
@@ -72,6 +73,16 @@ class BlockBody {
 
   /// 稳定标识。合体/分裂会生成新 id，便于动画层做进出场匹配。
   final String id;
+
+  /// 积木上写着的字。为 null 时是一块纯色积木（数字、加法、轮廓填充都是）。
+  ///
+  /// **写在积木身上，而不是让渲染层另外查表。** 汉字的部件加法要求
+  /// `木 + 木` 合体后那一块自己变成「林」——若字存在外部的 id→字 映射里，
+  /// 那张表就得在合体、分裂、退回、切题四条路径上与积木状态严格同步，
+  /// 迟早会有一处忘了更新，屏幕上就会出现一块写着「木」的林。
+  ///
+  /// 这不违反「儿童端零文字」：这里的字**就是学习内容本身**，不是界面说明。
+  final String? label;
 
   /// 调色板索引，经 `BlockColors.forIndex` 取色。
   ///
@@ -111,8 +122,10 @@ class BlockBody {
     int? widthUnits,
     int? heightUnits,
     BlockExpression? expression,
+    String? label,
     String? groupId,
     GridCell? anchor,
+    bool clearLabel = false,
     bool clearGroup = false,
     bool clearAnchor = false,
   }) {
@@ -122,6 +135,7 @@ class BlockBody {
       widthUnits: widthUnits ?? this.widthUnits,
       heightUnits: heightUnits ?? this.heightUnits,
       expression: expression ?? this.expression,
+      label: clearLabel ? null : (label ?? this.label),
       groupId: clearGroup ? null : (groupId ?? this.groupId),
       anchor: clearAnchor ? null : (anchor ?? this.anchor),
     );
@@ -135,6 +149,7 @@ class BlockBody {
       other.widthUnits == widthUnits &&
       other.heightUnits == heightUnits &&
       other.expression == expression &&
+      other.label == label &&
       other.groupId == groupId &&
       other.anchor == anchor;
 
@@ -145,6 +160,7 @@ class BlockBody {
     widthUnits,
     heightUnits,
     expression,
+    label,
     groupId,
     anchor,
   );
@@ -152,5 +168,6 @@ class BlockBody {
   @override
   String toString() =>
       'BlockBody($id, ${widthUnits}x$heightUnits, color=$colorIndex, '
-      'expr=${expression.name}, anchor=$anchor)';
+      'expr=${expression.name}, '
+      '${label == null ? '' : 'label=$label, '}anchor=$anchor)';
 }

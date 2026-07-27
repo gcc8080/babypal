@@ -172,69 +172,73 @@ void main() {
   });
 
   group('场景五：合体字引用了不存在的部件', () {
-    test('部件缺失 → 跳过该合体字，不产生空引用', () {
-      final result = loader.parse(
-        pack({
-          'schemaVersion': 1,
-          'hanzi': [
-            {
-              'char': '木',
-              'pinyin': 'mù',
-              'type': 'pictograph',
-              'voiceKey': 'zh.hanzi.mu',
-            },
-            // 林 = 木 + 木，部件齐全
-            {
-              'char': '林',
-              'pinyin': 'lín',
-              'type': 'compound',
-              'parts': ['木', '木'],
-              'voiceKey': 'zh.hanzi.lin',
-            },
-            // 明 = 日 + 月，但包里没有「日」和「月」
-            {
-              'char': '明',
-              'pinyin': 'míng',
-              'type': 'compound',
-              'parts': ['日', '月'],
-              'voiceKey': 'zh.hanzi.ming',
-            },
-          ],
-        }),
-        source: 'hanzi.json',
-      );
+    /// 部件齐不齐是**整个内容库**的问题，不是单个包的问题——所以这一组断言
+    /// 全都落在 [ContentLibrary] 上。逐包校验会把「新包引用老包里的部件」
+    /// 这种再正常不过的写法误杀，而那正是内容可扩展性的主场景。
+    ContentPack packOf(List<Map<String, Object?>> hanzi, String source) =>
+        loader.parse(
+          pack({'schemaVersion': 1, 'hanzi': hanzi}),
+          source: source,
+        )!;
 
-      expect(result!.hanzi.map((h) => h.char), ['木', '林']);
-      expect(result.skipped.single, contains('明'));
-      expect(result.skipped.single, contains('日'));
+    const mu = {
+      'char': '木',
+      'pinyin': 'mù',
+      'type': 'pictograph',
+      'voiceKey': 'zh.hanzi.mu',
+    };
+    const lin = {
+      'char': '林',
+      'pinyin': 'lín',
+      'type': 'compound',
+      'parts': ['木', '木'],
+      'voiceKey': 'zh.hanzi.lin',
+    };
+    const ming = {
+      'char': '明',
+      'pinyin': 'míng',
+      'type': 'compound',
+      'parts': ['日', '月'],
+      'voiceKey': 'zh.hanzi.ming',
+    };
+
+    test('部件缺失 → 剔除该合体字，不产生空引用', () {
+      final library = ContentLibrary([
+        packOf([mu, lin, ming], 'hanzi.json'),
+      ]);
+
+      expect(library.hanzi.map((h) => h.char), ['木', '林']);
+      expect(library.unresolvedCompounds.single, contains('明'));
+      expect(library.unresolvedCompounds.single, contains('日'));
+      expect(library.skipped.single, contains('明'));
     });
 
-    test('部件定义在合体字之后也算齐全（两趟解析）', () {
+    test('部件定义在合体字之后也算齐全', () {
       // 「林」在前、「木」在后。一趟扫描会误判为部件缺失。
-      final result = loader.parse(
-        pack({
-          'schemaVersion': 1,
-          'hanzi': [
-            {
-              'char': '林',
-              'pinyin': 'lín',
-              'type': 'compound',
-              'parts': ['木', '木'],
-              'voiceKey': 'zh.hanzi.lin',
-            },
-            {
-              'char': '木',
-              'pinyin': 'mù',
-              'type': 'pictograph',
-              'voiceKey': 'zh.hanzi.mu',
-            },
-          ],
-        }),
-        source: 'order.json',
-      );
+      final library = ContentLibrary([
+        packOf([lin, mu], 'order.json'),
+      ]);
 
-      expect(result!.hanzi.map((h) => h.char), ['林', '木']);
-      expect(result.skipped, isEmpty);
+      expect(library.hanzi.map((h) => h.char), ['林', '木']);
+      expect(library.skipped, isEmpty);
+    });
+
+    test('部件来自**另一个包**也算齐全——内容可扩展性靠这条', () {
+      // 明年的 hanzi_l2.json 就长这样：只写新字，部件引用老包里的。
+      final library = ContentLibrary([
+        packOf([mu], 'hanzi.json'),
+        packOf([lin], 'hanzi_l2.json'),
+      ]);
+
+      expect(library.hanzi.map((h) => h.char), ['木', '林']);
+      expect(library.skipped, isEmpty);
+    });
+
+    test('单个包自己看是「部件缺失」，也不该在解析阶段就被丢掉', () {
+      // 解析阶段留着，合并之后再判——否则第二个包永远等不到第一个包。
+      final l2 = packOf([lin], 'hanzi_l2.json');
+      expect(l2.hanzi.map((h) => h.char), ['林']);
+      expect(l2.skipped, isEmpty);
     });
   });
 

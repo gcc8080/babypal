@@ -8,6 +8,7 @@ import 'core/content/content_providers.dart';
 import 'core/design/tokens.dart';
 import 'modules/addition/addition_page.dart';
 import 'modules/home/home_page.dart';
+import 'modules/hanzi/pictograph_page.dart';
 import 'modules/home/module_id.dart';
 import 'modules/letters/letters_page.dart';
 import 'modules/numbers/place_value_page.dart';
@@ -94,15 +95,16 @@ class _BlockPlanetAppState extends State<BlockPlanetApp>
       home: Builder(
         builder: (context) => HomePage(
           onModuleSelected: (module) {
-            // 尚未实现的模块静默忽略——绝不能弹「敬请期待」之类的文字。
-            final builder = switch (module) {
+            // 五块大陆全部有落点了，因此这里**穷尽**枚举、不留 `_` 兜底：
+            // 日后新增模块时，忘了接线会在编译期就红，而不是在星球地图上
+            // 点下去毫无反应——那是三岁的他唯一无法理解的失败模式。
+            final WidgetBuilder builder = switch (module) {
               ModuleId.sandbox => (_) => const SandboxPage(),
               ModuleId.numbers => (_) => const PlaceValuePage(),
               ModuleId.addition => (_) => const AdditionPage(),
               ModuleId.letters => (_) => const LettersPage(),
-              _ => null,
+              ModuleId.hanzi => (_) => const PictographPage(),
             };
-            if (builder == null) return;
             Navigator.of(
               context,
             ).push(MaterialPageRoute<void>(builder: builder));

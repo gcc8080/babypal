@@ -12,7 +12,7 @@ import '../../core/content/content_providers.dart';
 import '../../core/content/models.dart';
 import '../../core/design/controls.dart';
 import '../../core/design/tokens.dart';
-import 'letter_tile.dart';
+import '../../core/design/glyph_tile.dart';
 import 'letters.dart';
 import 'letters_page.dart';
 
@@ -370,8 +370,8 @@ class _Slot extends StatelessWidget {
             scale: candidate.isNotEmpty || demonstrating ? 1.08 : 1.0,
             duration: const Duration(milliseconds: 160),
             child: filled
-                ? LetterTile(
-                    letter: targetLetter,
+                ? GlyphTile(
+                    glyph: targetLetter,
                     color: solved
                         ? RoundActionButton.doneColor
                         : letterColor(targetLetter),
@@ -379,8 +379,8 @@ class _Slot extends StatelessWidget {
                         ? BlockExpression.happy
                         : BlockExpression.idle,
                   )
-                : LetterTile(
-                    letter: targetLetter,
+                : GlyphTile(
+                    glyph: targetLetter,
                     // 影子槽：底色很淡，字形反而用该字母**自己的颜色**加深。
                     // 白字画在淡底上几乎看不见，而这个字形就是「这一格要哪个
                     // 字母」的全部提示。托盘里那块的颜色也是同一个，
@@ -407,8 +407,8 @@ class _TrayTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final view = LetterTile(
-      letter: tile.letter,
+    final view = GlyphTile(
+      glyph: tile.letter,
       color: letterColor(tile.letter),
       showFace: false,
     );

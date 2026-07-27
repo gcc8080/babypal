@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "hanzi": [
+    {
+      "char": "山",
+      "pinyin": "shān",
+      "type": "pictograph",
+      "imageKey": "mountain",
+      "voiceKey": "zh.hanzi.shan"
+    },
+    {
+      "char": "田",
+      "pinyin": "tián",
+      "type": "pictograph",
+      "imageKey": "field",
+      "voiceKey": "zh.hanzi.tian"
+    },
+    {
+      "char": "土",
+      "pinyin": "tǔ",
+      "type": "pictograph",
+      "imageKey": "soil",
+      "voiceKey": "zh.hanzi.tu"
+    },
+    {
+      "char": "木",
+      "pinyin": "mù",
+      "type": "pictograph",
+      "imageKey": "tree",
+      "voiceKey": "zh.hanzi.mu"
+    },
+    {
+      "char": "日",
+      "pinyin": "rì",
+      "type": "pictograph",
+      "imageKey": "sun",
+      "voiceKey": "zh.hanzi.ri"
+    },
+    {
+      "char": "月",
+      "pinyin": "yuè",
+      "type": "pictograph",
+      "imageKey": "moon",
+      "voiceKey": "zh.hanzi.yue"
+    },
+    {
+      "char": "水",
+      "pinyin": "shuǐ",
+      "type": "pictograph",
+      "imageKey": "water",
+      "voiceKey": "zh.hanzi.shui"
+    },
+    {
+      "char": "火",
+      "pinyin": "huǒ",
+      "type": "pictograph",
+      "imageKey": "fire",
+      "voiceKey": "zh.hanzi.huo"
+    },
+    {
+      "char": "人",
+      "pinyin": "rén",
+      "type": "pictograph",
+      "imageKey": "person",
+      "voiceKey": "zh.hanzi.ren"
+    },
+
+    {
+      "char": "林",
+      "pinyin": "lín",
+      "type": "compound",
+      "parts": ["木", "木"],
+      "voiceKey": "zh.hanzi.lin"
+    },
+    {
+      "char": "森",
+      "pinyin": "sēn",
+      "type": "compound",
+      "parts": ["木", "木", "木"],
+      "voiceKey": "zh.hanzi.sen"
+    },
+    {
+      "char": "明",
+      "pinyin": "míng",
+      "type": "compound",
+      "parts": ["日", "月"],
+      "voiceKey": "zh.hanzi.ming"
+    },
+    {
+      "char": "休",
+      "pinyin": "xiū",
+      "type": "compound",
+      "parts": ["人", "木"],
+      "voiceKey": "zh.hanzi.xiu"
+    },
+    {
+      "char": "从",
+      "pinyin": "cóng",
+      "type": "compound",
+      "parts": ["人", "人"],
+      "voiceKey": "zh.hanzi.cong"
+    },
+    {
+      "char": "众",
+      "pinyin": "zhòng",
+      "type": "compound",
+      "parts": ["人", "人", "人"],
+      "voiceKey": "zh.hanzi.zhong"
+    },
+
+    {
+      "char": "大",
+      "pinyin": "dà",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.da"
+    },
+    {
+      "char": "小",
+      "pinyin": "xiǎo",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.xiao"
+    },
+    {
+      "char": "多",
+      "pinyin": "duō",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.duo"
+    },
+    {
+      "char": "少",
+      "pinyin": "shǎo",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.shao"
+    },
+    {
+      "char": "前",
+      "pinyin": "qián",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.qian"
+    },
+    {
+      "char": "后",
+      "pinyin": "hòu",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.hou"
+    },
+    {
+      "char": "左",
+      "pinyin": "zuǒ",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.zuo"
+    },
+    {
+      "char": "右",
+      "pinyin": "yòu",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.you"
+    }
+  ],
+  "antonyms": [
+    ["大", "小"],
+    ["多", "少"],
+    ["前", "后"],
+    ["左", "右"]
+  ]
+}

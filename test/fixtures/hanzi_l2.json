@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "hanzi": [
+    {
+      "char": "炎",
+      "pinyin": "yán",
+      "type": "compound",
+      "parts": ["火", "火"],
+      "voiceKey": "zh.hanzi.yan"
+    },
+    {
+      "char": "凸",
+      "pinyin": "tū",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.tu2"
+    },
+    {
+      "char": "凹",
+      "pinyin": "āo",
+      "type": "simple",
+      "voiceKey": "zh.hanzi.ao"
+    }
+  ],
+  "antonyms": [["凸", "凹"]]
+}

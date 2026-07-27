@@ -12,7 +12,7 @@ import '../../core/content/content_providers.dart';
 import '../../core/content/models.dart';
 import '../../core/design/controls.dart';
 import '../../core/design/tokens.dart';
-import 'letter_tile.dart';
+import '../../core/design/glyph_tile.dart';
 import 'outline_page.dart';
 import 'letters.dart';
 
@@ -278,8 +278,8 @@ class _PressableLetterState extends State<_PressableLetter> {
         scale: _pressed ? BlockMetrics.squashScale : 1.0,
         duration: Duration(milliseconds: _pressed ? 90 : 320),
         curve: _pressed ? Curves.easeOut : Curves.elasticOut,
-        child: LetterTile(
-          letter: widget.letter.letter,
+        child: GlyphTile(
+          glyph: widget.letter.letter,
           color: letterColor(widget.letter.letter),
           expression: _pressed ? BlockExpression.happy : BlockExpression.idle,
         ),

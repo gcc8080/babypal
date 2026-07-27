@@ -1,5 +1,5 @@
 import 'package:baby_pal/core/block/block_face.dart';
-import 'package:baby_pal/modules/letters/letter_tile.dart';
+import 'package:baby_pal/core/design/glyph_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,7 +23,7 @@ void main() {
             child: SizedBox(
               width: box.width,
               height: box.height,
-              child: const LetterTile(letter: 'A', color: Colors.teal),
+              child: const GlyphTile(glyph: 'A', color: Colors.teal),
             ),
           ),
         ),
@@ -66,8 +66,8 @@ void main() {
               child: SizedBox(
                 width: 200,
                 height: 200,
-                child: LetterTile(
-                  letter: 'a',
+                child: GlyphTile(
+                  glyph: 'a',
                   color: Colors.teal,
                   showFace: false,
                 ),
@@ -87,7 +87,7 @@ void main() {
               child: SizedBox(
                 width: 240,
                 height: 240,
-                child: LetterTile(letter: 'A', color: Colors.teal),
+                child: GlyphTile(glyph: 'A', color: Colors.teal),
               ),
             ),
           ),

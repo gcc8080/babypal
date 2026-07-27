@@ -4,7 +4,7 @@ import 'package:baby_pal/core/content/pack_loader.dart';
 import 'package:baby_pal/core/design/controls.dart';
 import 'package:baby_pal/core/design/tokens.dart';
 import 'package:baby_pal/modules/letters/case_match_page.dart';
-import 'package:baby_pal/modules/letters/letter_tile.dart';
+import 'package:baby_pal/core/design/glyph_tile.dart';
 import 'package:baby_pal/modules/letters/name_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,13 +55,13 @@ void main() {
 
   /// 某个大写槽当前显示的字形。配好或演示中会变成「Aa」。
   String glyphOf(WidgetTester tester, String letter) => tester
-      .widget<LetterTile>(
+      .widget<GlyphTile>(
         find.descendant(
           of: find.byKey(ValueKey('upper-$letter')),
-          matching: find.byType(LetterTile),
+          matching: find.byType(GlyphTile),
         ),
       )
-      .letter;
+      .glyph;
 
   Future<void> match(WidgetTester tester, String lower, String upper) async {
     await tester.tap(find.byKey(ValueKey('lower-$lower')));

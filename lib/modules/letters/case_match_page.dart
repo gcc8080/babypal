@@ -12,7 +12,7 @@ import '../../core/content/content_providers.dart';
 import '../../core/content/models.dart';
 import '../../core/design/controls.dart';
 import '../../core/design/tokens.dart';
-import 'letter_tile.dart';
+import '../../core/design/glyph_tile.dart';
 import 'letters.dart';
 import 'name_page.dart';
 
@@ -315,8 +315,8 @@ class _UpperSlot extends StatelessWidget {
             duration: const Duration(milliseconds: 140),
             child: Opacity(
               opacity: demonstrating && !matched ? 0.75 : 1.0,
-              child: LetterTile(
-                letter: paired
+              child: GlyphTile(
+                glyph: paired
                     ? '${letter.letter}${letter.lowercase}'
                     : letter.letter,
                 color: matched
@@ -349,8 +349,8 @@ class _LowerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tile = LetterTile(
-      letter: letter.lowercase,
+    final tile = GlyphTile(
+      glyph: letter.lowercase,
       color: letterColor(letter.letter),
       showFace: false,
       expression: BlockExpression.idle,

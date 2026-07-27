@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
 
-import '../../core/block/block_face.dart';
-import '../../core/block/block_model.dart';
-import '../../core/design/tokens.dart';
+import '../block/block_face.dart';
+import '../block/block_model.dart';
 
-/// 一块字母积木。
+/// 一块写着字的积木。
 ///
-/// **字形占下 66%，脸占上 34%。** 把脸和字母叠在一起试过，结果是两样都看不
-/// 清；上下分区之后，脸还是那张熟悉的脸（眨眼、开心时眼睛弯成弧），字母也
-/// 还是那个字母。他在数字模块认识的那套「方块是活的」的语汇，走进字母模块
-/// 不需要重新学。
+/// **字形占下 66%，脸占上 34%。** 把脸和字叠在一起试过，结果是两样都看不
+/// 清；上下分区之后，脸还是那张熟悉的脸（眨眼、开心时眼睛弯成弧），字也
+/// 还是那个字。他在数字模块认识的那套「方块是活的」的语汇，走进字母、汉字
+/// 模块都不需要重新学。
 ///
-/// 儿童端零文字这条红线不适用于这里：字母**就是内容本身**，不是界面说明。
-class LetterTile extends StatelessWidget {
-  const LetterTile({
+/// 放在 `core/design/` 而不是某个模块里：字母积木和汉字积木**是同一个东西**，
+/// 只是写的字不一样。它原本叫 `LetterTile` 住在 letters 模块，汉字模块要用时
+/// 只有三条路——跨模块 import、复制一份、或者搬到公共层。前两条一条比一条
+/// 糟，而它本来就不含任何字母专有的东西（取色是模块自己的事，见
+/// `letterColor` 与 `hanziColor`）。
+///
+/// 儿童端零文字这条红线不适用于这里：这里的字**就是内容本身**，不是界面说明。
+class GlyphTile extends StatelessWidget {
+  const GlyphTile({
     super.key,
-    required this.letter,
+    required this.glyph,
     required this.color,
     this.expression = BlockExpression.idle,
     this.showFace = true,
@@ -23,8 +28,9 @@ class LetterTile extends StatelessWidget {
     this.glyphColor,
   });
 
-  /// 显示的字形。大写小写都由调用方决定——大小写配对玩法要的正是这个自由度。
-  final String letter;
+  /// 显示的字形。字母的大小写、汉字写哪个字，都由调用方决定——
+  /// 大小写配对玩法要的正是这个自由度。
+  final String glyph;
   final Color color;
   final BlockExpression expression;
 
@@ -87,7 +93,7 @@ class LetterTile extends StatelessWidget {
                     ),
                     child: FittedBox(
                       child: Text(
-                        letter,
+                        glyph,
                         style: TextStyle(
                           color: glyphColor ?? Colors.white,
                           fontWeight: FontWeight.w800,
@@ -104,13 +110,4 @@ class LetterTile extends StatelessWidget {
       },
     );
   }
-}
-
-/// 字母的取色。
-///
-/// 按字母在表中的位置取，因此 A 永远是同一个颜色——「我的名字第一个字母是
-/// 蓝色的那个」是三岁孩子真的会用的记忆抓手。
-Color letterColor(String letter) {
-  final code = letter.toUpperCase().codeUnitAt(0) - 0x41;
-  return BlockColors.forIndex(code);
 }
