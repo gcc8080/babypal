@@ -17,6 +17,43 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
+// ── 给插件子工程补上 kotlin-android（AGP 9 + builtInKotlin=false 的坑）──────
+//
+// package:jni 1.0.1 起，它的 android/build.gradle 会判断 AGP 主版本：AGP ≥ 9 时
+// 不再 `apply plugin: 'kotlin-android'`，改为指望 AGP 自带的 built-in Kotlin 去
+// 注册顶层 `kotlin {}` 扩展。而本项目的 android/gradle.properties 保留了 Flutter
+// 模板写入的 `android.builtInKotlin=false`，于是两头落空——jni 脚本末尾那句
+// `kotlin { compilerOptions { ... } }` 直接报
+// `Could not find method kotlin() ... on project ':jni'`，构建在配置阶段就挂。
+//
+// settings.gradle.kts 里的 `id("org.jetbrains.kotlin.android") ... apply false`
+// 只把 KGP 放上 classpath，不会作用到 flutter-plugin-loader 动态加进来的插件子
+// 工程，所以要在这里手动 apply。
+//
+// 用 withPlugin 而非 afterEvaluate：回调在子工程执行 `apply plugin:
+// 'com.android.library'` 的那一刻同步触发，早于同一脚本后面的 kotlin {} 块——
+// afterEvaluate 太晚，脚本那时已经报错了。
+//
+// 跳过 :app：它的 Kotlin 由 Flutter Gradle Plugin 负责，重复 apply 徒增变数。
+// 已有 kotlin 扩展的子工程也跳过，避免和自带 KGP 的插件打架。
+// 注意 `target` 这个别名：withPlugin 的 lambda receiver 是 AppliedPlugin，它自己
+// 就有 name/getName()，直接写 `name` 拿到的是插件名而非工程名。显式绑定免得踩坑。
+subprojects {
+    val target = this
+    if (target.name != "app") {
+        target.pluginManager.withPlugin("com.android.library") {
+            if (target.extensions.findByName("kotlin") == null) {
+                runCatching { target.pluginManager.apply("org.jetbrains.kotlin.android") }
+                    .onFailure {
+                        target.logger.warn(
+                            "[baby_pal] ${target.name}: 补 kotlin-android 失败 -> ${it.message}",
+                        )
+                    }
+            }
+        }
+    }
+}
+
 // ── 绕开 NDK 28 + CMake 3.22.1 在 macOS 上的工具链缺陷 ──────────────────
 //
 // AGP 默认使用 Android SDK 自带的 CMake 3.22.1。它与 NDK 28.2 搭配时不会把

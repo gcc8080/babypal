@@ -33,8 +33,19 @@ jobs:
           channel: stable
           cache: true
 
+      # pubspec.lock 里的 hosted url 必须是 pub.dev。pub 把 host 当成 source 标识
+      # 的一部分，只要 lock 里写的是镜像（本机开了 PUB_HOSTED_URL 就会这样），CI
+      # 这边默认 host 对不上，整份 lock 会被丢弃重新解析——等于没锁版本。
+      - name: 校验 pubspec.lock 未被镜像 URL 污染
+        run: |
+          if grep -nE 'url: "https://(pub\.flutter-io\.cn|mirrors\.|pub\.dartlang\.org)' pubspec.lock; then
+            echo "::error file=pubspec.lock::pubspec.lock 含非 pub.dev 的 hosted url，CI 会丢弃整份 lock 重新解析依赖。修复：本地执行 env -u PUB_HOSTED_URL flutter pub get 后重新提交。"
+            exit 1
+          fi
+
+      # --enforce-lockfile：解析结果与 lock 不一致就直接失败，而不是默默升版本。
       - name: pub get
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: analyze
         run: flutter analyze
@@ -58,7 +69,7 @@ jobs:
           cache: true
 
       - name: pub get
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: build iOS (no codesign)
         run: flutter build ios --no-codesign

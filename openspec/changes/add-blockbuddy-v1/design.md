@@ -110,6 +110,10 @@ Future<String> resolve(String key) async {
 
 同时从 `.gitignore` 移除 `pubspec.lock`——这是**应用**不是 library，锁文件必须入库，否则 CI 与本机会解析出不同的依赖版本组合。
 
+**入库的 `pubspec.lock` 里 hosted url 必须是 `https://pub.dev`。** pub 把 host 当作 source 标识的一部分：本机若开着 `PUB_HOSTED_URL=https://pub.flutter-io.cn`，写出的 lock 每一项 url 都是镜像地址，而 CI 默认 host 是 pub.dev，对不上就**整份 lock 作废、重新解析**——锁文件形同虚设，CI 实际跑的是「当下最新版」。这不是理论风险：`jni` 就因此在 CI 上从锁定的 1.0.0 跳到 1.0.1，撞上 D14 那个 AGP 9 的坑。
+
+因此本机拉包用 `env -u PUB_HOSTED_URL flutter pub get`（镜像加速改用 `.pub-cache` 缓存，别用环境变量），CI 侧则有两道闸：一道 grep 卡住镜像 url，一道 `flutter pub get --enforce-lockfile` 保证解析结果与 lock 完全一致，不一致就失败而不是默默升版本。
+
 **平台最低版本无需显式配置**——实测各方要求均不高于 Flutter 3.44.8 的默认值：
 
 | 来源 | Android minSdk | iOS |
@@ -157,6 +161,16 @@ Future<String> resolve(String key) async {
 **执行红线**：原创角色造型与配色；不使用「Numberblocks」「数字积木」作为 App 名或任何角色名。
 
 OpenMoji 为 CC BY-SA 4.0，义务是**署名**且**图形衍生作品同协议共享**——需在家长区提供署名页，并在 `assets/icons/` 下保留 LICENSE 文件。
+
+### D14. AGP 9 关掉 built-in Kotlin，插件子工程的 kotlin-android 由根脚本补
+
+`android/gradle.properties` 保留 Flutter 模板写入的 `android.builtInKotlin=false`（`:app` 的 Kotlin 由 Flutter Gradle Plugin 负责，不动为宜）。代价是**依赖里的 Android 插件子工程可能拿不到 `kotlin {}` 扩展**：
+
+`package:jni` 1.0.1 起会判断 AGP 主版本，AGP ≥ 9 时不再 `apply plugin: 'kotlin-android'`，改为指望 AGP 自带的 built-in Kotlin 注册 `kotlin {}`。本项目用 AGP 9.0.1 且把 built-in Kotlin 关了，两头落空，配置阶段直接报 `Could not find method kotlin() ... on project ':jni'`。
+
+`settings.gradle.kts` 里 `id("org.jetbrains.kotlin.android") ... apply false` 只把 KGP 放上 classpath，不会作用到 flutter-plugin-loader 动态加入的插件子工程，因此在 `android/build.gradle.kts` 里手动补：对非 `:app` 的子工程注册 `pluginManager.withPlugin("com.android.library")`，回调里若 `kotlin` 扩展缺失就 apply KGP。用 `withPlugin` 而非 `afterEvaluate`——回调在子工程 apply `com.android.library` 的那一刻同步触发，早于同一脚本后面的 `kotlin {}` 块；`afterEvaluate` 太晚，脚本那时已经报错。
+
+**替代方案**：改成 `android.builtInKotlin=true`。没选，因为它会同时改变 `:app` 的 Kotlin 编译路径，而 `:app` 现在走的是 Flutter Gradle Plugin 那条已验证的路——为一个依赖的兼容性去动主模块的编译链，不划算。
 
 ## Risks / Trade-offs
 
