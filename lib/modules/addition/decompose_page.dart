@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/audio_bus.dart';
 import '../../core/audio/audio_providers.dart';
-import '../../core/audio/narration.dart';
+import '../../core/settings/settings_providers.dart';
 import '../../core/audio/sfx.dart';
 import '../../core/block/block_board.dart';
 import '../../core/block/block_board_controller.dart';
@@ -68,6 +68,9 @@ class _DecomposePageState extends ConsumerState<DecomposePage> {
 
   AudioBus get _audio => ref.read(audioBusProvider);
 
+  /// 念一遍还是念两遍，由家长设置说了算。**每次现读**，因此设置页一关下一句就生效。
+  NarrationStyle get _narration => ref.read(narrationProvider);
+
   bool get _allFound => _found.length == _total - 1;
 
   @override
@@ -117,7 +120,7 @@ class _DecomposePageState extends ConsumerState<DecomposePage> {
   void _announceTotal({bool interrupt = false}) {
     unawaited(
       _audio.speakSequence(
-        Narration.bilingualNumber(_total),
+        _narration.number(_total),
         policy: interrupt ? VoicePolicy.interrupt : VoicePolicy.queue,
       ),
     );
@@ -169,7 +172,7 @@ class _DecomposePageState extends ConsumerState<DecomposePage> {
     // 「五 可以分成 二 和 三」，中英各一遍。
     unawaited(
       _audio.speakSequence(
-        Narration.bilingualDecomposition(_total, left, right),
+        _narration.decomposition(_total, left, right),
         policy: VoicePolicy.interrupt,
       ),
     );
@@ -187,7 +190,7 @@ class _DecomposePageState extends ConsumerState<DecomposePage> {
     if (cut != null) {
       unawaited(
         _audio.speakSequence(
-          Narration.bilingualAddition(cut.a, cut.b),
+          _narration.addition(cut.a, cut.b),
           policy: VoicePolicy.interrupt,
         ),
       );
@@ -337,7 +340,7 @@ class _DecomposePageState extends ConsumerState<DecomposePage> {
                             ? _announceTotal(interrupt: true)
                             : unawaited(
                                 _audio.speakSequence(
-                                  Narration.bilingualDecomposition(
+                                  _narration.decomposition(
                                     _total,
                                     cut.a,
                                     cut.b,

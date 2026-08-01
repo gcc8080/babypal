@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/audio_bus.dart';
 import '../../core/audio/audio_providers.dart';
-import '../../core/audio/narration.dart';
+import '../../core/settings/settings_providers.dart';
 import '../../core/audio/sfx.dart';
 import '../../core/block/block_board.dart';
 import '../../core/block/block_board_controller.dart';
@@ -79,6 +79,9 @@ class _EquationPageState extends ConsumerState<EquationPage> {
 
   AudioBus get _audio => ref.read(audioBusProvider);
 
+  /// 念一遍还是念两遍，由家长设置说了算。**每次现读**，因此设置页一关下一句就生效。
+  NarrationStyle get _narration => ref.read(narrationProvider);
+
   List<int> get _choices => equationChoices(_problem, _problemIndex);
 
   @override
@@ -129,7 +132,7 @@ class _EquationPageState extends ConsumerState<EquationPage> {
   void _askQuestion({bool interrupt = false}) {
     unawaited(
       _audio.speakSequence(
-        Narration.bilingualAdditionQuestion(_problem.a, _problem.b),
+        _narration.additionQuestion(_problem.a, _problem.b),
         policy: interrupt ? VoicePolicy.interrupt : VoicePolicy.queue,
       ),
     );
@@ -176,7 +179,7 @@ class _EquationPageState extends ConsumerState<EquationPage> {
 
     unawaited(
       _audio.speakSequence(
-        Narration.bilingualAddition(_problem.a, _problem.b),
+        _narration.addition(_problem.a, _problem.b),
         policy: VoicePolicy.interrupt,
       ),
     );
@@ -293,7 +296,7 @@ class _EquationPageState extends ConsumerState<EquationPage> {
                     ? _askQuestion(interrupt: true)
                     : unawaited(
                         _audio.speakSequence(
-                          Narration.bilingualAddition(_problem.a, _problem.b),
+                          _narration.addition(_problem.a, _problem.b),
                           policy: VoicePolicy.interrupt,
                         ),
                       ),

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/audio/audio_bus.dart';
 import '../../core/audio/audio_providers.dart';
 import '../../core/audio/narration.dart';
+import '../../core/settings/settings_providers.dart';
 import '../../core/audio/sfx.dart';
 import '../../core/block/block_board.dart';
 import '../../core/block/block_board_controller.dart';
@@ -60,6 +61,9 @@ class _PlaceValuePageState extends ConsumerState<PlaceValuePage> {
   Timer? _compactTimer;
 
   AudioBus get _audio => ref.read(audioBusProvider);
+
+  /// 念一遍还是念两遍，由家长设置说了算。**每次现读**，因此设置页一关下一句就生效。
+  NarrationStyle get _narration => ref.read(narrationProvider);
 
   @override
   void initState() {
@@ -255,7 +259,7 @@ class _PlaceValuePageState extends ConsumerState<PlaceValuePage> {
   void _announceTarget({bool interrupt = false}) {
     unawaited(
       _audio.speakSequence(
-        Narration.bilingualNumber(_target),
+        _narration.number(_target),
         policy: interrupt ? VoicePolicy.interrupt : VoicePolicy.queue,
       ),
     );

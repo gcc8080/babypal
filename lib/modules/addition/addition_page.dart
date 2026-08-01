@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/audio_bus.dart';
 import '../../core/audio/audio_providers.dart';
-import '../../core/audio/narration.dart';
+import '../../core/settings/settings_providers.dart';
 import '../../core/audio/sfx.dart';
 import '../../core/block/block_board.dart';
 import '../../core/block/block_board_controller.dart';
@@ -57,6 +57,9 @@ class _AdditionPageState extends ConsumerState<AdditionPage> {
   bool _mutating = false;
 
   AudioBus get _audio => ref.read(audioBusProvider);
+
+  /// 念一遍还是念两遍，由家长设置说了算。**每次现读**，因此设置页一关下一句就生效。
+  NarrationStyle get _narration => ref.read(narrationProvider);
 
   @override
   void initState() {
@@ -116,7 +119,7 @@ class _AdditionPageState extends ConsumerState<AdditionPage> {
   void _askQuestion({bool interrupt = false}) {
     unawaited(
       _audio.speakSequence(
-        Narration.bilingualAdditionQuestion(_problem.a, _problem.b),
+        _narration.additionQuestion(_problem.a, _problem.b),
         policy: interrupt ? VoicePolicy.interrupt : VoicePolicy.queue,
       ),
     );
@@ -211,7 +214,7 @@ class _AdditionPageState extends ConsumerState<AdditionPage> {
     // 「三 加 二 等于 五」，中英各一遍。
     unawaited(
       _audio.speakSequence(
-        Narration.bilingualAddition(_problem.a, _problem.b),
+        _narration.addition(_problem.a, _problem.b),
         policy: VoicePolicy.interrupt,
       ),
     );

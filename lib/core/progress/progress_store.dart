@@ -131,13 +131,17 @@ class ProgressSnapshot {
 /// 存储用 `shared_preferences` + 单个 JSON 字符串（design.md D8）：数据量是
 /// 「哪些内容练过几次」量级，引入嵌入式数据库要付 codegen 与 schema 迁移
 /// 成本，收益为零。
-class ProgressStore {
+class ProgressStore extends ChangeNotifier {
+  /// [_prefs] 为 null 时是内存版：记得住这一次会话，重启就没了。
+  ///
+  /// 与 [SettingsStore] 同一条降级路径——`shared_preferences` 打不开时
+  /// App 仍然能玩，只是时长与统计不跨启动累积。
   ProgressStore(this._prefs, {DateTime Function()? clock})
     : _clock = clock ?? DateTime.now;
 
   static const String storageKey = 'baby_pal.progress.v1';
 
-  final SharedPreferences _prefs;
+  final SharedPreferences? _prefs;
   final DateTime Function() _clock;
 
   ProgressSnapshot _snapshot = const ProgressSnapshot();
@@ -147,14 +151,19 @@ class ProgressStore {
   DateTime? _sessionStart;
 
   static Future<ProgressStore> open({DateTime Function()? clock}) async {
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences? prefs;
+    try {
+      prefs = await SharedPreferences.getInstance();
+    } on Exception catch (e) {
+      debugPrint('ProgressStore: 存档打不开，降级为内存统计 -> $e');
+    }
     final store = ProgressStore(prefs, clock: clock);
     store.load();
     return store;
   }
 
   void load() {
-    final raw = _prefs.getString(storageKey);
+    final raw = _prefs?.getString(storageKey);
     if (raw == null) {
       _snapshot = ProgressSnapshot(dayKey: _todayKey());
       return;
@@ -170,7 +179,9 @@ class ProgressStore {
   }
 
   Future<void> _persist() async {
-    await _prefs.setString(storageKey, jsonEncode(_snapshot.toJson()));
+    // 先通知再落盘：家长看板与谢幕判定都盯着这个快照，界面不该等磁盘。
+    notifyListeners();
+    await _prefs?.setString(storageKey, jsonEncode(_snapshot.toJson()));
   }
 
   String _todayKey() {
