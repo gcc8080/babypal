@@ -71,7 +71,8 @@ int nextLetterIndex(int current, int count, {bool forward = true}) {
 ///
 /// 按字母在表中的位置取，因此 A 永远是同一个颜色——「我的名字第一个字母是
 /// 蓝色的那个」是三岁孩子真的会用的记忆抓手。
-Color letterColor(String letter) {
-  final code = letter.toUpperCase().codeUnitAt(0) - 0x41;
-  return BlockColors.forIndex(code);
-}
+Color letterColor(String letter) => BlockColors.forIndex(letterColorIndex(letter));
+
+/// 同上，但取的是调色板下标——积木存的是语义索引而不是 `Color`
+/// （见 `BlockBody.colorIndex`）。与汉字那边 `hanziColorIndex` 同一个道理。
+int letterColorIndex(String letter) => letter.toUpperCase().codeUnitAt(0) - 0x41;

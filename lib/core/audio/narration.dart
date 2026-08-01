@@ -47,6 +47,19 @@ class Narration {
     number(b, lang),
   ];
 
+  /// 任意多个加数的整条算式：「三 加 二 加 一 等于 六」。
+  ///
+  /// [addition] 是它两项时的特例，保留是因为两项才是出题的形态，而这个通用
+  /// 版本是给沙盒用的——那里没有出题人，他自己摆几块就是几项。
+  static List<String> sum(List<int> addends, VoiceLang lang) => [
+    for (var i = 0; i < addends.length; i++) ...[
+      if (i > 0) _word('plus', lang),
+      number(addends[i], lang),
+    ],
+    _word('equals', lang),
+    number(addends.fold(0, (a, b) => a + b), lang),
+  ];
+
   /// 「五 可以分成 二 和 三」/「five is made of two and three」
   ///
   /// 反向分解的播报。见规格「反向分解」——它的权重不低于合体求和，
