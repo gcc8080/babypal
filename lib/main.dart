@@ -272,11 +272,16 @@ class _BlockPlanetAppState extends ConsumerState<BlockPlanetApp>
                 enabledModules: settings.settings.orderedModules,
                 onModuleSelected: (module) => _openModule(context, module),
               ),
-              // 家长门放右下角：够得着，但长得不像能按的地方。
+              // 家长门放左上角：够得着，但长得不像能按的地方。
+              //
+              // **原本在右下角，真机上按不动**——见 [ParentGateEntry] 的
+              // 类文档。左上角还顺带离右上角那块蛋糕最远。
               Positioned(
-                right: BlockMetrics.gap / 2,
-                bottom: BlockMetrics.gap / 2,
-                child: ParentGateEntry(onUnlockRequested: _openParentZone),
+                left: BlockMetrics.gap / 2,
+                top: BlockMetrics.gap / 2,
+                child: SafeArea(
+                  child: ParentGateEntry(onUnlockRequested: _openParentZone),
+                ),
               ),
               // 重播生日彩蛋的固定入口（规格要求「固定入口可重播」）。
               // 与家长门正相反：这个是**给他按的**，所以够大、有颜色、

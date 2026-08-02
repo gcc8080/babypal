@@ -288,6 +288,46 @@ void main() {
   });
 
   group('家长门在门后', () {
+    /// 入口离屏幕四边都不能太近。
+    ///
+    /// 真机上撞到的：第一版放在右下角，大人**按不动**。全屏沉浸加手势导航，
+    /// 屏幕底边那一条是系统的——手指落在那里先被拿去唤出导航栏，App 收不到
+    /// pointer down。而这个入口只有 44dp、又贴着边角，几乎整个都在那条带子里。
+    ///
+    /// 所以这里量的是位置，不是「找得到」。按类型找的用例挪到哪个角都是绿的，
+    /// 正好挡不住这一类问题。
+    void expectClearOfSystemGestureBands(WidgetTester tester, Finder entry) {
+      final rect = tester.getRect(entry);
+      expect(rect.left, lessThan(phone.width / 2), reason: '应当在左半边');
+      expect(rect.top, lessThan(phone.height / 2), reason: '应当在上半边');
+      // 底边与右边是系统手势带，离远点。
+      expect(phone.height - rect.bottom, greaterThan(60.0));
+      expect(phone.width - rect.right, greaterThan(60.0));
+    }
+
+    testWidgets('入口在左上角——右下角那条被系统手势吃掉了', (tester) async {
+      await pumpApp(tester);
+      expectClearOfSystemGestureBands(
+        tester,
+        find.byType(ParentGateEntry).first,
+      );
+    });
+
+    testWidgets('谢幕画面上那个也在左上角——两处不一致等于要家长记两个位置', (tester) async {
+      await pumpApp(tester);
+      now = now.add(const Duration(minutes: 16));
+      await progress.flush();
+      await settleOverlay(tester);
+
+      expectClearOfSystemGestureBands(
+        tester,
+        find.descendant(
+          of: find.byType(BedtimeOverlay),
+          matching: find.byType(ParentGateEntry),
+        ),
+      );
+    });
+
     testWidgets('首页有入口，但按一下进不去', (tester) async {
       await pumpApp(tester);
       final gate = find.descendant(

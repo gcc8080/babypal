@@ -21,8 +21,11 @@ import '../../core/design/tokens.dart';
 class BedtimeOverlay extends StatefulWidget {
   const BedtimeOverlay({super.key, this.corner});
 
-  /// 右下角挂的东西。家长门放在这里——**谢幕画面盖住了整个 App，
+  /// 左上角挂的东西。家长门放在这里——**谢幕画面盖住了整个 App，
   /// 若连它也盖掉，家长就没有任何办法把上限调高了**。
+  ///
+  /// **左上而不是右下**：右下那一块被系统吃掉了，见 [ParentGateEntry]
+  /// 的类文档。两处必须一致，否则家长要记两个位置。
   final Widget? corner;
 
   /// 躺下的时长。慢，因为这一段本身就是「该结束了」的信号，
@@ -85,9 +88,9 @@ class _BedtimeOverlayState extends State<BedtimeOverlay>
               ),
               if (widget.corner != null)
                 Positioned(
-                  right: BlockMetrics.gap / 2,
-                  bottom: BlockMetrics.gap / 2,
-                  child: widget.corner!,
+                  left: BlockMetrics.gap / 2,
+                  top: BlockMetrics.gap / 2,
+                  child: SafeArea(child: widget.corner!),
                 ),
             ],
           );
