@@ -1,3 +1,5 @@
+import 'package:baby_pal/birthday/birthday_providers.dart';
+import 'package:baby_pal/birthday/birthday_store.dart';
 import 'package:baby_pal/core/audio/narration.dart';
 import 'package:baby_pal/core/progress/progress_providers.dart';
 import 'package:baby_pal/core/progress/progress_store.dart';
@@ -13,19 +15,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   late SettingsStore settings;
   late ProgressStore progress;
+  late BirthdayStore birthday;
   late ProviderContainer container;
 
-  Future<void> pumpPage(WidgetTester tester) async {
+  Future<void> pumpPage(WidgetTester tester, {bool birthdayPlayed = true}) async {
     settings = SettingsStore();
     progress = ProgressStore(null)..load();
+    birthday = BirthdayStore();
+    if (birthdayPlayed) await birthday.markPlayed();
     addTearDown(settings.dispose);
     addTearDown(progress.dispose);
+    addTearDown(birthday.dispose);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           settingsStoreProvider.overrideWithValue(settings),
           progressStoreProvider.overrideWithValue(progress),
+          birthdayStoreProvider.overrideWithValue(birthday),
         ],
         child: const MaterialApp(home: ParentSettingsPage()),
       ),
@@ -145,6 +152,54 @@ void main() {
       await store.setBilingual(false);
       expect(store.settings.bilingual, isFalse);
       store.dispose();
+    });
+  });
+
+  group('生日彩蛋', () {
+    // 真机上撞出来的：8.1 首启自动播只在 `hasPlayed` 为假时触发，而这个标记
+    // 一旦写上就没有任何界面能改回去——彩蛋在他生日之前被谁点开过一次，
+    // 生日当天开机就只剩平常的星球地图。这个开关是那件事的出路。
+    testWidgets('放过之后开关是关的，说明已经放过了', (tester) async {
+      await pumpPage(tester);
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('birthday-replay')),
+        200,
+      );
+      final tile = tester.widget<SwitchListTile>(
+        find.byKey(const ValueKey('birthday-replay')),
+      );
+      expect(tile.value, isFalse);
+      expect(birthday.hasPlayed, isTrue);
+    });
+
+    testWidgets('打开开关 → 下次启动会再自动放一次', (tester) async {
+      await pumpPage(tester);
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('birthday-replay')),
+        200,
+      );
+      await tester.tap(find.byKey(const ValueKey('birthday-replay')));
+      await tester.pumpAndSettle();
+
+      expect(birthday.hasPlayed, isFalse, reason: '这正是首启自动播的条件');
+      expect(
+        tester
+            .widget<SwitchListTile>(find.byKey(const ValueKey('birthday-replay')))
+            .value,
+        isTrue,
+        reason: '开关要立刻反映出来，否则家长不知道自己按上没有',
+      );
+    });
+
+    testWidgets('再关回去 → 恢复成「已经放过了」', (tester) async {
+      await pumpPage(tester, birthdayPlayed: false);
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('birthday-replay')),
+        200,
+      );
+      await tester.tap(find.byKey(const ValueKey('birthday-replay')));
+      await tester.pumpAndSettle();
+      expect(birthday.hasPlayed, isTrue);
     });
   });
 }

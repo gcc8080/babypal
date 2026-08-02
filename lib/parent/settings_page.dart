@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../birthday/birthday_providers.dart';
 import '../core/design/tokens.dart';
 import '../core/progress/progress_providers.dart';
 import '../core/settings/settings_providers.dart';
@@ -24,6 +25,7 @@ class ParentSettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsStoreProvider);
     final progress = ref.watch(progressStoreProvider);
+    final birthday = ref.watch(birthdayStoreProvider);
 
     // 两个 store 都是 ChangeNotifier，用 ListenableBuilder 而不是把它们塞成
     // riverpod 的状态：改一个开关要立即反映在这一页上，而 `Provider` 不会
@@ -31,7 +33,7 @@ class ParentSettingsPage extends ConsumerWidget {
     return ParentShell(
       title: '设置',
       child: ListenableBuilder(
-        listenable: Listenable.merge([settings, progress]),
+        listenable: Listenable.merge([settings, progress, birthday]),
         builder: (context, _) {
           final current = settings.settings;
           return ListView(
@@ -88,6 +90,26 @@ class ParentSettingsPage extends ConsumerWidget {
               const ParentNote(
                 '关掉只是首页不再显示这块大陆的入口，进度和存档都留着，'
                 '打开就还在。',
+              ),
+              const Divider(height: 1),
+              const ParentNote('生日彩蛋'),
+              SwitchListTile(
+                key: const ValueKey('birthday-replay'),
+                value: !birthday.hasPlayed,
+                onChanged: (armed) =>
+                    armed ? birthday.reset() : birthday.markPlayed(),
+                title: const Text('下次打开自动放一次'),
+                subtitle: Text(
+                  birthday.hasPlayed
+                      ? '已经放过了。打开这个开关，下次进 App 会再自动放一次。'
+                      : '下次打开 App 会自动放彩蛋。',
+                ),
+                activeThumbColor: BlockColors.forIndex(5),
+              ),
+              const ParentNote(
+                '彩蛋只在第一次打开时自动放一次。生日当天记得先打开这个开关，'
+                '否则他那天开机看到的只是平常的星球地图。'
+                '首页右上角那块蛋糕任何时候都能重播，不受这个开关影响。',
               ),
             ],
           );
