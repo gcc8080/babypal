@@ -25,7 +25,7 @@ An offline block-play learning app built for a nearly-three-year-old. No ads, no
 
 ### 截图
 
-以下均为 **MI 8 SE 真机 release 构建**的实拍（横屏 738×393 dp）。
+以下均为 **MI 8 SE 真机 release 构建**的实拍。横屏 816×393 dp——刘海那一条也算在内，画面是**铺满整块屏幕**的。
 
 | 星球地图（首页） | 自由沙盒 |
 |---|---|
@@ -118,7 +118,7 @@ Flutter 3.44.8（fvm 锁定）· Dart ^3.12.2
 
 **刻意不引入**：游戏引擎与物理引擎（幼儿要的是「吸附到位」的确定感，不是自由落体）、Rive / Lottie（积木的脸用 `CustomPainter` 程序化绘制）、任何网络 / 分析 / 广告 SDK。
 
-积木、脸、蛋糕、星球、**连应用图标**都是 `Canvas` 画出来的，零位图素材。唯一的外部素材是 88 个 OpenMoji 名词图标。
+积木、脸、蛋糕、星球、**连应用图标**都是 `Canvas` 画出来的，零位图素材。唯一的外部素材是 86 个 OpenMoji 名词图标。
 
 ### 目录
 
@@ -142,7 +142,7 @@ tool/               gen_audio · gen_sfx · gen_icon · fetch_openmoji
 ```bash
 fvm flutter pub get
 fvm flutter analyze          # 无告警
-fvm flutter test             # 626 项
+fvm flutter test             # 636 项
 fvm flutter run -d <device>
 
 fvm dart run tool/gen_audio.dart      # 内容包 → TTS 语音
@@ -207,7 +207,7 @@ The five domains look unrelated but share one mental model: **composition**.
 
 ### Screenshots
 
-All shots are from a **release build on a real MI 8 SE** (landscape, 738×393 dp).
+All shots are from a **release build on a real MI 8 SE**. Landscape, 816×393 dp — the display cutout strip included, so the picture goes **edge to edge**.
 
 | Planet map (home) | Sandbox |
 |---|---|
@@ -300,7 +300,7 @@ Flutter 3.44.8 (pinned via fvm) · Dart ^3.12.2
 
 **Deliberately not used**: game/physics engines (a toddler wants the certainty of *snapping into place*, not free fall), Rive / Lottie (block faces are drawn programmatically with `CustomPainter`), and any network / analytics / ad SDK.
 
-The blocks, faces, cake, planet and **even the app icon** are drawn on a `Canvas` — zero bitmap art. The only external assets are 88 OpenMoji noun icons.
+The blocks, faces, cake, planet and **even the app icon** are drawn on a `Canvas` — zero bitmap art. The only external assets are 86 OpenMoji noun icons.
 
 ### Layout
 
@@ -324,7 +324,7 @@ tool/               gen_audio · gen_sfx · gen_icon · fetch_openmoji
 ```bash
 fvm flutter pub get
 fvm flutter analyze          # clean
-fvm flutter test             # 626 tests
+fvm flutter test             # 636 tests
 fvm flutter run -d <device>
 
 fvm dart run tool/gen_audio.dart      # content packs → TTS voice files
