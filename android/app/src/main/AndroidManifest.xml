@@ -26,6 +26,17 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- MIUI 自己那一套刘海开关。
+
+             标准的 android:windowLayoutInDisplayCutoutMode="shortEdges"
+             （见 res/values-v28/styles.xml）在原生 Android 上就够了，但小米
+             另外要求这条 meta-data 才肯让应用画进刘海区域——交付机正是
+             MI 8 SE，少了它横屏左边仍然是一条黑边。
+
+             值里必须同时写上 portrait 与 landscape：只写 landscape 无效。 -->
+        <meta-data
+            android:name="notch.config"
+            android:value="portrait|landscape" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

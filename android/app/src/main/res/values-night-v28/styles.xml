@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  与 values-v28/styles.xml 同一件事，深色模式那一份。见那边的说明。
+
+  必须单独写一份：`values-night/` 与 `values-v28/` 是两个**并列**的限定符，
+  深色模式下系统选中的是 `values-night/`，拿不到 `values-v28/` 里那条刘海
+  设置。少了这个文件，家长在夜里打开 App 就又会看见那条黑边。
+-->
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+</resources>

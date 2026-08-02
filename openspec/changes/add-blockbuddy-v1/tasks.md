@@ -695,6 +695,23 @@
 
 顺带记一句以免以后又当成 bug：**按一下本来就不该有反应**，必须按满 3 秒（7.5 的设计，挡的就是他乱按）。
 
+### 刘海屏适配（2026-08-02，真机反馈）
+
+**App 没撑满屏幕，刘海那一侧留了一条黑边。** 交付机 MI 8 SE 是刘海屏，横屏时刘海在左边。
+
+原因不在布局，在窗口：`LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT`（系统默认）**只允许窗口在竖屏时延伸进刘海区域，横屏时一律让开**。而这个 App 是全局锁横屏的，等于永远踩在这条默认行为上——窗口被系统限制成 2159px，屏幕是 2244px，差的那 85px 就是那条黑边。
+
+修在 Android 那一侧，两处缺一不可：
+
+- `res/values-v28/styles.xml` 与 `values-night-v28/styles.xml`：`android:windowLayoutInDisplayCutoutMode = shortEdges`。两个主题（LaunchTheme / NormalTheme）都要设，否则启动那一瞬间窗口还是让开的，第一帧画出来时画面会跳一下宽度。深色模式那份必须单独写——`values-night/` 与 `values-v28/` 是并列限定符，深色下拿不到后者。
+- 清单里 MIUI 自己那条 `<meta-data android:name="notch.config" android:value="portrait|landscape"/>`。标准属性在原生 Android 上够用，小米额外要求这条。
+
+**Flutter 那侧一行没改。** 一开始加了个全局 `SafeArea` + `ColoredBox`，写完做变异验证才发现是多余的：每个儿童端页面、以及家长端统一的 `ParentShell`，**本来就各自套了 `SafeArea`**（去掉 `HomePage` 那个，用例立刻变红；去掉我加的那层，一条都不红）。窗口铺满之后 `Scaffold` 自然把底色画到刘海那一条，内容也自然让开——已经对了的东西不需要再加一层。
+
+真机复验：窗口从 `Requested w=2159` 变成 `w=2244`，黑边消失，内容仍在刘海之外。
+
+新增 `刘海屏` 一组用例：模拟 85px 的左侧刘海，验五块大陆与家长门都不压在底下、页面底色仍铺满整屏、而谢幕画面反过来要盖满（那是「该结束了」的整屏信号，留一条不盖反而像没盖住）。主题开关本身是系统行为、widget 测试验不了，但**开了 `shortEdges` 之后真正会出错的是内容压到刘海底下**，守的正是这一条。
+
 ### 应用图标（2026-08-02）
 
 原来一直是 `flutter create` 的默认图标。换成 `tool/gen_icon.dart` 画的：一条星球地平线，三块积木站在上面，中间那块看着你。**没有文字**——儿童端一个字都没有，图标也不该有。

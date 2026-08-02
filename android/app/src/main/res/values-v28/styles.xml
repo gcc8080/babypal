@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  刘海屏（display cutout）适配，Android 9 / API 28 起。
+
+  **默认行为在横屏下会留一条黑边。** `LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT`
+  只允许窗口在竖屏时延伸到刘海区域；横屏时系统把整个窗口让开那一条，于是
+  刘海那侧露出一条纯黑。这个 App 是**全局锁横屏**的，等于永远踩在这个默认
+  行为上——真机（MI 8 SE）上左边就是一条黑边，App 没撑满屏幕。
+
+  `shortEdges` 让窗口在短边方向铺满整块屏幕，黑边消失。代价是内容可能被
+  刘海挡住，所以 Flutter 那侧用 `SafeArea` 把内容挡回来（见 main.dart）：
+  底色铺满整屏，可视内容避开刘海。
+
+  放在 `values-v28/` 而不是基础 `values/`：这个属性 API 28 才有，minSdk 是
+  24。旧系统上运行时会忽略未知的主题属性，但按限定符分目录才是标准做法，
+  也省得 lint 每次都来提醒。
+
+  两个主题都要设：只设 NormalTheme 的话，启动那一瞬间窗口还是让开的，
+  第一帧画出来时会看见画面「跳」一下宽度。
+-->
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+</resources>

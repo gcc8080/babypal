@@ -45,12 +45,23 @@ void main() {
     await tester.pump();
   }
 
+  /// 谢幕画面里的「呼吸」是**永不停止**的循环动画（静止的画面像卡住了），
+  /// 因此这一组只能 pump 固定帧数，不能 pumpAndSettle——后者会一直等下去。
+  Future<void> settleOverlay(WidgetTester tester) async {
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 120));
+  }
+
   /// 起 App。
   ///
   /// [birthdayPlayed] 默认 **true**：除了「首启放彩蛋」那一组，别的用例验的
   /// 都是他日常打开 App 之后的样子——那时彩蛋早放过了。若默认成 false，
   /// 每个用例一进来都会被彩蛋盖住，找不到星球地图。
-  Future<void> pumpApp(WidgetTester tester, {bool birthdayPlayed = true}) async {
+  Future<void> pumpApp(
+    WidgetTester tester, {
+    bool birthdayPlayed = true,
+    double cutoutLeft = 0,
+  }) async {
     now = DateTime(2026, 8, 2, 9);
     settings = SettingsStore();
     progress = ProgressStore(null, clock: () => now)..load();
@@ -62,6 +73,9 @@ void main() {
 
     tester.view.physicalSize = phone;
     tester.view.devicePixelRatio = 1.0;
+    if (cutoutLeft > 0) {
+      tester.view.padding = FakeViewPadding(left: cutoutLeft);
+    }
     addTearDown(tester.view.reset);
 
     await tester.pumpWidget(
@@ -105,6 +119,64 @@ void main() {
 
       expect(find.byKey(const ValueKey(ModuleId.hanzi)), findsNothing);
       expect(find.byKey(const ValueKey(ModuleId.numbers)), findsOneWidget);
+    });
+  });
+
+  group('刘海屏', () {
+    // 真机（MI 8 SE）上撞到的：横屏锁定 + 系统默认的刘海策略，等于刘海那侧
+    // 永远留一条黑边，App 撑不满屏幕。修在 Android 那一侧
+    // （`res/values-v28/styles.xml` 的 `shortEdges` + 清单里 MIUI 的
+    // `notch.config`），窗口从 2159px 变成整屏 2244px。
+    //
+    // **主题开关没法在 widget 测试里验**——那是系统行为。能验、也真正会
+    // 出错的是另一半：窗口铺满之后，内容不许压到刘海底下去。
+    const cutout = 85.0;
+
+    testWidgets('五块大陆都避开刘海，一块都不压在底下', (tester) async {
+      await pumpApp(tester, cutoutLeft: cutout);
+      for (final module in ModuleId.values) {
+        expect(
+          tester.getRect(find.byKey(ValueKey(module))).left,
+          greaterThanOrEqualTo(cutout),
+          reason: '${module.label}压在刘海下面了',
+        );
+      }
+    });
+
+    testWidgets('家长门也避开——左上角正是刘海那条边', (tester) async {
+      await pumpApp(tester, cutoutLeft: cutout);
+      expect(
+        tester.getRect(find.byType(ParentGateEntry).first).left,
+        greaterThanOrEqualTo(cutout),
+      );
+    });
+
+    testWidgets('底色仍要铺满整屏，刘海那一条不许留白', (tester) async {
+      // 内容让开之后露出来的那一条，得由页面底色填上，否则黑边只是从
+      // 「系统留的」变成「我们留的」。`Scaffold` 铺满整个窗口，
+      // `SafeArea` 在它的 body 里面——这个层次关系正是这条用例守的东西。
+      await pumpApp(tester, cutoutLeft: cutout);
+      final scaffold = tester.getRect(
+        find.descendant(
+          of: find.byType(HomePage),
+          matching: find.byType(Scaffold),
+        ),
+      );
+      expect(scaffold.left, 0);
+      expect(scaffold.width, phone.width);
+    });
+
+    testWidgets('谢幕画面反过来要盖满，包括刘海那一条', (tester) async {
+      // 与内容相反：这一层是「该结束了」的整屏信号，留一条不盖反而
+      // 像没盖住。
+      await pumpApp(tester, cutoutLeft: cutout);
+      now = now.add(const Duration(minutes: 16));
+      await progress.flush();
+      await settleOverlay(tester);
+
+      final rect = tester.getRect(find.byType(BedtimeOverlay));
+      expect(rect.left, 0);
+      expect(rect.width, phone.width);
     });
   });
 
@@ -163,13 +235,6 @@ void main() {
       expect(find.byType(BedtimeOverlay), findsOneWidget);
     });
   });
-
-  /// 谢幕画面里的「呼吸」是**永不停止**的循环动画（静止的画面像卡住了），
-  /// 因此这一组只能 pump 固定帧数，不能 pumpAndSettle——后者会一直等下去。
-  Future<void> settleOverlay(WidgetTester tester) async {
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 120));
-  }
 
   group('到点了', () {
     testWidgets('没到点时没有谢幕画面', (tester) async {
