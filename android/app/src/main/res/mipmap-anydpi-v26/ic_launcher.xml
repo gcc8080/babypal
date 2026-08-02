@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  自适应图标（Android 8 起）。
+
+  分两层是系统的要求：启动器会按自己的形状（圆、方、水滴、squircle）裁掉
+  外面一圈，只有中间 66% 保证可见，两层还会随手势各自轻微平移。
+  两层的图都由 tool/gen_icon.dart 画出来——改设计就重跑那个脚本。
+
+  同目录下没有 ic_launcher_round.xml：清单里没有声明 android:roundIcon，
+  圆形启动器直接拿这份自适应图标去裁圆就是了。
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@mipmap/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+</adaptive-icon>
