@@ -192,6 +192,9 @@ void main() {
 
       expect(cake(tester).remaining, 0);
       expect(audio.spoken, contains('zh.birthday.happyBirthday'));
+      expect(finished, 0, reason: '生日快乐还没说完，别急着撤画面');
+
+      await tester.pump(kCelebrateHold);
       expect(finished, 1);
     });
 
@@ -238,6 +241,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 100));
       }
       expect(cake(tester).remaining, 0);
+      await tester.pump(kCelebrateHold);
       expect(finished, 1);
     });
 
@@ -282,6 +286,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 100));
       }
       expect(cake(tester).remaining, 0);
+      await tester.pump(kCelebrateHold);
       expect(finished, 1);
     });
   });

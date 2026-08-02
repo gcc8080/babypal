@@ -1,7 +1,9 @@
 import 'package:baby_pal/birthday/birthday_egg.dart';
 import 'package:baby_pal/birthday/birthday_store.dart';
 import 'package:baby_pal/birthday/candle_scene.dart';
+import 'package:baby_pal/birthday/name_scene.dart';
 import 'package:baby_pal/core/audio/audio_providers.dart';
+import 'package:baby_pal/core/content/content_providers.dart';
 import 'package:baby_pal/core/design/tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,12 +12,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../support/recording_audio_bus.dart';
 import 'candle_scene_test.dart' show FakeBreathSource;
+import 'name_scene_test.dart' show library;
 
 void main() {
   late FakeBreathSource breath;
   late int done;
 
-  Future<void> pumpEgg(WidgetTester tester) async {
+  /// 起彩蛋。
+  ///
+  /// [name] 为 null 时内容包里没有他的名字，于是拼名字那一幕整个省掉、
+  /// 一进来就是蜡烛——这一组验的是**放映机本身**，用最短的那串幕次最省事。
+  /// 名字那一幕自己的行为在 `name_scene_test` 里。
+  Future<void> pumpEgg(WidgetTester tester, {String? name}) async {
     breath = FakeBreathSource(available: false);
     done = 0;
     addTearDown(breath.dispose);
@@ -26,7 +34,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [audioBusProvider.overrideWithValue(RecordingAudioBus())],
+        overrides: [
+          audioBusProvider.overrideWithValue(RecordingAudioBus()),
+          contentLibraryProvider.overrideWithValue(library(child: name)),
+        ],
         child: MaterialApp(
           theme: buildBlockPlanetTheme(),
           home: BirthdayEgg(breathSource: breath, onDone: () => done++),
@@ -39,8 +50,23 @@ void main() {
   }
 
   group('放彩蛋', () {
-    testWidgets('第一幕是蜡烛', (tester) async {
+    testWidgets('配了名字时先拼名字，再放蜡烛', (tester) async {
+      await pumpEgg(tester, name: 'Bo');
+      expect(find.byType(NameScene), findsOneWidget);
+      expect(find.byType(CandleScene), findsNothing);
+
+      // 两个字母落定、停留结束 → 换蜡烛那一幕。
+      await tester.pump(kNameLetterStagger * 2);
+      await tester.pump(kNameHold);
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.byType(CandleScene), findsOneWidget);
+      expect(done, 0, reason: '还没到最后一幕');
+    });
+
+    testWidgets('没配名字时一进来就是蜡烛——缺的那一幕优雅省略', (tester) async {
       await pumpEgg(tester);
+      expect(find.byType(NameScene), findsNothing);
       expect(find.byType(CandleScene), findsOneWidget);
       expect(done, 0);
     });
@@ -130,8 +156,7 @@ void main() {
       // 蜡烛这一幕要点着、要吹、要点。若把任何触摸都当成「跳过」，
       // 这一幕根本没法玩。
       await pumpEgg(tester);
-      final scenes = birthdayScenes();
-      expect(scenes.every((s) => !s.tapAnywhereSkips), isTrue);
+      expect(find.byType(CandleScene), findsOneWidget);
       expect(find.byKey(const ValueKey('skip-surface')), findsNothing);
 
       // 点画面中间（蛋糕上）不该结束彩蛋。

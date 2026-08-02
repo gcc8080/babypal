@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/content/content_providers.dart';
+import '../core/content/models.dart';
+import '../core/content/pack_loader.dart';
 import '../core/design/controls.dart';
 import '../core/design/tokens.dart';
 import 'breath_source.dart';
 import 'candle_scene.dart';
+import 'name_scene.dart';
 
 /// 彩蛋里的一幕。
 @immutable
@@ -32,17 +36,43 @@ class BirthdayScene {
 ///
 /// 见 birthday 规格「彩蛋数据与资源可缺失」：姓名、照片、家人语音没配置时
 /// 彩蛋**仍要能启动并完成**，缺的那一幕优雅省略。所以幕次是算出来的，
-/// 不是写死的一串。
+/// 不是写死的一串——「今年有没有这一幕」在这里判断，各幕自己只管演。
 ///
-/// 今天只有蜡烛这一幕（8.3–8.5）。拼名字（8.2）与家人相册（8.6）落地后
-/// 加进这个列表即可，[BirthdayEgg] 一个字都不用改。
-List<BirthdayScene> birthdayScenes({BreathSource? breathSource}) => [
-  BirthdayScene(
-    id: 'candles',
-    build: (context, onFinished) =>
-        CandleScene(breathSource: breathSource, onFinished: onFinished),
-  ),
-];
+/// 家人相册（8.6）落地后加进这个列表即可，[BirthdayEgg] 一个字都不用改。
+List<BirthdayScene> birthdayScenes({
+  ContentLibrary? library,
+  BreathSource? breathSource,
+}) {
+  final name = _childName(library);
+  return [
+    // 名字在前、蜡烛在后：先叫他的名字，再请他吹蜡烛。倒过来就变成
+    // 「吹完了，顺便告诉你这是给谁的」。
+    if (name != null)
+      BirthdayScene(
+        id: 'name',
+        // 被动画面：他什么都不用做，一碰就说明想往下走了。
+        tapAnywhereSkips: true,
+        build: (context, onFinished) =>
+            NameScene(target: name, onFinished: onFinished),
+      ),
+    BirthdayScene(
+      id: 'candles',
+      build: (context, onFinished) =>
+          CandleScene(breathSource: breathSource, onFinished: onFinished),
+    ),
+  ];
+}
+
+/// 内容包里他的名字。没配置就返回 null，那一幕整个省掉。
+SpellingTarget? _childName(ContentLibrary? library) {
+  if (library == null) return null;
+  for (final target in library.spellingTargets) {
+    if (target.id == kChildSpellingId) return target;
+  }
+  // **不退而求其次拿第一个。** `spellingTargets` 里还躺着 Mama / Baba，
+  // 那是字母模块终关的备选目标；名字这一幕拼出「MAMA」是错的，不如不放。
+  return null;
+}
 
 /// 生日彩蛋。
 ///
@@ -81,7 +111,11 @@ class BirthdayEgg extends ConsumerStatefulWidget {
 
 class _BirthdayEggState extends ConsumerState<BirthdayEgg> {
   late final List<BirthdayScene> _scenes =
-      widget.scenes ?? birthdayScenes(breathSource: widget.breathSource);
+      widget.scenes ??
+      birthdayScenes(
+        library: ref.read(contentLibraryProvider),
+        breathSource: widget.breathSource,
+      );
 
   int _index = 0;
 

@@ -39,6 +39,14 @@ const int kCandleColumns = 5;
 /// 真机实测一块是 80ms（16kHz 单声道，每块 2560 字节），4 块 ≈ 0.32 秒。
 const int kChunksPerCandle = 4;
 
+/// 三根都灭掉之后，庆祝停留多久再交给下一幕。
+///
+/// **写 8.3 的时候这里是 0。** 那时 `onFinished` 还没有接线，「庆祝」和
+/// 「交出去」写在同一行看不出问题；8.1 把它接上之后，那一行的含义变成了
+/// 「吹灭第三根的同一帧就把画面撤掉」——生日快乐还没说出口，三缕烟也还没
+/// 升起来。他等了整整一关的那一下，就这么被下一幕盖掉了。
+const Duration kCelebrateHold = Duration(milliseconds: 2200);
+
 /// 多久没进展就把「点一下也行」演出来。
 ///
 /// 给得比较长，因为**吹才是他想做的事**——太早提示等于在说「你吹不灭的」。
@@ -75,6 +83,7 @@ class _CandleSceneState extends ConsumerState<CandleScene> {
   BlockBoardController? _controller;
   StreamSubscription<Uint8List>? _micSub;
   Timer? _hintTimer;
+  Timer? _finishTimer;
 
   /// 已经点着了吗。三块合成 3 之后为真。
   bool _lit = false;
@@ -100,6 +109,7 @@ class _CandleSceneState extends ConsumerState<CandleScene> {
   @override
   void dispose() {
     _hintTimer?.cancel();
+    _finishTimer?.cancel();
     unawaited(_micSub?.cancel());
     unawaited(_breath.stop());
     unawaited(_breath.dispose());
@@ -293,7 +303,9 @@ class _CandleSceneState extends ConsumerState<CandleScene> {
         'zh.birthday.happyBirthday',
       ], policy: VoicePolicy.interrupt),
     );
-    widget.onFinished?.call();
+    _finishTimer = Timer(kCelebrateHold, () {
+      if (mounted) widget.onFinished?.call();
+    });
   }
 
   // ─── 布局 ──────────────────────────────────────────────────────────
