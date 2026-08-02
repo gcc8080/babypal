@@ -710,6 +710,12 @@
 
 真机复验：窗口从 `Requested w=2159` 变成 `w=2244`，黑边消失，内容仍在刘海之外。
 
+**黑边没了之后又冒出一条白边。** 窗口铺满不等于每一像素都由 Flutter 画——冷启动闪屏、`main()` 里那几个 `await`（音频引擎、内容包、三个存档）还没跑完的那段、以及窗口尺寸变化的那一两帧，露出来的都是 **Android 的窗口底色**。而 Flutter 模板把它留成了 `?android:colorBackground`：`Theme.Light` 下是**白**，`Theme.Black`（深色模式那份）下是**黑**。
+
+这个 App 的界面没有深色版本，永远是那片米色的天，窗口底色就该跟着它。于是新增 `res/values/colors.xml` 的 `sky_background`（与 `BlockColors.skyBackground` 同值），四份 styles 的 `NormalTheme` 与两份 `launch_background.xml` 全部改用它。顺带把冷启动那一下的白屏闪烁也解决了——白屏一闪再跳到米色的天，在一个给三岁孩子看的 App 上很刺眼。
+
+`test/android_window_test.dart` 把这些钉住：Android 那边的 `sky_background` 必须与 Dart 里的 `BlockColors.skyBackground` **逐位相等**，四份主题都不许再留模板默认值，两个 v28 主题都得声明 `shortEdges`，深色那份文件必须存在，清单里必须有 MIUI 那条。这些东西在 Dart 里一行都看不到，但决定了用户第一眼看见什么。
+
 新增 `刘海屏` 一组用例：模拟 85px 的左侧刘海，验五块大陆与家长门都不压在底下、页面底色仍铺满整屏、而谢幕画面反过来要盖满（那是「该结束了」的整屏信号，留一条不盖反而像没盖住）。主题开关本身是系统行为、widget 测试验不了，但**开了 `shortEdges` 之后真正会出错的是内容压到刘海底下**，守的正是这一条。
 
 ### 应用图标（2026-08-02）

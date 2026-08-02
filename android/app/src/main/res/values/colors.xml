@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      星球天色。**必须与 `BlockColors.skyBackground` 一模一样。**
+
+      这是 Android 窗口的底色，也就是「Flutter 还没画到的地方」露出来的颜色：
+      冷启动那一瞬间的闪屏、窗口尺寸变化的那一两帧、以及刘海那一条。
+
+      Flutter 模板给的是 `?android:colorBackground`——`Theme.Light` 下是白色。
+      于是刘海区域露出来的是一条**白边**，和米色的天空拼在一起有明显割裂感；
+      深色模式下 `Theme.Black` 更糟，是一条黑边。这个 App 的界面没有深色版本，
+      永远是这片米色的天，窗口底色就该跟着它。
+
+      改这个值时记得同时改 `lib/core/design/tokens.dart` 里的 `skyBackground`
+      ——`test/android_window_test.dart` 会把两边对上，对不上就变红。
+    -->
+    <color name="sky_background">#FFF4F1EA</color>
+</resources>
