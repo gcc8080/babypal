@@ -69,5 +69,14 @@ class MicBreathSource implements BreathSource {
   }
 
   @override
-  Future<void> dispose() async => _recorder.dispose();
+  Future<void> dispose() async {
+    // 与 [stop] 同一个理由，外加一条：这里是**离开画面时**调的，而且调用方
+    // 只能 `unawaited` 它（`dispose()` 不能是 async）。抛出去就没人接得住，
+    // 变成一条未捕获的异步异常——他吹完蜡烛退出来，App 崩在庆祝之后。
+    try {
+      await _recorder.dispose();
+    } on Exception catch (e) {
+      debugPrint('BreathSource: 释放失败，忽略 -> $e');
+    }
+  }
 }

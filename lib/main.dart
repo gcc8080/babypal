@@ -7,6 +7,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'core/audio/audio_providers.dart';
 import 'core/content/content_providers.dart';
+import 'core/design/controls.dart';
 import 'core/design/tokens.dart';
 import 'core/progress/progress_providers.dart';
 import 'core/progress/progress_store.dart';
@@ -19,6 +20,9 @@ import 'modules/home/home_page.dart';
 import 'modules/home/module_id.dart';
 import 'modules/letters/letters_page.dart';
 import 'modules/numbers/place_value_page.dart';
+import 'birthday/birthday_egg.dart';
+import 'birthday/birthday_providers.dart';
+import 'birthday/birthday_store.dart';
 import 'modules/sandbox/sandbox_page.dart';
 import 'parent/gate.dart';
 import 'parent/parent_home_page.dart';
@@ -48,6 +52,7 @@ Future<void> main() async {
   // 都得在画第一帧之前就知道。晚一帧就意味着大陆先出现再消失。
   final settings = await SettingsStore.open();
   final progress = await ProgressStore.open();
+  final birthday = await BirthdayStore.open();
 
   runApp(
     ProviderScope(
@@ -56,6 +61,7 @@ Future<void> main() async {
         contentLibraryProvider.overrideWithValue(content),
         settingsStoreProvider.overrideWithValue(settings),
         progressStoreProvider.overrideWithValue(progress),
+        birthdayStoreProvider.overrideWithValue(birthday),
       ],
       child: const BlockPlanetApp(),
     ),
@@ -92,6 +98,15 @@ class _BlockPlanetAppState extends ConsumerState<BlockPlanetApp>
     _setWakelock(true);
     _progress.beginSession();
     _flushTimer = Timer.periodic(_flushInterval, (_) => _flush());
+
+    // 首启放一次生日彩蛋。放在首帧之后而不是把 `home` 换掉：这样「放完」
+    // 和「跳过」都只是弹掉一层路由，回到的就是那张星球地图——**只有一个
+    // 出口，也就没有卡在中间的可能**。星球地图会先闪一帧，人眼看不出来。
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && !ref.read(birthdayStoreProvider).hasPlayed) {
+        unawaited(_openBirthday());
+      }
+    });
   }
 
   @override
@@ -155,18 +170,20 @@ class _BlockPlanetAppState extends ConsumerState<BlockPlanetApp>
     _current = null;
   }
 
+  /// 家长区（含家长门）正开着。
+  ///
+  /// 家长门与家长区都在路由栈里，而谢幕画面盖在路由栈**之上**。因此到点
+  /// 之后必须把谢幕画面让开，否则家长长按进来的乘法题、进去之后的设置页，
+  /// 全都被压在那层画面底下——看不见也点不着，**而调高上限是唯一的出路**。
+  /// 真机上一走这条流程就撞上了：门开了，人进不去。
+  bool _inParentZone = false;
+
   /// 走家长门，过了就进家长区。
   ///
   /// 用 [_navigatorKey] 而不是就近的 `context`：谢幕画面挂在 `MaterialApp`
   /// 的 `builder` 里，那一层**在 Navigator 之上**，`Navigator.of(context)`
   /// 在那儿取不到东西。而谢幕画面上的家长门恰恰是最必须能用的一个——
   /// 它盖住了整个 App，家长只能从那里进去把上限调高。
-  /// 家长门与家长区都在路由栈里，而谢幕画面盖在路由栈**之上**。
-  ///
-  /// 因此到点之后必须把谢幕画面让开，否则家长长按进来的乘法题、进去之后的
-  /// 设置页，全都被压在那层画面底下——看不见也点不着，而调高上限是唯一的
-  /// 出路。真机上一走这条流程就撞上了：门开了，人进不去。
-  bool _inParentZone = false;
 
   Future<void> _openParentZone() async {
     final navigator = _navigatorKey.currentState;
@@ -183,6 +200,32 @@ class _BlockPlanetAppState extends ConsumerState<BlockPlanetApp>
       if (mounted) setState(() => _inParentZone = false);
     }
   }
+
+  /// 放生日彩蛋。首启自动走这里，之后由首页那块蛋糕重播。
+  ///
+  /// 演完与跳过是同一个出口（[BirthdayEgg.onDone]），这里只做一件事：
+  /// 弹掉那层路由并记下「放过了」。
+  Future<void> _openBirthday() async {
+    final navigator = _navigatorKey.currentState;
+    if (navigator == null || _inBirthday) return;
+
+    setState(() => _inBirthday = true);
+    try {
+      await navigator.push(
+        MaterialPageRoute<void>(
+          builder: (context) =>
+              BirthdayEgg(onDone: () => Navigator.of(context).pop()),
+        ),
+      );
+      await ref.read(birthdayStoreProvider).markPlayed();
+    } finally {
+      if (mounted) setState(() => _inBirthday = false);
+    }
+  }
+
+  /// 彩蛋正放着。与 [_inParentZone] 同理——谢幕画面不该盖住彩蛋，
+  /// 那是他生日当天唯一真正重要的那一屏。
+  bool _inBirthday = false;
 
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
@@ -210,7 +253,7 @@ class _BlockPlanetAppState extends ConsumerState<BlockPlanetApp>
             // 它要能自己消失，而路由不会。
             //
             // 家长区打开时让开：见 [_inParentZone]。
-            if (progress.isLimitReached && !_inParentZone)
+            if (progress.isLimitReached && !_inParentZone && !_inBirthday)
               Positioned.fill(
                 child: BedtimeOverlay(
                   key: const ValueKey('bedtime'),
@@ -234,6 +277,24 @@ class _BlockPlanetAppState extends ConsumerState<BlockPlanetApp>
                 right: BlockMetrics.gap / 2,
                 bottom: BlockMetrics.gap / 2,
                 child: ParentGateEntry(onUnlockRequested: _openParentZone),
+              ),
+              // 重播生日彩蛋的固定入口（规格要求「固定入口可重播」）。
+              // 与家长门正相反：这个是**给他按的**，所以够大、有颜色、
+              // 一眼看得出能按。
+              Positioned(
+                right: BlockMetrics.gap / 2,
+                top: BlockMetrics.gap / 2,
+                child: PressableTile(
+                  key: const ValueKey('birthday'),
+                  width: BlockMetrics.minGrabTarget,
+                  color: BlockColors.forIndex(5),
+                  onPressed: () => unawaited(_openBirthday()),
+                  child: Icon(
+                    Icons.cake_rounded,
+                    size: BlockMetrics.minGrabTarget * 0.46,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ],
           ),
