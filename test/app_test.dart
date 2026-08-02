@@ -141,6 +141,32 @@ void main() {
       );
       expect(gate, findsOneWidget);
     });
+
+    testWidgets('从谢幕画面上的家长门进去，画面必须让开——否则门开了人进不去', (tester) async {
+      // 真机上撞到的：谢幕画面盖在路由栈之上，而家长门和家长区都是路由。
+      // 长按之后乘法题被压在画面底下，看不见也点不着，而调高上限是唯一出路。
+      await pumpApp(tester);
+      now = now.add(const Duration(minutes: 16));
+      await progress.flush();
+      await settleOverlay(tester);
+
+      final gate = find.descendant(
+        of: find.byType(BedtimeOverlay),
+        matching: find.byType(ParentGateEntry),
+      );
+      final press = await tester.startGesture(tester.getCenter(gate));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 3, milliseconds: 100));
+      await press.up();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ParentGatePage), findsOneWidget);
+      expect(
+        find.byType(BedtimeOverlay),
+        findsNothing,
+        reason: '乘法题不能被谢幕画面盖住',
+      );
+    });
   });
 
   group('时长记到对的地方', () {

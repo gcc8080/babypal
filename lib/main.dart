@@ -161,15 +161,27 @@ class _BlockPlanetAppState extends ConsumerState<BlockPlanetApp>
   /// 的 `builder` 里，那一层**在 Navigator 之上**，`Navigator.of(context)`
   /// 在那儿取不到东西。而谢幕画面上的家长门恰恰是最必须能用的一个——
   /// 它盖住了整个 App，家长只能从那里进去把上限调高。
+  /// 家长门与家长区都在路由栈里，而谢幕画面盖在路由栈**之上**。
+  ///
+  /// 因此到点之后必须把谢幕画面让开，否则家长长按进来的乘法题、进去之后的
+  /// 设置页，全都被压在那层画面底下——看不见也点不着，而调高上限是唯一的
+  /// 出路。真机上一走这条流程就撞上了：门开了，人进不去。
+  bool _inParentZone = false;
+
   Future<void> _openParentZone() async {
     final navigator = _navigatorKey.currentState;
     final context = _navigatorKey.currentContext;
-    if (navigator == null || context == null) return;
+    if (navigator == null || context == null || _inParentZone) return;
 
-    if (!await runParentGate(context)) return;
-    await navigator.push(
-      MaterialPageRoute<void>(builder: (_) => const ParentHomePage()),
-    );
+    setState(() => _inParentZone = true);
+    try {
+      if (!await runParentGate(context)) return;
+      await navigator.push(
+        MaterialPageRoute<void>(builder: (_) => const ParentHomePage()),
+      );
+    } finally {
+      if (mounted) setState(() => _inParentZone = false);
+    }
   }
 
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
@@ -196,7 +208,9 @@ class _BlockPlanetAppState extends ConsumerState<BlockPlanetApp>
             // 到点了就盖上谢幕画面。它**盖在最上层但不是路由**——
             // 一是不能弹强制对话框（规格），二是家长把上限调高之后
             // 它要能自己消失，而路由不会。
-            if (progress.isLimitReached)
+            //
+            // 家长区打开时让开：见 [_inParentZone]。
+            if (progress.isLimitReached && !_inParentZone)
               Positioned.fill(
                 child: BedtimeOverlay(
                   key: const ValueKey('bedtime'),

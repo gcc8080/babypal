@@ -128,34 +128,70 @@ class _SandboxPageState extends ConsumerState<SandboxPage> {
 
   // ─── 托盘 ──────────────────────────────────────────────────────────
 
-  /// 把托盘换成当前类别当前页的货。
+  /// 让托盘等于「当前类别当前页应该有的那一排货」。
   ///
   /// 台面上已落位的积木**一块都不动**：换货架不是清场，他正在拼的东西必须
   /// 留在那儿。这也是「跨内容域混搭」真正发生的地方——切到汉字类之后，
   /// 台面上原有的数字块还在，两者就混在一起了。
-  void _stockTray() {
+  ///
+  /// **每次都整排重排，而不是把补的货接在末尾。** 接在末尾的话，他从中间
+  /// 拿走一块，右边所有的货会往左挪一格——真机上一眼就看出来了：想连着拿
+  /// 「0、+、1」，第二下手指落到的已经是别的块。托盘的位置是他找东西的
+  /// 唯一线索，不能在他手底下动。
+  ///
+  /// 还在托盘里的那几块**沿用原来的 id**，因此重排不会打断动画：
+  /// `AnimatedPositioned` 认的是 id，同一块只是换了个槽位。
+  void _syncTray() {
     final controller = _controller;
     final kit = _kit;
     if (controller == null || kit == null || _trayCapacity <= 0) return;
 
-    _mutate((c) {
-      for (final block in c.blocks) {
-        if (block.anchor == null && !c.isDragging(block.id)) {
-          c.removeBlock(block.id);
+    final wanted = _category.page(_pageIndex, _trayCapacity);
+    final tray = [
+      for (final b in controller.blocks)
+        if (b.anchor == null && !controller.isDragging(b.id)) b,
+    ];
+
+    // 已经就是这一排了就别动——这个方法挂在每一次棋盘变化上，
+    // 其中包括拖动中的每一帧。
+    if (tray.length == wanted.length) {
+      var same = true;
+      for (var i = 0; i < tray.length; i++) {
+        if (_signature(tray[i]) != _pieceSignature(wanted[i])) {
+          same = false;
+          break;
         }
       }
-      for (final piece in _category.page(_pageIndex, _trayCapacity)) {
-        c.addBlock(piece.spawn('b${_nextBlockId++}'));
+      if (same) return;
+    }
+
+    _mutate((c) {
+      final reusable = <String, BlockBody>{};
+      for (final block in tray) {
+        reusable.putIfAbsent(_signature(block), () => block);
+        c.removeBlock(block.id);
+      }
+      for (final piece in wanted) {
+        final keep = reusable[_pieceSignature(piece)];
+        c.addBlock(keep ?? piece.spawn('b${_nextBlockId++}'));
       }
     });
   }
+
+  /// 「这是哪一样货」。颜色要算进去——纯色块的 label 全是 null，
+  /// 只按 label 认的话十种颜色会被当成同一样东西，托盘里只剩一块。
+  static String _signature(BlockBody block) =>
+      '${block.label}#${block.colorIndex}';
+
+  static String _pieceSignature(SandboxPiece piece) =>
+      '${piece.label}#${piece.colorIndex}';
 
   void _nextCategory() {
     setState(() {
       _categoryIndex = (_categoryIndex + 1) % _kit!.categories.length;
       _pageIndex = 0;
     });
-    _stockTray();
+    _syncTray();
     _audio.playSfx(Sfx.pickup);
   }
 
@@ -164,7 +200,7 @@ class _SandboxPageState extends ConsumerState<SandboxPage> {
       _pageIndex =
           (_pageIndex + 1) % _category.pageCount(math.max(1, _trayCapacity));
     });
-    _stockTray();
+    _syncTray();
     _audio.playSfx(Sfx.tap);
   }
 
@@ -206,7 +242,7 @@ class _SandboxPageState extends ConsumerState<SandboxPage> {
 
     Timer(const Duration(milliseconds: 300), () {
       if (!mounted) return;
-      _stockTray();
+      _syncTray();
       unawaited(_store?.clear() ?? Future<void>.value());
     });
   }
@@ -235,7 +271,7 @@ class _SandboxPageState extends ConsumerState<SandboxPage> {
     }
     _celebrated = present;
 
-    _refillTray();
+    _syncTray();
     // 拖动过程中每移动一个像素都会走到这里——那时落盘就是每帧一次磁盘写。
     // 手松了再存，反正中途的位置本来也不值得记。
     if (controller.drags.isEmpty) _persist();
@@ -293,31 +329,6 @@ class _SandboxPageState extends ConsumerState<SandboxPage> {
     );
   }
 
-  /// 托盘里被拿走的货随手补上——**他永远不会「用完」**。
-  ///
-  /// 沙盒里「没积木了」是一种失败状态，而这一页不该有任何失败状态。
-  void _refillTray() {
-    final controller = _controller;
-    final kit = _kit;
-    if (controller == null || kit == null || _trayCapacity <= 0) return;
-
-    final inTray = controller.blocks.where((b) => b.anchor == null).length;
-    if (inTray >= _trayCapacity) return;
-
-    final wanted = _category.page(_pageIndex, _trayCapacity);
-    final present = {
-      for (final b in controller.blocks)
-        if (b.anchor == null) b.label,
-    };
-    _mutate((c) {
-      for (final piece in wanted) {
-        if (present.contains(piece.label)) continue;
-        c.addBlock(piece.spawn('b${_nextBlockId++}'));
-        present.add(piece.label);
-      }
-    });
-  }
-
   void _mutate(void Function(BlockBoardController controller) action) {
     final controller = _controller;
     if (controller == null) return;
@@ -347,22 +358,29 @@ class _SandboxPageState extends ConsumerState<SandboxPage> {
   /// 别的模块是反过来的（格数固定、格位随屏幕缩放），因为那里格数由题目决定。
   /// 沙盒没有题目，屏幕大就该能多摆几块——平板上给他一片更大的地板，而不是
   /// 几块更大的积木。
+  ///
+  /// 格位**不拉伸去填满宽度**。第一版把 cell 撑到 `width / columns`，在交付机
+  /// （MI 8 SE，738×393）上正好把 90 撑成 95，于是高度只够两行棋盘——为了让
+  /// 边上不留 34dp 白边，赔掉了整整一行地板。空白不值这个价。
   SnapGrid _buildGrid(BoxConstraints constraints) {
-    const min = BlockMetrics.minGrabTarget;
+    const cell = BlockMetrics.minGrabTarget;
     final gap = BlockMetrics.gap;
 
-    final columns = math.max(3, (constraints.maxWidth / min).floor());
-    final cell = math.max(min, constraints.maxWidth / columns);
+    final columns = math.max(3, (constraints.maxWidth / cell).floor());
     // 最后一行留给托盘。
     final rows = math.max(1, ((constraints.maxHeight - gap) / cell).floor() - 1);
 
+    // 棋盘 + 间隔 + 托盘，**整体在两个方向上都居中**。
+    // 真机上第一版是贴着顶的，托盘底下空出一条 76dp 的死带——和平板上跷跷板
+    // 贴着下缘是同一个毛病，也同样只有真机上才看得出来。
+    final usedHeight = (rows + 1) * cell + gap;
     return SnapGrid(
       columns: columns,
       rows: rows,
       cellSize: cell,
       origin: Offset(
         ((constraints.maxWidth - cell * columns) / 2).clamp(0, double.infinity),
-        0,
+        ((constraints.maxHeight - usedHeight) / 2).clamp(0, double.infinity),
       ),
     );
   }
@@ -392,11 +410,11 @@ class _SandboxPageState extends ConsumerState<SandboxPage> {
                         mergeResolver: _hanziMerge,
                         onSound: _playSound,
                       )..addListener(_onBoardChanged);
-                      _stockTray();
+                      _syncTray();
                     } else {
                       _controller!.updateGrid(grid);
                       // 屏幕变宽/变窄会改变托盘能放几块，这时才需要重新上货。
-                      if (capacityChanged) _stockTray();
+                      if (capacityChanged) _syncTray();
                     }
                     return BlockBoard(controller: _controller!);
                   },

@@ -89,6 +89,8 @@ class _ParentGateEntryState extends State<ParentGateEntry>
   void _onStatus(AnimationStatus status) {
     if (status != AnimationStatus.completed) return;
     _hold.value = 0;
+    // 这一下很可能把自己拆掉：开门会让上层重建，谢幕画面一让开，
+    // 这个入口就跟着没了。所以放在最后一句，后面不能再碰任何状态。
     widget.onUnlockRequested();
   }
 
@@ -101,7 +103,14 @@ class _ParentGateEntryState extends State<ParentGateEntry>
   /// 松手就归零，**不保留进度**。
   ///
   /// 攒进度会让孩子的反复乱按最终累积到 3 秒——那正是这道门要挡的事。
-  void _release() => _hold.value = 0;
+  ///
+  /// `mounted` 这一句不是防御性编程：按满 3 秒会开门，开门会让这个入口
+  /// 被拆掉（谢幕画面让开、上层重建），而**手指还按在屏幕上**——随后的
+  /// 抬手事件打到已经 dispose 的控制器上，debug 下直接断言失败。
+  void _release() {
+    if (!mounted) return;
+    _hold.value = 0;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -202,38 +211,42 @@ class _ParentGatePageState extends State<ParentGatePage> {
   @override
   Widget build(BuildContext context) {
     // 家长区是**唯一有文字的地方**，也是唯一按成人尺度排版的地方。
+    //
+    // 尺寸按交付机（MI 8 SE，横屏 393dp 高）收紧过一遍：第一版把「返回」
+    // 挤出了屏幕下缘。虽然外面包着 `SingleChildScrollView`、滑一下就能看见，
+    // 但一个默认看不见的取消键，等于没有取消键。
     return Scaffold(
       backgroundColor: BlockColors.skyBackground,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(BlockMetrics.gap),
+            padding: const EdgeInsets.all(BlockMetrics.gap / 2),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
                   '家长验证',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 14,
                     color: BlockColors.ink,
                     letterSpacing: 2,
                   ),
                 ),
-                const SizedBox(height: BlockMetrics.gap / 2),
+                const SizedBox(height: 6),
                 Text(
                   '${widget.challenge.a} × ${widget.challenge.b} = ?',
                   key: const ValueKey('question'),
                   style: const TextStyle(
-                    fontSize: 30,
+                    fontSize: 26,
                     fontWeight: FontWeight.w600,
                     color: BlockColors.ink,
                   ),
                 ),
-                const SizedBox(height: BlockMetrics.gap / 2),
+                const SizedBox(height: 6),
                 Container(
                   key: const ValueKey('answer'),
                   width: 180,
-                  height: 44,
+                  height: 38,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -248,13 +261,13 @@ class _ParentGatePageState extends State<ParentGatePage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: BlockMetrics.gap / 2),
+                const SizedBox(height: 6),
                 SizedBox(
                   width: 260,
                   child: Wrap(
                     alignment: WrapAlignment.center,
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: 7,
+                    runSpacing: 6,
                     children: [
                       for (var d = 1; d <= 9; d++)
                         _Key(label: '$d', onPressed: () => _digit(d)),
@@ -273,7 +286,7 @@ class _ParentGatePageState extends State<ParentGatePage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: BlockMetrics.gap / 2),
+                const SizedBox(height: 6),
                 TextButton(
                   key: const ValueKey('cancel'),
                   onPressed: () => Navigator.of(context).pop(false),
@@ -304,8 +317,8 @@ class _Key extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 76,
-      height: 48,
+      width: 74,
+      height: 42,
       child: FilledButton(
         key: ValueKey('gate-key-${keyValue ?? label}'),
         onPressed: onPressed,

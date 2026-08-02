@@ -42,13 +42,17 @@ ContentLibrary _library() => ContentLibrary([
 void main() {
   late RecordingAudioBus audio;
 
-  // 与 `_SandboxPageState._buildGrid` 在 738×393 上算出来的几何一致。
-  // 写死在这里是刻意的：布局一改这些数就对不上，测试会失败并逼我重新
-  // 确认「他的手指还够得着吗」——那正是这几个数存在的理由。
-  const double boardLeft = BlockMetrics.gap / 2;
-  const double boardTop = BlockMetrics.gap / 2;
-  const int columns = 6;
-  const double cell = 104.0;
+  // 与 `_SandboxPageState._buildGrid` 在交付机（MI 8 SE，738×393）上算出来的
+  // 几何一致。写死在这里是刻意的：布局一改这些数就对不上，而下面「几何前提」
+  // 那条用例会拿真的落位结果去撞它们——**光有一组自洽的算术是不够的**，
+  // 第一版就是那样，改完布局之后它们照样全绿，只是不再描述任何东西。
+  const double cell = BlockMetrics.minGrabTarget; // 90，不拉伸
+  const int columns = 6; // floor((738 - 16 - 8 - 90) / 90)
+  const int boardRows = 3; // floor((393 - 16 - 16) / 90) - 1
+  const double boardLeft = BlockMetrics.gap / 2 + (624 - columns * cell) / 2;
+  const double boardTop =
+      BlockMetrics.gap / 2 +
+      (377 - ((boardRows + 1) * cell + BlockMetrics.gap)) / 2;
 
   Offset cellCenter(int col, int row) => Offset(
     boardLeft + (col + 0.5) * cell,
@@ -93,6 +97,16 @@ void main() {
         w.body.anchor == null,
   );
 
+  /// 托盘里从左到右都写着什么。
+  List<String?> trayOrder(WidgetTester tester) {
+    final entries =
+        tester
+            .widgetList<BlockWidget>(find.byType(BlockWidget))
+            .where((w) => w.body.id != 'sample' && w.body.anchor == null)
+            .toList();
+    return [for (final w in entries) w.body.label];
+  }
+
   /// 点两下把托盘里的一块放到指定格位——引擎的点选通道，
   /// 规格要求每个拖拽任务都必须有的那条「拖不动也做得到」的路。
   Future<void> place(
@@ -124,13 +138,22 @@ void main() {
   }
 
   group('货架', () {
-    test('几何前提：738×393 上算出 6 列、格位 104', () {
-      // place() 的坐标全建在这两个数上。它们一旦变了，
-      // 下面每一条「点这里」都在点别的地方，必须先失败在这里。
-      const available = 738.0 - BlockMetrics.gap - BlockMetrics.gap / 2 -
-          BlockMetrics.minGrabTarget;
-      expect((available / BlockMetrics.minGrabTarget).floor(), columns);
-      expect(available / columns, closeTo(cell, 0.01));
+    testWidgets('几何前提：点在算出来的格心，积木就落在那一格', (tester) async {
+      // place() 的坐标全建在上面那组常量上。**拿真的落位去撞它们**——
+      // 只验算术自洽的话，布局改了这条照样绿，而下面每一条「点这里」
+      // 其实都在点别的地方。
+      await pumpPage(tester);
+      for (final target in [
+        const GridCell(0, 0),
+        const GridCell(columns - 1, 0),
+        const GridCell(2, boardRows - 1),
+      ]) {
+        await place(tester, '1', target.col, target.row);
+        final placed = tester
+            .widgetList<BlockWidget>(blockOf('1'))
+            .where((w) => w.body.anchor == target);
+        expect(placed, hasLength(1), reason: '点 $target 的格心却没落在那一格');
+      }
     });
 
     testWidgets('一进来托盘里是数字，加号等号常驻', (tester) async {
@@ -178,6 +201,16 @@ void main() {
       await place(tester, '1', 0, 0);
       // 台面上一块 + 托盘里补的一块。
       expect(blockOf('1'), findsNWidgets(2));
+    });
+
+    testWidgets('从中间拿走一块，右边的货不会往左挪——托盘位置不能在他手底下动', (tester) async {
+      // 真机上发现的：补的货接在末尾的话，想连着拿「0、+、1」，
+      // 第二下手指落到的已经是别的块了。托盘的位置是他找东西的唯一线索。
+      await pumpPage(tester);
+      final before = trayOrder(tester);
+
+      await place(tester, '0', 0, 0); // 拿走中间那块
+      expect(trayOrder(tester), before, reason: '托盘该原样不动，只是那一格换了块新的');
     });
   });
 
