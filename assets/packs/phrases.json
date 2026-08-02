@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "phrases": [
+    {
+      "id": "great",
+      "group": "praise",
+      "text": "太棒了",
+      "textEn": "awesome",
+      "voiceKey": "zh.praise.great",
+      "voiceKeyEn": "en.praise.great"
+    },
+    {
+      "id": "thatsIt",
+      "group": "praise",
+      "text": "就是这样",
+      "textEn": "that's it",
+      "voiceKey": "zh.praise.thatsIt",
+      "voiceKeyEn": "en.praise.thatsIt"
+    },
+    {
+      "id": "youDidIt",
+      "group": "praise",
+      "text": "你做到了",
+      "textEn": "you did it",
+      "voiceKey": "zh.praise.youDidIt",
+      "voiceKeyEn": "en.praise.youDidIt"
+    },
+    {
+      "id": "againPlease",
+      "group": "praise",
+      "text": "再来一个",
+      "textEn": "one more",
+      "voiceKey": "zh.praise.againPlease",
+      "voiceKeyEn": "en.praise.againPlease"
+    },
+    {
+      "id": "almostThere",
+      "group": "praise",
+      "text": "快好了",
+      "textEn": "almost there",
+      "voiceKey": "zh.praise.almostThere",
+      "voiceKeyEn": "en.praise.almostThere"
+    },
+    {
+      "id": "happyBirthday",
+      "group": "birthday",
+      "text": "生日快乐",
+      "textEn": "happy birthday",
+      "voiceKey": "zh.birthday.happyBirthday",
+      "voiceKeyEn": "en.birthday.happyBirthday"
+    },
+    {
+      "id": "threeYearsOld",
+      "group": "birthday",
+      "text": "你三岁啦",
+      "textEn": "you are three",
+      "voiceKey": "zh.birthday.threeYearsOld",
+      "voiceKeyEn": "en.birthday.threeYearsOld"
+    },
+    {
+      "id": "makeAWish",
+      "group": "birthday",
+      "text": "许个愿吧",
+      "textEn": "make a wish",
+      "voiceKey": "zh.birthday.makeAWish",
+      "voiceKeyEn": "en.birthday.makeAWish"
+    },
+    {
+      "id": "blowTheCandles",
+      "group": "birthday",
+      "text": "吹蜡烛",
+      "textEn": "blow the candles",
+      "voiceKey": "zh.birthday.blowTheCandles",
+      "voiceKeyEn": "en.birthday.blowTheCandles"
+    },
+    {
+      "id": "weLoveYou",
+      "group": "birthday",
+      "text": "我们爱你",
+      "textEn": "we love you",
+      "voiceKey": "zh.birthday.weLoveYou",
+      "voiceKeyEn": "en.birthday.weLoveYou"
+    },
+    {
+      "id": "thisIsForYou",
+      "group": "birthday",
+      "text": "这是给你做的",
+      "textEn": "this is for you",
+      "voiceKey": "zh.birthday.thisIsForYou",
+      "voiceKeyEn": "en.birthday.thisIsForYou"
+    }
+  ]
+}

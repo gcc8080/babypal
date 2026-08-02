@@ -539,6 +539,16 @@ void _collect(File pack, Map<String, VoiceEntry> out, List<String> unresolved) {
     add(item['voiceKeyEn'] as String?, item['textEn'] as String?, enVoice);
   }
 
+  // 整句：鼓励语、生日台词。朗读文本由内容包直接给出。
+  //
+  // 这类**本来只有「十个一是一个十」一条**，硬写在下面的内置表里就够了。
+  // 鼓励语和生日台词进内容包，是因为它们恰恰是家长最想改词、也最该用真人
+  // 声音说的东西——写死在代码里，改一句话就要改代码、重新打包。
+  for (final item in _list(decoded['phrases'])) {
+    add(item['voiceKey'] as String?, item['text'] as String?, zhVoice);
+    add(item['voiceKeyEn'] as String?, item['textEn'] as String?, enVoice);
+  }
+
   // 拼字目标：朗读文本就是名字本身，从字母序列还原，避免同一个名字在包里
   // 写两遍然后哪天改了一处忘了另一处。
   for (final item in _list(decoded['spellingTargets'])) {

@@ -144,6 +144,42 @@ class NounItem extends ContentItem {
   String toString() => 'NounItem($id, $category)';
 }
 
+/// 一句整句播报：鼓励语、生日彩蛋台词这类。
+///
+/// **为什么是内容而不是代码。** 「太棒了」和「祝你生日快乐」拼不出来（不是
+/// 词片能组的），此前这类只有 `zh.phrase.tenOnesMakeATen` 一条，硬写在
+/// `gen_audio` 的内置表里就够了。但鼓励语和生日台词不一样——它们恰恰是
+/// 家长最想改词的东西（「太棒了」还是「宝贝真棒」），也是最该用真人声音说
+/// 的东西。写死在 Dart 里，改一句话就要改代码、重新打包。
+///
+/// 放进内容包之后，改词是改 JSON，录音页里自动出现，`gen_audio` 自动补打底。
+@immutable
+class PhraseItem extends ContentItem {
+  const PhraseItem({
+    required this.id,
+    required this.group,
+    required this.text,
+    required super.voiceKey,
+    this.textEn,
+    super.voiceKeyEn,
+  });
+
+  final String id;
+
+  /// 分组，如 `praise`（鼓励语）、`birthday`（生日台词）。
+  ///
+  /// 只是个标签，代码不对它做任何判断——录音页拿它分节、排顺序而已。
+  /// 内容包里新增一个组，录音页里自动多一节。
+  final String group;
+
+  /// 朗读文本。这既是 TTS 要念的，也是录音页显示给家长看的「这条该念什么」。
+  final String text;
+  final String? textEn;
+
+  @override
+  String toString() => 'PhraseItem($id, $group)';
+}
+
 /// 一个拼字目标，如孩子自己的名字。
 ///
 /// 做成内容包里的数据而不是常量：`letters` 规格明确要求目标名字**不得硬编码**
@@ -201,6 +237,7 @@ class ContentPack {
     this.nouns = const [],
     this.antonyms = const [],
     this.spellingTargets = const [],
+    this.phrases = const [],
     this.skipped = const [],
   });
 
@@ -215,6 +252,7 @@ class ContentPack {
   final List<NounItem> nouns;
   final List<AntonymPair> antonyms;
   final List<SpellingTarget> spellingTargets;
+  final List<PhraseItem> phrases;
 
   /// 被跳过的非法条目及原因。
   ///
@@ -228,11 +266,18 @@ class ContentPack {
       hanzi.isEmpty &&
       nouns.isEmpty &&
       antonyms.isEmpty &&
-      spellingTargets.isEmpty;
+      spellingTargets.isEmpty &&
+      phrases.isEmpty;
 
   /// 本包引用到的全部语音键，供构建工具生成音频清单、离线检出缺失。
   Set<String> get allVoiceKeys => {
-    for (final item in [...numbers, ...letters, ...hanzi, ...nouns]) ...[
+    for (final item in [
+      ...numbers,
+      ...letters,
+      ...hanzi,
+      ...nouns,
+      ...phrases,
+    ]) ...[
       item.voiceKey,
       if (item.voiceKeyEn != null) item.voiceKeyEn!,
     ],

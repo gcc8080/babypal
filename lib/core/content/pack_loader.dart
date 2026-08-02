@@ -109,6 +109,12 @@ class PackLoader {
       skipped: skipped,
       parseOne: _parseSpellingTarget,
     );
+    final phrases = _parseList(
+      decoded['phrases'],
+      source: source,
+      skipped: skipped,
+      parseOne: _parsePhrase,
+    );
 
     return ContentPack(
       schemaVersion: version,
@@ -119,6 +125,7 @@ class PackLoader {
       nouns: nouns,
       antonyms: antonyms,
       spellingTargets: spellingTargets,
+      phrases: phrases,
       skipped: skipped,
     );
   }
@@ -196,6 +203,27 @@ class PackLoader {
       id: id,
       category: category,
       iconKey: iconKey,
+      text: text,
+      textEn: _optionalString(json['textEn']),
+      voiceKey: voiceKey,
+      voiceKeyEn: _optionalString(json['voiceKeyEn']),
+    );
+  }
+
+  PhraseItem? _parsePhrase(Map<String, dynamic> json) {
+    final id = json['id'];
+    final group = json['group'];
+    final text = json['text'];
+    final voiceKey = json['voiceKey'];
+    if (id is! String || id.isEmpty) return null;
+    if (group is! String || group.isEmpty) return null;
+    // `text` 必填，与名词同理：一句没有文本的话既合不出打底语音，
+    // 录音页也没法告诉家长「这条该念什么」——而照着 voiceKey 是录不出话的。
+    if (text is! String || text.isEmpty) return null;
+    if (voiceKey is! String || voiceKey.isEmpty) return null;
+    return PhraseItem(
+      id: id,
+      group: group,
       text: text,
       textEn: _optionalString(json['textEn']),
       voiceKey: voiceKey,
@@ -355,6 +383,13 @@ class ContentLibrary {
   List<AntonymPair> get antonyms => [for (final p in packs) ...p.antonyms];
   List<SpellingTarget> get spellingTargets => [
     for (final p in packs) ...p.spellingTargets,
+  ];
+  List<PhraseItem> get phrases => [for (final p in packs) ...p.phrases];
+
+  /// 某一组整句，如 `praise` / `birthday`。保持包内顺序。
+  List<PhraseItem> phrasesIn(String group) => [
+    for (final item in phrases)
+      if (item.group == group) item,
   ];
 
   /// 全部被跳过的条目，供开发期排查内容包错误。

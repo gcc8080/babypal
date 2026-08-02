@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "nouns": [
+    {
+      "id": "papa",
+      "category": "family",
+      "iconKey": "1F468",
+      "text": "爸爸",
+      "textEn": "daddy",
+      "voiceKey": "zh.noun.papa",
+      "voiceKeyEn": "en.noun.papa"
+    },
+    {
+      "id": "mama",
+      "category": "family",
+      "iconKey": "1F469",
+      "text": "妈妈",
+      "textEn": "mommy",
+      "voiceKey": "zh.noun.mama",
+      "voiceKeyEn": "en.noun.mama"
+    },
+    {
+      "id": "yeye",
+      "category": "family",
+      "iconKey": "1F474",
+      "text": "爷爷",
+      "textEn": "grandpa",
+      "voiceKey": "zh.noun.yeye",
+      "voiceKeyEn": "en.noun.yeye"
+    },
+    {
+      "id": "nainai",
+      "category": "family",
+      "iconKey": "1F475",
+      "text": "奶奶",
+      "textEn": "grandma",
+      "voiceKey": "zh.noun.nainai",
+      "voiceKeyEn": "en.noun.nainai"
+    },
+    {
+      "id": "waigong",
+      "category": "family",
+      "iconKey": "1F9D3",
+      "text": "外公",
+      "textEn": "grandpa",
+      "voiceKey": "zh.noun.waigong",
+      "voiceKeyEn": "en.noun.waigong"
+    },
+    {
+      "id": "waipo",
+      "category": "family",
+      "iconKey": "1F9D3",
+      "text": "外婆",
+      "textEn": "grandma",
+      "voiceKey": "zh.noun.waipo",
+      "voiceKeyEn": "en.noun.waipo"
+    },
+    {
+      "id": "gege",
+      "category": "family",
+      "iconKey": "1F466",
+      "text": "哥哥",
+      "textEn": "brother",
+      "voiceKey": "zh.noun.gege",
+      "voiceKeyEn": "en.noun.gege"
+    },
+    {
+      "id": "jiejie",
+      "category": "family",
+      "iconKey": "1F467",
+      "text": "姐姐",
+      "textEn": "sister",
+      "voiceKey": "zh.noun.jiejie",
+      "voiceKeyEn": "en.noun.jiejie"
+    },
+    {
+      "id": "didi",
+      "category": "family",
+      "iconKey": "1F476",
+      "text": "弟弟",
+      "textEn": "brother",
+      "voiceKey": "zh.noun.didi",
+      "voiceKeyEn": "en.noun.didi"
+    },
+    {
+      "id": "meimei",
+      "category": "family",
+      "iconKey": "1F476",
+      "text": "妹妹",
+      "textEn": "sister",
+      "voiceKey": "zh.noun.meimei",
+      "voiceKeyEn": "en.noun.meimei"
+    },
+    {
+      "id": "shushu",
+      "category": "family",
+      "iconKey": "1F468",
+      "text": "叔叔",
+      "textEn": "uncle",
+      "voiceKey": "zh.noun.shushu",
+      "voiceKeyEn": "en.noun.shushu"
+    },
+    {
+      "id": "ayi",
+      "category": "family",
+      "iconKey": "1F469",
+      "text": "阿姨",
+      "textEn": "aunt",
+      "voiceKey": "zh.noun.ayi",
+      "voiceKeyEn": "en.noun.ayi"
+    }
+  ]
+}
