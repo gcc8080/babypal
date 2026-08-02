@@ -23,6 +23,39 @@ An offline block-play learning app built for a nearly-three-year-old. No ads, no
 木 + 木 = 林      日 + 月 = 明
 ```
 
+### 截图
+
+以下均为 **MI 8 SE 真机 release 构建**的实拍（横屏 738×393 dp）。
+
+| 星球地图（首页） | 自由沙盒 |
+|---|---|
+| ![星球地图](docs/screenshots/01-home.png) | ![自由沙盒](docs/screenshots/06-sandbox.png) |
+| 五块大陆 = 五个模块入口，纯图形无文字。左上角那个浅浅的圆环是家长门 | 无关卡无对错。他自己摆出 `1+2=3`，App 认出来并念给他听 |
+
+| 数字大陆 · 位值 | 加法大陆 · 等式槽 |
+|---|---|
+| ![位值](docs/screenshots/02-numbers.png) | ![等式槽](docs/screenshots/03-addition.png) |
+| 用十条和单块拼出 13，不是数到 13 | `1 + 2 = ?`，积木区随时可以当算盘用 |
+
+| 字母大陆 · A is for Apple | 汉字大陆 · 部件加法 |
+|---|---|
+| ![字母](docs/screenshots/04-letters.png) | ![汉字](docs/screenshots/05-hanzi.png) |
+| Apple / Ant / Airplane **都是正确答案**，点哪个都欢呼 | 人 + 田 摆到一起会合成新字；中间是象形动画 |
+
+| 生日彩蛋 · 拼名字 | 生日彩蛋 · 蜡烛 |
+|---|---|
+| ![拼名字](docs/screenshots/08-birthday-name.png) | ![蜡烛](docs/screenshots/09-birthday-candles.png) |
+| 名字来自内容包，字母左右交替飞入、逐个念出 | 三块合体成 3 点燃蜡烛，对着麦克风吹灭（点一下也行） |
+
+<details>
+<summary>家长区（长按左上角 3 秒 + 两位数乘法之后）</summary>
+
+![家长设置](docs/screenshots/07-parent-settings.png)
+
+**这是整个 App 里唯一有文字的地方。**
+
+</details>
+
 ### 五块大陆
 
 | 模块 | 玩法 |
@@ -126,11 +159,34 @@ fvm flutter test tool/gen_icon.dart   # 重新生成应用图标
 
 里面有：逐条录音、中英双声道开关、每日时长上限、模块开关、今天玩了什么、隐私与素材署名。**按一下不该有反应，必须按满 3 秒**——挡的就是他乱按。
 
+### 许可
+
+**源代码按 [Apache License 2.0](LICENSE) 授权。** 完整条款见 `LICENSE`，第三方素材声明见 [`NOTICE`](NOTICE)。
+
+```
+Copyright 2026 eric.ding
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+```
+
+**但仓库里有两类东西不在 Apache 2.0 之下**，分发前请留意：
+
+| 内容 | 许可 | 要点 |
+|---|---|---|
+| `assets/icons/` 86 个 SVG | **CC BY-SA 4.0**（OpenMoji） | 相同方式共享，**不能重新授权为 Apache 2.0**；必须保留署名 |
+| `assets/audio/` 617 个 WAV | 由 macOS `say` 生成 | 用的是 Apple 系统语音，**不是本项目的原创作品**，再分发受 Apple 许可协议约束 |
+
+音频那条是给「打算把这个 App 分发出去」的人看的：`fvm dart run tool/gen_audio.dart` 会从内容包重建全部音频，换一套授权明确的 TTS 只需改那一个脚本。
+
+其余部分——积木、表情、蛋糕、星球、应用图标、音效——全部由代码绘制或合成，均为原创，按 Apache 2.0 授权。
+
 ### 版权
 
 角色造型与数字—颜色对应关系均为原创。教学法（立方体表数量、位值、部件组字）属公共领域，可自由借鉴；调色板刻意避开了某部知名动画那套「色相随数字单调递增」的彩虹配色，这一条同样由 `test/compliance_test.dart` 守着。
-
-名词图标来自 **OpenMoji**，CC BY-SA 4.0，署名见 `assets/icons/LICENSE.txt` 与 App 内的「关于」页。
 
 ---
 
@@ -148,6 +204,39 @@ The five domains look unrelated but share one mental model: **composition**.
 3 + 2 = 5        C + A + T = CAT
 木 + 木 = 林      日 + 月 = 明
 ```
+
+### Screenshots
+
+All shots are from a **release build on a real MI 8 SE** (landscape, 738×393 dp).
+
+| Planet map (home) | Sandbox |
+|---|---|
+| ![Planet map](docs/screenshots/01-home.png) | ![Sandbox](docs/screenshots/06-sandbox.png) |
+| Five continents = five modules, pure graphics, no text. The faint ring at top-left is the parent gate | No levels, no right answers. He laid out `1+2=3` himself; the app recognises it and reads it back |
+
+| Numbers · place value | Addition · equation slots |
+|---|---|
+| ![Place value](docs/screenshots/02-numbers.png) | ![Equation](docs/screenshots/03-addition.png) |
+| Build 13 out of ten-rods and unit cubes — not count to 13 | `1 + 2 = ?`, with the block area usable as an abacus at any time |
+
+| Letters · A is for Apple | Chinese · radical addition |
+|---|---|
+| ![Letters](docs/screenshots/04-letters.png) | ![Chinese](docs/screenshots/05-hanzi.png) |
+| Apple / Ant / Airplane are **all correct** — every one of them cheers | 人 + 田 merge into a new character; the centre shows the pictograph morph |
+
+| Birthday egg · name | Birthday egg · candles |
+|---|---|
+| ![Name](docs/screenshots/08-birthday-name.png) | ![Candles](docs/screenshots/09-birthday-candles.png) |
+| The name comes from a content pack; letters fly in from alternating sides, each spoken | Three blocks merge into a 3 and light the candles; blow into the mic (tapping also works) |
+
+<details>
+<summary>Parent zone (behind a 3-second hold on the top-left corner plus a two-digit multiplication)</summary>
+
+![Parent settings](docs/screenshots/07-parent-settings.png)
+
+**This is the only place in the app with any text.**
+
+</details>
 
 ### Five continents
 
@@ -252,8 +341,31 @@ Press and hold the **top-left** corner of the home screen for 3 seconds, then an
 
 Inside: per-line recording, bilingual toggle, daily time limit, module switches, today's activity, privacy and asset attribution. **A single tap is meant to do nothing** — the full 3-second hold is exactly what keeps the toddler out.
 
+### License
+
+**The source code is licensed under the [Apache License 2.0](LICENSE).** Full terms are in `LICENSE`; third-party asset terms are in [`NOTICE`](NOTICE).
+
+```
+Copyright 2026 eric.ding
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+```
+
+**Two categories of bundled content are NOT under Apache 2.0.** Check them before redistributing:
+
+| Content | License | What it means |
+|---|---|---|
+| `assets/icons/` — 86 SVGs | **CC BY-SA 4.0** (OpenMoji) | Share-alike; **cannot be relicensed under Apache 2.0**. Attribution must be preserved |
+| `assets/audio/` — 617 WAVs | Generated by macOS `say` | Uses Apple's system voices — **not original work of this project**. Redistribution is governed by Apple's license agreement |
+
+That audio note matters to anyone planning to distribute this app: `fvm dart run tool/gen_audio.dart` rebuilds every file from the content packs, so switching to a clearly-licensed TTS engine only means editing that one script.
+
+Everything else — blocks, faces, cake, planet, app icon, sound effects — is drawn or synthesised in code, is original, and is covered by Apache 2.0.
+
 ### Copyright
 
 Character shapes and the number-to-colour mapping are original. The pedagogy (cubes for quantity, place value, radical composition) is public domain and freely borrowed. The palette deliberately avoids the "hue increasing monotonically with number" rainbow scheme of a well-known animated series — a property also guarded by `test/compliance_test.dart`.
-
-Noun icons come from **OpenMoji**, licensed CC BY-SA 4.0. Attribution is in `assets/icons/LICENSE.txt` and on the in-app About page.
